@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sanitary Permit Issuance</title>
+    <link rel="stylesheet" href="css\2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+</head>
+<body>
+<body>
+    <div class="top-bar">
+        <img src="image\My project (1).png" style="width: 90px; height: auto; float: left; margin-left: 2%">
+        <img src="image\MUNICIPAL HEALTH OFFICE 2172025 (1).png" style="width: 90px; height: auto; float: left; margin-left: 10px">
+        <span>Issuance of Sanitary Permit<kbd></kbd></span>
+             <a href="index.html" target="_blank"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left: -17%;
+    z-index:100; margin-top:-1%;"></a>
+    </div>
+    <div class="content">
+      <div class="employee-list">
+    <div class="top-bars"></div>
+    <span><kbd></kbd></span></div>
+<table id="applicationTable" border="1">
+    <thead>
+        <tr>
+            <th>Business Name</th>
+            <th>Owner/Applicant</th>
+            <th>Applicant Type</th>
+            <th>Application Date</th>
+            <th>Remarks</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody id="applicationTableBody">
+
+</table>
+</div>
+    <form name="submit-to-google-sheet">
+        <div class="top-barz">
+                <label for="businessName"></label><br>
+                <input style="margin-left: 9px; height: 30px; position: absolute; width: 18.7%;
+                margin-top: -18px; border: -10px solid gray;" placeholder="+" type="text" id="businessName" name="Business Name" required><br><br>
+              
+                <label for="ownerName"></label><br>
+                <input style="margin-left: 19.9%; height: 30px; position: absolute; width: 265.7px;
+                margin-top: -72px; border: -10px solid gray;" placeholder="+" type="text" id="ownerName" name="Owner/Applicant" required>
+              
+                <label for="applicantType"></label><br>
+                <input style="margin-left: 546px; height: 30px; position: absolute; width: 239.5px;
+                margin-top: -90px; border: -10px solid gray; align-items: center; " placeholder="+" type="text" id="applicantType" name="Applicant Type" required>
+              
+                <label for="applicationDate"></label><br>
+                <input style="margin-left: 794px; height: 32px; position: absolute; width: 267px;
+                margin-top: -108px; border: -10px solid gray;" type="date" id="applicationDate" name="Application Date" required>
+
+                <label for="remarks"></label><br>
+                <select style="margin-left: 1065.5px; height: 36px; position: absolute; width: 11.8%;
+                margin-top: -126px; border: -10px solid gray;" id="remarks" name="Remarks" required>
+                <option value="">Select</option>
+                <option value="Approved">Approved</option>
+                <option value="Not Approved">Not Approved</option>
+                </select><br><br>
+
+                <label for="applicationStatus"></label><br>
+                <select style="margin-left: 1226.5px; height: 36px; position: absolute; width: 130px;
+                margin-top: -180px; border: -10px solid gray;" id="status" name="Status" required>
+                <option value="">Select Status</option>
+                <option value="Active">Active</option>
+                <option value="Not Active">Not Active</option>
+                </select><br><br>
+        </div> 
+<input style="height: 30px; width: 10%; margin-left: 89%; position:fixed;
+margin-top: 13%; border-radius: 5px; border: 1px solid black;" type="submit" value="Submit" onclick="storeData()">
+
+</form>
+<script>
+      function storeData() {
+            // ... your storeData function ...
+        }
+        google.script.run
+            .withSuccessHandler(function(data) {
+                const tableBody = document.getElementById("applicationTableBody");
+                tableBody.innerHTML = ""; // Clear loading message
+
+                data.forEach(row => {
+                    const tr = document.createElement("tr");
+                    row.forEach(cell => {
+                        const td = document.createElement("td");
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+            })
+            .withFailureHandler(function(error) {
+                console.error("Error fetching data:", error);
+                const tableBody = document.getElementById("applicationTableBody");
+                tableBody.innerHTML = "<tr><td colspan='5'>Error loading data.</td></tr>";
+            })
+            .getApplicationData();
+</script>
+
+    </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

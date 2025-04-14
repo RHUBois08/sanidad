@@ -1,0 +1,157 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #afd3e2;
+}
+
+.header-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 15px;
+    background-color: #003366;
+    
+}
+
+.header-details > div {
+    display: flex;
+    flex-direction: column;
+    color: #ffffff;
+    margin-top: -10px;
+}
+
+.header-details label {
+    margin-bottom: 5px;
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-right: 30%;
+    
+}
+
+.header-details input {
+    padding: 7px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    font-weight:lighter;
+    width: 40%;
+    margin-left: 14%;
+    font-size: 90%;
+}
+.employee-list {
+    padding: 20px;
+}
+
+.list-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+table {
+    width: 103%;
+    border-collapse: collapse;
+    position: relative;
+    margin-top: .1%;
+    margin-left: -1.5%;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+td{
+    text-align: center;
+}
+
+
+.add-employee {
+    margin-top: 10px;
+}
+
+.add-employee input {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+    text-align: center;
+}
+
+.year-navigation {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.year-navigation button {
+    padding: 8px 15px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.top-bars {
+    background-color: #ffffff; 
+    color: white;
+    padding: 5px;
+    text-align: center;
+    position: relative;
+    margin-top: -1.4%;
+    width: 102.2%;
+    margin-left: -1.5%;
+}
+.checkbox-group {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    margin-left: 8%;
+  }
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    transform: scale(1.7); 
+    font-size: 10px;
+    
+  }
+  .checkbox-group input[type="checkbox"] {
+    margin-right: 5px;
+
+  }
+  .container{
+    padding:1.5%;
+    height: 7px;
+    width: 97.2%;
+    margin-top: -7px;
+    background-color: #4c7b8b;
+    position: fixed;
+    margin-left: -1.7%;
+  }
+  @media (min-width: 768px) {
+    .year-navigation{
+        background-color:  #4c7b8b; 
+        padding: 5px;
+        text-align: center;
+        position: sticky;
+        margin-top: -.6%;
+        width: 99.3%;
+        height: 10%;
+        display: flex;
+        justify-content: center; 
+        align-items: center; 
+    }
+  }
+  .year-navigations{
+    color:black;
+  }
+  .dabyong{
+    float: right;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sanitary Permit Issuance</title>
+    <link rel="stylesheet" href="css\2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .search-container {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .search-container input[type="text"] {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        .search-container button {
+            padding: 8px 12px;
+            background-color: #4c7b8b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .top-bar {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingMessage" style="display: none;">Loading data, please wait...</div>
+    <div id="errorMessage" style="display: none; color: red;">Failed to load data. Please try again later.</div>
+    
+    <div class="top-bar">
+        <img src="image\My project (1).png" style="width: 90px; height: auto; float: left; margin-left: 2%">
+        <img src="image\MUNICIPAL HEALTH OFFICE 2172025 (1).png" style="width: 90px; height: auto; float: left; margin-left: 10px">
+        <span>Issuance of Sanitary Permit<kbd></kbd></span>
+        <a href="home.html" target="_blank"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left: -17%;
+    z-index:100; margin-top:-1%;"></a>
+        <div class="search-container">
+            <input type="text" id="iframeSearchInput" placeholder="Search...">
+            <button id="iframeSearchButton">Search</button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="top-bars">
+            <span><kbd></kbd></span>
+            <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button> 
+        </div>
+        <center>
+            <iframe src="https://script.google.com/macros/s/AKfycbzRbBP4c7phrHG0XkKoYXCy-Txoft3U6dy1XquwYJX9i9xqkXqMe6u63ljDGgNHmOLzgg/exec"
+            width="100%" height="1000px" scrolling="no" style="border: none; width: 100%; margin-top:10px;
+            z-index: 20; position: relative;" frameborder="0" ></iframe>
+        </center>
+    </div>
+    
+    <script>
+        document.getElementById('dataIframe').onload = function() {
+            document.getElementById('iframeSearchButton').addEventListener('click', function() {
+                var input, filter;
+                input = document.getElementById("iframeSearchInput");
+                filter = input.value.toUpperCase();
+
+                var iframe = document.getElementById("dataIframe");
+                var iframeDocument = iframe.contentWindow.document;
+
+                var table = iframeDocument.querySelector("table");
+                if (table) {
+                    var tr = table.getElementsByTagName("tr");
+                    for (var i = 1; i < tr.length; i++) {
+                        var found = false;
+                        var td = tr[i].getElementsByTagName("td");
+                        for (var j = 0; j < td.length; j++) {
+                            if (td[j]) {
+                                var txtValue = td[j].textContent || td[j].innerText;
+                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (found) {
+                            tr[i].style.display = "";
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                } else {
+                    alert("Table not found in iframe.");
+                }
+            });
+        };
+    </script>
+</body>
+</html>

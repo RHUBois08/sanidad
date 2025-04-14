@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #afd3e2;
+}
+.top-bar {
+    background-color: #003366; 
+    color: white;
+    padding: 30px;
+    text-align: right;
+    position: relative;
+}
+
+.top-bar span {
+    background-color: #003366;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-right: 340px;
+    font-size: 50px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.my-button {
+    position: absolute; 
+    top: 10px;
+    left: 20px; 
+    z-index: 10;
+    margin-top: 10px;
+    margin-left: 3%;
+    padding: 15px;
+    width: 15%;
+    font-weight: bold;
+}

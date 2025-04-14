@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sanitary Permit Form</title>
+    <link rel="stylesheet" href="css\5.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="input-group">
+                <label for="businessName">Business Name</label>
+                <input type="text" id="businessName">
+            </div>
+            <div class="input-group">
+                <label for="ownerName">Name of Owner/Applicant</label>
+                <input type="text" id="ownerName">
+            </div>
+            <div class="input-group">
+                <label for="permitNumber">Sanitary Permit #</label>
+                <input type="text" id="permitNumber">
+            </div>
+        </div>
+        <div class="mid-section">
+            <button class="category-btn" data-category="Food">Food</button>
+            <button class="category-btn" data-category="Non-Food">Non-Food</button>
+            <button class="classification-btn" onclick="addClassification()">+</button>
+            <label for="classification">Classification</label>
+            <input type="text" id="classificationInput">
+        </div>
+        <div class="list-header">
+            List (202+)
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    <tr>
+                        <td><input type="text" class="employee-no"></td>
+                        <td><input type="text" class="employee-name"></td>
+                        <td><input type="text" class="employee-address"></td>
+                        <td><input type="text" class="health-cert"></td>
+                        <td><input type="text" class="remarks"></td>
+                        <td><button onclick="removeRow(this)">X</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="submit-section">
+            <button class="submit-btn" onclick="submitForm()">Submit</button>
+        </div>
+    </div>
+    <script>
+        function addClassification() {
+            const classification = document.getElementById("classificationInput").value;
+            // You can handle adding classification logic here
+            console.log("Classification added:", classification);
+        }
+
+        function removeRow(button) {
+            button.parentElement.parentElement.remove();
+        }
+
+        function submitForm() {
+            const businessName = document.getElementById("businessName").value;
+            const ownerName = document.getElementById("ownerName").value;
+            const permitNumber = document.getElementById("permitNumber").value;
+            const category = document.querySelector(".category-btn.active")?.dataset.category;
+            const classification = document.getElementById("classificationInput").value;
+
+            const employees = [];
+            document.querySelectorAll("#employeeTableBody tr").forEach(row => {
+                const no = row.querySelector(".employee-no").value;
+                const name = row.querySelector(".employee-name").value;
+                const address = row.querySelector(".employee-address").value;
+                const cert = row.querySelector(".health-cert").value;
+                const remarks = row.querySelector(".remarks").value;
+                employees.push({ no, name, address, cert, remarks });
+            });
+
+            const formData = { businessName, ownerName, permitNumber, category, classification, employees };
+
+            google.script.run
+                .withSuccessHandler(function() {
+                    alert("Form submitted successfully!");
+                    document.getElementById("businessName").value = "";
+                    document.getElementById("ownerName").value = "";
+                    document.getElementById("permitNumber").value = "";
+                    document.getElementById("classificationInput").value = "";
+                    document.querySelectorAll("#employeeTableBody tr").forEach(row => row.remove());
+                    document.getElementById("employeeTableBody").innerHTML = `<tr>
+                        <td><input type="text" class="employee-no"></td>
+                        <td><input type="text" class="employee-name"></td>
+                        <td><input type="text" class="employee-address"></td>
+                        <td><input type="text" class="health-cert"></td>
+                        <td><input type="text" class="remarks"></td>
+                        <td><button onclick="removeRow(this)">X</button></td>
+                    </tr>`
+
+                })
+                .submitData(formData);
+        }
+
+        document.querySelectorAll(".category-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+                document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+    </script>
+    <script src="style.js"></script>
+</body>
+</html>
