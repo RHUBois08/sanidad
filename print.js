@@ -57,7 +57,7 @@ try {
 
 // Save it
 try {
-    fs.writeFileSync("C:/Users/DELL/Desktop/sample_outputs/sample_output.docx", buffer);
+    fs.writeFileSync("C:/Users/DELL/Desktop/sanidad/sample_outputs/sample_output.docx", buffer);
     console.log("Document generated successfully: sample_output.docx");
 } catch (error) {
     console.error("Error saving the document:", error);
