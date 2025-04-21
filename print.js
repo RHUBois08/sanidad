@@ -5,7 +5,7 @@ const fs = require("fs");
 // Load the Word template as binary
 let content;
 try {
-    content = fs.readFileSync("sanitary_certificate_format.docx", "binary");
+    content = fs.readFileSync("C:/Users/DELL/Desktop/sanidad/assests/sanitary_certificate_format.docx", "binary");
 } catch (error) {
     console.error("Error reading the template file:", error);
     process.exit(1);
@@ -37,7 +37,7 @@ try {
     doc.render({
         Date: "April 15, 2025",
         BUSINESS_NAME: "Adrian's Samgyupsalamat",
-        BUSINESS_OWNER: "Adrian"
+        BUSINESS_OWNER: "Adrian Pogi"
     });
 } catch (error) {
     console.error("Error rendering the document:", error);
@@ -57,7 +57,7 @@ try {
 
 // Save it
 try {
-    fs.writeFileSync("C:\Users\DELL\Desktop\sample_outputs\sample_output.docx", buffer);
+    fs.writeFileSync("C:/Users/DELL/Desktop/sanidad/sample_outputs/sample_output.docx", buffer);
     console.log("Document generated successfully: sample_output.docx");
 } catch (error) {
     console.error("Error saving the document:", error);
