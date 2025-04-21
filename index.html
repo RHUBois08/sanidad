@@ -53,48 +53,77 @@
             <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button> 
         </div>
         <center>
-            <iframe src="https://script.google.com/macros/s/AKfycbxWEghQepm2Ge3DMFV2fZF7nyfs40KHjnQZz4GunvSYAeZBtYORcZbTjEfOOD11rLXT4Q/exec"
-            width="100%" height="1000px" scrolling="no" style="border: none; width: 100%; margin-top:10px;
-            z-index: 20; position: relative;" frameborder="0" ></iframe>
+            <table id="applicationTable" border="1" style="width: 90%; margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th>Business Name</th>
+                        <th>Owner/Applicant</th>
+                        <th>Applicant Type</th>
+                        <th>Application Date</th>
+                        <th>Remarks</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationTableBody">
+                    <tr><td colspan="6">Loading data...</td></tr>
+                </tbody>
+            </table>
         </center>
     </div>
     
     <script>
-        document.getElementById('dataIframe').onload = function() {
-            document.getElementById('iframeSearchButton').addEventListener('click', function() {
-                var input, filter;
-                input = document.getElementById("iframeSearchInput");
-                filter = input.value.toUpperCase();
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.getElementById('applicationTableBody');
+            const searchInput = document.getElementById('iframeSearchInput');
+            const searchButton = document.getElementById('iframeSearchButton');
 
-                var iframe = document.getElementById("dataIframe");
-                var iframeDocument = iframe.contentWindow.document;
+            async function fetchData() {
+                try {
+                    const response = await fetch('http://localhost:3000/api/owners');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    tableBody.innerHTML = '';
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.business_name}</td>
+                            <td>${row.owner_name}</td>
+                            <td>${row.applicant_type}</td>
+                            <td>${new Date(row.application_date).toLocaleDateString()}</td>
+                            <td>${row.remarks}</td>
+                            <td>${row.status}</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    tableBody.innerHTML = '<tr><td colspan="6">Error loading data.</td></tr>';
+                }
+            }
 
-                var table = iframeDocument.querySelector("table");
-                if (table) {
-                    var tr = table.getElementsByTagName("tr");
-                    for (var i = 1; i < tr.length; i++) {
-                        var found = false;
-                        var td = tr[i].getElementsByTagName("td");
-                        for (var j = 0; j < td.length; j++) {
-                            if (td[j]) {
-                                var txtValue = td[j].textContent || td[j].innerText;
-                                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (found) {
-                            tr[i].style.display = "";
-                        } else {
-                            tr[i].style.display = "none";
+            function filterTable() {
+                const filter = searchInput.value.toUpperCase();
+                const rows = tableBody.getElementsByTagName('tr');
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+                    for (let j = 0; j < cells.length; j++) {
+                        if (cells[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
                         }
                     }
-                } else {
-                    alert("Table not found in iframe.");
+                    rows[i].style.display = found ? '' : 'none';
                 }
+            }
+
+            searchButton.addEventListener('click', filterTable);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') filterTable();
             });
-        };
+
+            fetchData();
+        });
     </script>
 </body>
 </html>

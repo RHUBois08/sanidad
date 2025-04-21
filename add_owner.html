@@ -22,6 +22,8 @@
       <div class="employee-list">
     <div class="top-bars"></div>
     <span><kbd></kbd></span></div>
+<!-- Removed the data display table from add_owner.html as per request -->
+<!--
 <table id="applicationTable" border="1">
     <thead>
         <tr>
@@ -36,70 +38,79 @@
     <tbody id="applicationTableBody">
 
 </table>
+-->
 </div>
     <form name="submit-to-google-sheet">
-        <div class="top-barz">
-                <label for="businessName"></label><br>
-                <input style="margin-left: 9px; height: 30px; position: absolute; width: 18.7%;
-                margin-top: -18px; border: -10px solid gray;" placeholder="+" type="text" id="businessName" name="Business Name" required><br><br>
-              
-                <label for="ownerName"></label><br>
-                <input style="margin-left: 19.9%; height: 30px; position: absolute; width: 265.7px;
-                margin-top: -72px; border: -10px solid gray;" placeholder="+" type="text" id="ownerName" name="Owner/Applicant" required>
-              
-                <label for="applicantType"></label><br>
-                <input style="margin-left: 546px; height: 30px; position: absolute; width: 239.5px;
-                margin-top: -90px; border: -10px solid gray; align-items: center; " placeholder="+" type="text" id="applicantType" name="Applicant Type" required>
-              
-                <label for="applicationDate"></label><br>
-                <input style="margin-left: 794px; height: 32px; position: absolute; width: 267px;
-                margin-top: -108px; border: -10px solid gray;" type="date" id="applicationDate" name="Application Date" required>
-
-                <label for="remarks"></label><br>
-                <select style="margin-left: 1065.5px; height: 36px; position: absolute; width: 11.8%;
-                margin-top: -126px; border: -10px solid gray;" id="remarks" name="Remarks" required>
-                <option value="">Select</option>
-                <option value="Approved">Approved</option>
-                <option value="Not Approved">Not Approved</option>
-                </select><br><br>
-
-                <label for="applicationStatus"></label><br>
-                <select style="margin-left: 1226.5px; height: 36px; position: absolute; width: 130px;
-                margin-top: -180px; border: -10px solid gray;" id="status" name="Status" required>
-                <option value="">Select Status</option>
-                <option value="Active">Active</option>
-                <option value="Not Active">Not Active</option>
-                </select><br><br>
+        <div class="top-barz" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <div style="display: flex; flex-direction: column; width: 18.7%; position: relative;">
+                    <label for="businessName" style="background: white; padding: 0 5px;">Business Name</label>
+                    <input style="height: 30px; border: 1px solid gray;" placeholder="+" type="text" id="businessName" name="Business Name" required>
+                </div>
+                <div style="display: flex; flex-direction: column; width: 265.7px; position: relative;">
+                    <label for="ownerName" style="background: white; padding: 0 5px;">Owner/Applicant</label>
+                    <input style="height: 30px; border: 1px solid gray;" placeholder="+" type="text" id="ownerName" name="Owner/Applicant" required>
+                </div>
+                <div style="display: flex; flex-direction: column; width: 239.5px; position: relative;">
+                    <label for="applicantType" style="background: white; padding: 0 5px;">Applicant Type</label>
+                    <input style="height: 30px; border: 1px solid gray;" placeholder="+" type="text" id="applicantType" name="Applicant Type" required>
+                </div>
+                <div style="display: flex; flex-direction: column; width: 267px; position: relative;">
+                    <label for="applicationDate" style="background: white; padding: 0 5px;">Application Date</label>
+                    <input style="height: 32px; border: 1px solid gray;" type="date" id="applicationDate" name="Application Date" required>
+                </div>
+                <div style="display: flex; flex-direction: column; width: 11.8%; position: relative;">
+                    <label for="remarks" style="background: white; padding: 0 5px;">Remarks</label>
+                    <select style="height: 36px; border: 1px solid gray;" id="remarks" name="Remarks" required>
+                        <option value="">Select</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Not Approved">Not Approved</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; width: 130px; position: relative;">
+                    <label for="applicationStatus" style="background: white; padding: 0 5px;">Status</label>
+                    <select style="height: 36px; border: 1px solid gray;" id="status" name="Status" required>
+                        <option value="">Select Status</option>
+                        <option value="Active">Active</option>
+                        <option value="Not Active">Not Active</option>
+                    </select>
+                </div>
         </div> 
 <input style="height: 30px; width: 10%; margin-left: 89%; position:fixed;
-margin-top: 13%; border-radius: 5px; border: 1px solid black;" type="submit" value="Submit" onclick="storeData()">
+margin-top: 13%; border-radius: 5px; border: 1px solid black;" type="submit" value="Submit">
 
 </form>
 <script>
-      function storeData() {
-            // ... your storeData function ...
-        }
-        google.script.run
-            .withSuccessHandler(function(data) {
-                const tableBody = document.getElementById("applicationTableBody");
-                tableBody.innerHTML = ""; // Clear loading message
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form[name="submit-to-google-sheet"]');
 
-                data.forEach(row => {
-                    const tr = document.createElement("tr");
-                    row.forEach(cell => {
-                        const td = document.createElement("td");
-                        td.textContent = cell;
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
-                });
-            })
-            .withFailureHandler(function(error) {
-                console.error("Error fetching data:", error);
-                const tableBody = document.getElementById("applicationTableBody");
-                tableBody.innerHTML = "<tr><td colspan='5'>Error loading data.</td></tr>";
-            })
-            .getApplicationData();
+  // Handle form submission
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      businessName: form.businessName.value,
+      ownerName: form.ownerName.value,
+      applicantType: form.applicantType.value,
+      applicationDate: form.applicationDate.value,
+      remarks: form.remarks.value,
+      status: form.status.value,
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/owners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+      // Clear form
+      form.reset();
+      alert('Data submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting data:', error);
+      alert('Failed to submit data.');
+    }
+  });
+});
 </script>
 
     </div>
