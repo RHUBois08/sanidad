@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee List</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4; /* Light grey background */
+        }
+        .container {
+            background-color: #e0f2f7; /* Light cyan container */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .header-field {
+            background-color: #bbdefb; /* Light blue header fields */
+            padding: 10px;
+            border-radius: 4px;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .radio-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .radio-buttons button {
+            background-color: #90caf9; /* Blue radio buttons */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .radio-buttons button.active {
+            background-color: #1e88e5; /* Darker blue for active button */
+        }
+        .classification {
+            background-color: #bbdefb; /* Light blue classification */
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .list-header {
+            background-color: #03a9f4; /* Cyan list header */
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .list-header span {
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0f7fa; /* Light cyan table header */
+            font-weight: bold;
+        }
+        .add-row-button {
+            background-color: #4caf50; /* Green add button */
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .submit-button {
+            background-color: #007bff; /* Blue submit button */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .table-actions button {
+            background: none;
+            border: none;
+            color: #f44336; /* Red delete button */
+            cursor: pointer;
+            padding: 5px;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-field">Business Name</div>
+            <div class="header-field">Name of Owner/Applicant</div>
+            <div class="header-field">Sanitary Permit #</div>
+        </div>
+        <div class="radio-buttons">
+            <button class="active">Food</button>
+            <button>Non-Food</button>
+        </div>
+        <div class="classification">+ Classification</div>
+        <div class="list-header">
+            <span>List (202+)</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Employee Name</th>
+                    <th>Address</th>
+                    <th>Health Cert. No.</th>
+                    <th>Remarks</th>
+                    <th></th> </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>binay</td>
+                    <td>talbi</td>
+                    <td>2025</td>
+                    <td>ndas/ksdaas</td>
+                    <td class="table-actions"><button>X</button></td>
+                </tr>
+                <tr>
+                    <td>+</td>
+                    <td>+</td>
+                    <td>+</td>
+                    <td>+</td>
+                    <td>+</td>
+                    <td></td>
+                </tr>
+                </tbody>
+        </table>
+        <button class="add-row-button">+</button>
+        <button class="submit-button">Submit</button>
+    </div>
+
+    <script>
+        // Basic JavaScript to toggle active class on radio buttons
+        const foodButton = document.querySelector('.radio-buttons button:first-child');
+        const nonFoodButton = document.querySelector('.radio-buttons button:last-child');
+
+        foodButton.addEventListener('click', () => {
+            foodButton.classList.add('active');
+            nonFoodButton.classList.remove('active');
+        });
+
+        nonFoodButton.addEventListener('click', () => {
+            nonFoodButton.classList.add('active');
+            foodButton.classList.remove('active');
+        });
+
+        // You would add more JavaScript here to:
+        // 1. Dynamically add new rows to the table when the "+" button is clicked.
+        // 2. Handle the "+" placeholders in the last row to create new input fields.
+        // 3. Implement the delete functionality for rows.
+        // 4. Handle the submission of the data.
+    </script>
+</body>
+</html>

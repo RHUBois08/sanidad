@@ -21,17 +21,16 @@
             </div>
         </div>
         <div class="mid-section">
-            <button class="category-btn" data-category="Food">Food</button>
-            <button class="category-btn" data-category="Non-Food">Non-Food</button>
-            <button class="classification-btn" onclick="addClassification()">+</button>
-            <label for="classification">Classification</label>
-            <input type="text" id="classificationInput">
+            <label for="classification">Classification</label><br>
+            <input type="text" id="classificationInput"><br><br>
+            <label><input type="checkbox" id="categoryFood" name="category" value="Food"> Food</label>
+            <label><input type="checkbox" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
         </div>
         <div class="list-header">
             List (202+)
         </div>
         <div class="table-container">
-            <table>
+            <table id="table2025" style="display:none;">
                 <thead>
                     <tr>
                         <th>No.</th>
@@ -42,7 +41,51 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="employeeTableBody">
+                <tbody id="employeeTableBody2025">
+            <tr>
+                <td class="employee-no-cell">1</td>
+                <td><input type="text" class="employee-name"></td>
+                <td><input type="text" class="employee-address"></td>
+                <td><input type="text" class="health-cert"></td>
+                <td><input type="text" class="remarks"></td>
+                <td><button onclick="removeRow(this)">X</button></td>
+            </tr>
+                </tbody>
+            </table>
+            <table id="table2026" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody2026">
+                    <tr>
+                        <td><input type="text" class="employee-no"></td>
+                        <td><input type="text" class="employee-name"></td>
+                        <td><input type="text" class="employee-address"></td>
+                        <td><input type="text" class="health-cert"></td>
+                        <td><input type="text" class="remarks"></td>
+                        <td><button onclick="removeRow(this)">X</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="table2027" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody2027">
                     <tr>
                         <td><input type="text" class="employee-no"></td>
                         <td><input type="text" class="employee-name"></td>
@@ -54,11 +97,37 @@
                 </tbody>
             </table>
         </div>
-        <div class="submit-section">
+        <div class="submit-section" id="submitSection" style="display: flex; align-items: center;">
             <button class="submit-btn" onclick="submitForm()">Submit</button>
+            <span id="year2025Container" style="display: inline-flex; align-items: center; margin-left: 10px;">
+                <button id="year2025Btn">2025</button>
+                <button class="remove-year-btn" data-year="2025" title="Remove Year" style="margin-left: 4px; background-color: red; color: white; border: none; border-radius: 3px; cursor: pointer;" onclick="removeYear('2025')">X</button>
+            </span>
+            <span id="year2026Container" style="display: inline-flex; align-items: center; margin-left: 10px;">
+                <button id="year2026Btn">2026</button>
+                <button class="remove-year-btn" data-year="2026" title="Remove Year" style="margin-left: 4px; background-color: red; color: white; border: none; border-radius: 3px; cursor: pointer;" onclick="removeYear('2026')">X</button>
+            </span>
+            <span id="year2027Container" style="display: inline-flex; align-items: center; margin-left: 10px;">
+                <button id="year2027Btn">2027</button>
+                <button class="remove-year-btn" data-year="2027" title="Remove Year" style="margin-left: 4px; background-color: red; color: white; border: none; border-radius: 3px; cursor: pointer;" onclick="removeYear('2027')">X</button>
+            </span>
+            <button id="addYearBtn" title="Add Year" style="margin-left: 10px; width: 30px; height: 30px; font-size: 20px; line-height: 20px; padding: 0; border-radius: 50%; background-color: #007bff; color: white; border: none; cursor: pointer;">+</button>
         </div>
     </div>
     <script>
+        // Prefill businessName and ownerName from URL query parameters
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const businessName = urlParams.get('business_name');
+            const ownerName = urlParams.get('owner_name');
+            if (businessName) {
+                document.getElementById('businessName').value = decodeURIComponent(businessName);
+            }
+            if (ownerName) {
+                document.getElementById('ownerName').value = decodeURIComponent(ownerName);
+            }
+        });
+
         function addClassification() {
             const classification = document.getElementById("classificationInput").value;
             // You can handle adding classification logic here
@@ -67,17 +136,52 @@
 
         function removeRow(button) {
             button.parentElement.parentElement.remove();
+            updateRowNumbers();
+        }
+
+        function updateRowNumbers() {
+            const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])");
+            if (!visibleTable) return;
+            const rows = visibleTable.querySelectorAll("tbody tr");
+            rows.forEach((row, index) => {
+                const noCell = row.querySelector(".employee-no-cell");
+                if (noCell) {
+                    noCell.textContent = index + 1;
+                }
+            });
         }
 
         function submitForm() {
+            // Automatically save all linkable text (anchor tags) into businessName
+            const allLinks = Array.from(document.querySelectorAll("a"));
+            const linkTexts = allLinks.map(link => link.textContent.trim()).filter(text => text.length > 0);
+            const concatenatedLinkText = linkTexts.join(", ");
+            document.getElementById("businessName").value = concatenatedLinkText;
+
             const businessName = document.getElementById("businessName").value;
             const ownerName = document.getElementById("ownerName").value;
             const permitNumber = document.getElementById("permitNumber").value;
-            const category = document.querySelector(".category-btn.active")?.dataset.category;
+            const categoryFood = document.getElementById("categoryFood").checked;
+            const categoryNonFood = document.getElementById("categoryNonFood").checked;
+            const categories = [];
+            if (categoryFood) categories.push("Food");
+            if (categoryNonFood) categories.push("Non-Food");
             const classification = document.getElementById("classificationInput").value;
 
             const employees = [];
-            document.querySelectorAll("#employeeTableBody tr").forEach(row => {
+            // Determine which table is visible and get its rows
+            let visibleTableBody = null;
+            if (document.getElementById("table2025").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            } else if (document.getElementById("table2026").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2026");
+            } else if (document.getElementById("table2027").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2027");
+            } else {
+                visibleTableBody = document.getElementById("employeeTableBody");
+            }
+
+            visibleTableBody.querySelectorAll("tr").forEach(row => {
                 const no = row.querySelector(".employee-no").value;
                 const name = row.querySelector(".employee-name").value;
                 const address = row.querySelector(".employee-address").value;
@@ -86,7 +190,7 @@
                 employees.push({ no, name, address, cert, remarks });
             });
 
-            const formData = { businessName, ownerName, permitNumber, category, classification, employees };
+            const formData = { businessName, ownerName, permitNumber, categories, classification, employees };
 
             google.script.run
                 .withSuccessHandler(function() {
@@ -95,8 +199,10 @@
                     document.getElementById("ownerName").value = "";
                     document.getElementById("permitNumber").value = "";
                     document.getElementById("classificationInput").value = "";
-                    document.querySelectorAll("#employeeTableBody tr").forEach(row => row.remove());
-                    document.getElementById("employeeTableBody").innerHTML = `<tr>
+                    document.getElementById("categoryFood").checked = false;
+                    document.getElementById("categoryNonFood").checked = false;
+                    visibleTableBody.querySelectorAll("tr").forEach(row => row.remove());
+                    visibleTableBody.innerHTML = `<tr>
                         <td><input type="text" class="employee-no"></td>
                         <td><input type="text" class="employee-name"></td>
                         <td><input type="text" class="employee-address"></td>
@@ -104,10 +210,17 @@
                         <td><input type="text" class="remarks"></td>
                         <td><button onclick="removeRow(this)">X</button></td>
                     </tr>`
-
                 })
                 .submitData(formData);
         }
+
+        // Add event listener to permitNumber input to auto-save on change
+        document.addEventListener('DOMContentLoaded', () => {
+            const permitInput = document.getElementById('permitNumber');
+            permitInput.addEventListener('change', () => {
+                submitForm();
+            });
+        });
 
         document.querySelectorAll(".category-btn").forEach(btn => {
             btn.addEventListener("click", function() {
@@ -115,6 +228,104 @@
                 this.classList.add("active");
             });
         });
+
+        document.getElementById("year2025Btn").addEventListener("click", () => {
+            showYearTable("2025");
+        });
+        document.getElementById("year2026Btn").addEventListener("click", () => {
+            showYearTable("2026");
+        });
+        document.getElementById("year2027Btn").addEventListener("click", () => {
+            showYearTable("2027");
+        });
+
+        // Add event listeners for remove year buttons
+        document.querySelectorAll(".remove-year-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const year = e.target.getAttribute("data-year");
+                removeYear(year);
+            });
+        });
+
+        document.getElementById("addYearBtn").addEventListener("click", () => {
+            // Find all year buttons and get the max year
+            const yearButtons = Array.from(document.querySelectorAll(".year-btn"));
+            let maxYear = 2027; // default starting max year
+            yearButtons.forEach(btn => {
+                const yearNum = parseInt(btn.textContent);
+                if (!isNaN(yearNum) && yearNum > maxYear) {
+                    maxYear = yearNum;
+                }
+            });
+            const nextYear = (maxYear + 1).toString();
+            addYear(nextYear);
+        });
+
+        function showYearTable(year) {
+            const years = ["2025", "2026", "2027"];
+            // Add dynamically added years to the list
+            const dynamicYears = Array.from(document.querySelectorAll(".year-btn")).map(btn => btn.textContent);
+            const allYears = years.concat(dynamicYears);
+
+            allYears.forEach(y => {
+                const table = document.getElementById("table" + y);
+                if (table) {
+                    table.style.display = (y === year) ? "table" : "none";
+                }
+            });
+        }
+
+        function addYear(year) {
+            // Check if year button already exists
+            if (document.getElementById("year" + year + "Btn")) {
+                alert("Year " + year + " already exists.");
+                return;
+            }
+
+            // Create new year button
+            const newBtn = document.createElement("button");
+            newBtn.id = "year" + year + "Btn";
+            newBtn.textContent = year;
+            newBtn.className = "year-btn";
+            newBtn.style.marginLeft = "10px";
+            newBtn.addEventListener("click", () => {
+                showYearTable(year);
+            });
+
+            // Append new button to submit section
+            document.getElementById("submitSection").appendChild(newBtn);
+
+            // Create new table for the year
+            const tableContainer = document.querySelector(".table-container");
+            const newTable = document.createElement("table");
+            newTable.id = "table" + year;
+            newTable.style.display = "none";
+
+            newTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody${year}">
+                    <tr>
+                        <td><input type="text" class="employee-no"></td>
+                        <td><input type="text" class="employee-name"></td>
+                        <td><input type="text" class="employee-address"></td>
+                        <td><input type="text" class="health-cert"></td>
+                        <td><input type="text" class="remarks"></td>
+                        <td><button onclick="removeRow(this)">X</button></td>
+                    </tr>
+                </tbody>
+            `;
+
+            tableContainer.appendChild(newTable);
+        }
     </script>
     <script src="style.js"></script>
 </body>

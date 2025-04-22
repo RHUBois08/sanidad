@@ -47,28 +47,35 @@
             <button id="iframeSearchButton">Search</button>
         </div>
     </div>
+    <style>
+        .content {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+        }
+    </style>
     <div class="content">
         <div class="top-bars">
             <span><kbd></kbd></span>
             <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button> 
         </div>
-        <center>
-            <table id="applicationTable" border="1" style="width: 90%; margin-top: 10px;">
-                <thead>
-                    <tr>
-                        <th>Business Name</th>
-                        <th>Owner/Applicant</th>
-                        <th>Applicant Type</th>
-                        <th>Application Date</th>
-                        <th>Remarks</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="applicationTableBody">
-                    <tr><td colspan="6">Loading data...</td></tr>
-                </tbody>
-            </table>
-        </center>
+        <table id="applicationTable" border="1" style="width: 100%; margin-top: 10px; height: 100%;">
+            <thead>
+                <tr>
+                    <th>Business Name</th>
+                    <th>Owner/Applicant</th>
+                    <th>Applicant Type</th>
+                    <th>Application Date</th>
+                    <th>Remarks</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="applicationTableBody">
+                <tr><td colspan="6">Loading data...</td></tr>
+            </tbody>
+        </table>
     </div>
     
     <script>
@@ -79,6 +86,7 @@
 
             async function fetchData() {
                 try {
+                    // Fetch data from backend API connected to PostgreSQL
                     const response = await fetch('http://localhost:3000/api/owners');
                     if (!response.ok) throw new Error('Network response was not ok');
                     const data = await response.json();
@@ -86,7 +94,7 @@
                     data.forEach(row => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${row.business_name}</td>
+                            <td><a href="add_employee.html?business_name=${encodeURIComponent(row.business_name)}&owner_name=${encodeURIComponent(row.owner_name)}">${row.business_name}</a></td>
                             <td>${row.owner_name}</td>
                             <td>${row.applicant_type}</td>
                             <td>${new Date(row.application_date).toLocaleDateString()}</td>
@@ -107,10 +115,10 @@
                 for (let i = 0; i < rows.length; i++) {
                     const cells = rows[i].getElementsByTagName('td');
                     let found = false;
-                    for (let j = 0; j < cells.length; j++) {
-                        if (cells[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                    // Only check Business Name (cells[0]) and Owner/Applicant (cells[1])
+                    if (cells.length >= 2) {
+                        if (cells[0].textContent.toUpperCase().indexOf(filter) > -1 || cells[1].textContent.toUpperCase().indexOf(filter) > -1) {
                             found = true;
-                            break;
                         }
                     }
                     rows[i].style.display = found ? '' : 'none';

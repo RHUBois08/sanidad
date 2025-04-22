@@ -84,23 +84,23 @@
         <div class="form-container">
             <div class="form-group">
                 <label for="businessName">Business Name</label>
-                <input  style="width: 225px; margin-left:1px;" placeholder="+" type="text" position: relative; margin-top: -76px; height: 40px;  id="businessName" name="Business Name" required>
+                <input  style="width: 225px; margin-left:1px;" placeholder="+" type="text" position: relative; margin-top: -76px; height: 40px;  id="businessName" name="businessName" required>
             </div>
             <div class="form-group">
                 <label for="ownerName" style="margin-left:-46px;">Owner/Applicant</label>
-                <input  style="width: 250px;" placeholder="+" type="text" id="ownerName" name="Owner/Applicant" required>
+                <input  style="width: 250px;" placeholder="+" type="text" id="ownerName" name="ownerName" required>
             </div>
             <div class="form-group">
                 <label for="applicantType" style="margin-left:-46px;">Applicant Type</label>
-                <input style="width: 250px; margin-left:-39px;"placeholder="+" type="text" id="applicantType" name="Applicant Type" required>
+                <input style="width: 250px; margin-left:-39px;"placeholder="+" type="text" id="applicantType" name="applicantType" required>
             </div>
             <div class="form-group">
                 <label for="applicationDate" style="margin-left:-80px;">Application Date</label>
-                <input style="width: 250px; margin-left:-47px;" type="date" id="applicationDate" name="Application Date" required>
+                <input style="width: 250px; margin-left:-47px;" type="date" id="applicationDate" name="applicationDate" required>
             </div>
             <div class="form-group">
                 <label for="remarks"  style="margin-left:-210px;">Remarks</label>
-                <select style="width: 160px;height: 41px; margin-left: -54px;" id="remarks" name="Remarks" required>
+                <select style="width: 160px;height: 41px; margin-left: -54px;" id="remarks" name="remarks" required>
                     <option value="">Select</option>
                     <option value="Approved">Approved</option>
                     <option value="Not Approved">Not Approved</option>
@@ -108,11 +108,15 @@
             </div>
             <div class="form-group">
                 <label for="applicationStatus" style="margin-top: -85px; margin-left:1200px;">Status</label>
-                <select style="width: 150px; position: relative; height: 41px; margin-left:1208px;" id="status" name="Status" required>
+                <select style="width: 150px; position: relative; height: 41px; margin-left:1208px;" id="status" name="status" required>
                     <option value="">Select Status</option>
                     <option value="Active">Active</option>
                     <option value="Not Active">Not Active</option>
                 </select>
+            </div>
+            <div class="form-group">
+                <label for="sanitaryPermitNumber" style="margin-left:-46px;">Sanitary Permit Number</label>
+                <input style="width: 250px; margin-left:-39px;" placeholder="+" type="text" id="sanitaryPermitNumber" name="sanitaryPermitNumber" required>
             </div>
         </div>
         <input class="submit-button" type="submit" value="Submit">
@@ -131,6 +135,7 @@
           applicationDate: form.applicationDate.value,
           remarks: form.remarks.value,
           status: form.status.value,
+          sanitaryPermitNumber: form.sanitaryPermitNumber.value,
         };
 
         try {
