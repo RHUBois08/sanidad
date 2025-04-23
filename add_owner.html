@@ -9,6 +9,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
     <style>
+        html, body {
+            overflow: visible !important;
+        }
         .form-container {
             display: flex;
             flex-wrap: wrap;
@@ -28,7 +31,7 @@
             margin-bottom: 5px;
             font-weight: bold;
             font-size: 16px;
-            text-align: center;
+            text-align: left;
         }
         .form-group input,
         .form-group select {
@@ -37,7 +40,7 @@
             padding: 4px 8px;
             font-size: 14px;
             border-radius: 3px;
-            margin-left: -32px;
+            margin-left: 0;
         }
         .submit-button {
             height: 36px;
@@ -51,8 +54,6 @@
             right: 3%;
             top: 13%;
             transition: all 0.3s ease;
-            right: 3%;
-            top: 13%;
             margin-top: 500px;
         }
         @media (max-width: 768px) {
@@ -84,39 +85,45 @@
         <div class="form-container">
             <div class="form-group">
                 <label for="businessName">Business Name</label>
-                <input  style="width: 225px; margin-left:1px;" placeholder="+" type="text" position: relative; margin-top: -76px; height: 40px;  id="businessName" name="businessName" required>
+                <input style="width: 225px;" placeholder="+" type="text" id="businessName" name="businessName" required>
             </div>
             <div class="form-group">
-                <label for="ownerName" style="margin-left:-46px;">Owner/Applicant</label>
-                <input  style="width: 250px;" placeholder="+" type="text" id="ownerName" name="ownerName" required>
+                <label for="ownerName">Owner/Applicant</label>
+                <input style="width: 250px;" placeholder="+" type="text" id="ownerName" name="ownerName" required>
             </div>
             <div class="form-group">
-                <label for="applicantType" style="margin-left:-46px;">Applicant Type</label>
-                <input style="width: 250px; margin-left:-39px;"placeholder="+" type="text" id="applicantType" name="applicantType" required>
+                <label for="applicantType">Applicant Type</label>
+                <select style="width: 250px; height: 41px;" placeholder="+" type="text" id="applicantType" name="applicantType" required>
+                 <option value="">Select</option>
+                    <option value="New">New</option>
+                    <option value="Renewal">Renewal</option>
+                </select>   
             </div>
             <div class="form-group">
-                <label for="applicationDate" style="margin-left:-80px;">Application Date</label>
-                <input style="width: 250px; margin-left:-47px;" type="date" id="applicationDate" name="applicationDate" required>
+                <label for="applicationDate">Application Date</label>
+                <input style="width: 250px;" type="date" id="applicationDate" name="applicationDate" required>
             </div>
             <div class="form-group">
-                <label for="remarks"  style="margin-left:-210px;">Remarks</label>
-                <select style="width: 160px;height: 41px; margin-left: -54px;" id="remarks" name="remarks" required>
+                <label for="address">Address</label>
+                <input style="width: 250px;" placeholder="+" type="text" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+                <label for="remarks">Remarks</label>
+                <select style="width: 160px; height: 41px;" id="remarks" name="remarks" required>
                     <option value="">Select</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Not Approved">Not Approved</option>
+                    <option value="Denied">Denied</option>
+                    <option value="For Release">For Release</option>
+                    <option value="Issued">Issued</option>
+                    <option value="Pending">Pending</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="applicationStatus" style="margin-top: -85px; margin-left:1200px;">Status</label>
-                <select style="width: 150px; position: relative; height: 41px; margin-left:1208px;" id="status" name="status" required>
+                <label for="status">Status</label>
+                <select style="width: 150px; height: 41px;" id="status" name="status" required>
                     <option value="">Select Status</option>
                     <option value="Active">Active</option>
                     <option value="Not Active">Not Active</option>
                 </select>
-            </div>
-            <div class="form-group">
-                <label for="sanitaryPermitNumber" style="margin-left:-46px;">Sanitary Permit Number</label>
-                <input style="width: 250px; margin-left:-39px;" placeholder="+" type="text" id="sanitaryPermitNumber" name="sanitaryPermitNumber" required>
             </div>
         </div>
         <input class="submit-button" type="submit" value="Submit">
@@ -133,9 +140,9 @@
           ownerName: form.ownerName.value,
           applicantType: form.applicantType.value,
           applicationDate: form.applicationDate.value,
+          address: form.address.value,
           remarks: form.remarks.value,
-          status: form.status.value,
-          sanitaryPermitNumber: form.sanitaryPermitNumber.value,
+          status: form.status.value
         };
 
         try {

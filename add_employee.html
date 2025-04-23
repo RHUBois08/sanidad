@@ -21,7 +21,7 @@
             </div>
         </div>
         <div class="mid-section">
-            <label for="classification">Classification</label><br>
+            <label for="classification">Type of Establishment</label><br>
             <input type="text" id="classificationInput"><br><br>
             <label><input type="checkbox" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="checkbox" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
@@ -38,6 +38,7 @@
                         <th>Address</th>
                         <th>Health Cert. No.</th>
                         <th>Remarks</th>
+                        <th>Date of X-ray</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -48,6 +49,7 @@
                 <td><input type="text" class="employee-address"></td>
                 <td><input type="text" class="health-cert"></td>
                 <td><input type="text" class="remarks"></td>
+                <td><input type="date" class="x-ray-date"></td>
                 <td><button onclick="removeRow(this)">X</button></td>
             </tr>
                 </tbody>
@@ -99,40 +101,40 @@
         </div>
         <div class="submit-section" id="submitSection" style="display: flex; align-items: center;">
             <button class="submit-btn" onclick="submitForm()">Submit</button>
-            <span id="year2025Container" style="display: inline-flex; align-items: center; margin-left: 10px;">
-                <button id="year2025Btn">2025</button>
-                <button class="remove-year-btn" data-year="2025" title="Remove Year" style="margin-left: 4px; background-color: red; color: white; border: none; border-radius: 3px; cursor: pointer;" onclick="removeYear('2025')">X</button>
-            </span>
-            <span id="year2026Container" style="display: inline-flex; align-items: center; margin-left: 10px;">
-                <button id="year2026Btn">2026</button>
-                <button class="remove-year-btn" data-year="2026" title="Remove Year" style="margin-left: 4px; background-color: red; color: white; border: none; border-radius: 3px; cursor: pointer;" onclick="removeYear('2026')">X</button>
-            </span>
-            <span id="year2027Container" style="display: inline-flex; align-items: center; margin-left: 10px;">
-                <button id="year2027Btn">2027</button>
-                <button class="remove-year-btn" data-year="2027" title="Remove Year" style="margin-left: 4px; background-color: red; color: white; border: none; border-radius: 3px; cursor: pointer;" onclick="removeYear('2027')">X</button>
-            </span>
-            <button id="addYearBtn" title="Add Year" style="margin-left: 10px; width: 30px; height: 30px; font-size: 20px; line-height: 20px; padding: 0; border-radius: 50%; background-color: #007bff; color: white; border: none; cursor: pointer;">+</button>
         </div>
     </div>
+    <button id="addYearBtn" title="Add Year" style="margin: 10px 0; width: 30px; height: 30px; font-size: 20px; line-height: 20px; padding: 0; border-radius: 50%; background-color: #007bff; color: white; border: none; cursor: pointer;">+</button>
     <script>
-        // Prefill businessName and ownerName from URL query parameters
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const businessName = urlParams.get('business_name');
             const ownerName = urlParams.get('owner_name');
+
             if (businessName) {
                 document.getElementById('businessName').value = decodeURIComponent(businessName);
             }
             if (ownerName) {
                 document.getElementById('ownerName').value = decodeURIComponent(ownerName);
             }
-        });
 
-        function addClassification() {
-            const classification = document.getElementById("classificationInput").value;
-            // You can handle adding classification logic here
-            console.log("Classification added:", classification);
-        }
+            // Remove localStorage saving for category checkboxes
+
+            // Fetch and prefill Classification and Sanitary Permit #
+            if (businessName && ownerName) {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/classifications?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data) {
+                            document.getElementById('classificationInput').value = data.classification || '';
+                            document.getElementById('permitNumber').value = data.permit_number || '';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching classification data:', error);
+                }
+            }
+        });
 
         function removeRow(button) {
             button.parentElement.parentElement.remove();
@@ -152,24 +154,69 @@
         }
 
         function submitForm() {
-            // Automatically save all linkable text (anchor tags) into businessName
-            const allLinks = Array.from(document.querySelectorAll("a"));
-            const linkTexts = allLinks.map(link => link.textContent.trim()).filter(text => text.length > 0);
-            const concatenatedLinkText = linkTexts.join(", ");
-            document.getElementById("businessName").value = concatenatedLinkText;
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+            const permitNumber = document.getElementById("permitNumber").value.trim();
+            const classification = document.getElementById("classificationInput").value.trim();
 
-            const businessName = document.getElementById("businessName").value;
-            const ownerName = document.getElementById("ownerName").value;
-            const permitNumber = document.getElementById("permitNumber").value;
+            if (!permitNumber || !classification) {
+                alert('Sanitary Permit # and Classification are required.');
+                return;
+            }
+
+            // Save Sanitary Permit # and Classification with selected categories as linkable_texts
+            const selectedCategories = [];
+            if (document.getElementById("categoryFood").checked) selectedCategories.push("Food");
+            if (document.getElementById("categoryNonFood").checked) selectedCategories.push("Non-Food");
+
+            fetch('http://localhost:3000/api/classifications/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
+            })
+            .then(async response => {
+                console.log('Server response:', response);
+                if (!response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to save Sanitary Permit # and Classification');
+                    } else {
+                        const errorText = await response.text();
+                        console.error('Unexpected response:', errorText);
+                        throw new Error('Unexpected response from server');
+                    }
+                }
+                return response.json();
+            })
+            .then(() => {
+                alert('Sanitary Permit # and Classification saved successfully!');
+                // Save selected categories in localStorage to persist checkbox state
+                localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
+                // Proceed with saving employees
+                saveEmployees();
+            })
+            .catch(error => {
+                console.error('Error saving Sanitary Permit # and Classification:', error);
+                alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
+            });
+        }
+
+        // On page load, restore checkbox states from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedCategories = JSON.parse(localStorage.getItem('selectedCategories') || '[]');
+            document.getElementById('categoryFood').checked = savedCategories.includes('Food');
+            document.getElementById('categoryNonFood').checked = savedCategories.includes('Non-Food');
+        });
+
+        function saveEmployees() {
             const categoryFood = document.getElementById("categoryFood").checked;
             const categoryNonFood = document.getElementById("categoryNonFood").checked;
             const categories = [];
             if (categoryFood) categories.push("Food");
             if (categoryNonFood) categories.push("Non-Food");
-            const classification = document.getElementById("classificationInput").value;
 
             const employees = [];
-            // Determine which table is visible and get its rows
             let visibleTableBody = null;
             if (document.getElementById("table2025").style.display !== "none") {
                 visibleTableBody = document.getElementById("employeeTableBody2025");
@@ -190,44 +237,22 @@
                 employees.push({ no, name, address, cert, remarks });
             });
 
-            const formData = { businessName, ownerName, permitNumber, categories, classification, employees };
+            const formData = { businessName, ownerName, categories, employees };
 
-            google.script.run
-                .withSuccessHandler(function() {
-                    alert("Form submitted successfully!");
-                    document.getElementById("businessName").value = "";
-                    document.getElementById("ownerName").value = "";
-                    document.getElementById("permitNumber").value = "";
-                    document.getElementById("classificationInput").value = "";
-                    document.getElementById("categoryFood").checked = false;
-                    document.getElementById("categoryNonFood").checked = false;
-                    visibleTableBody.querySelectorAll("tr").forEach(row => row.remove());
-                    visibleTableBody.innerHTML = `<tr>
-                        <td><input type="text" class="employee-no"></td>
-                        <td><input type="text" class="employee-name"></td>
-                        <td><input type="text" class="employee-address"></td>
-                        <td><input type="text" class="health-cert"></td>
-                        <td><input type="text" class="remarks"></td>
-                        <td><button onclick="removeRow(this)">X</button></td>
-                    </tr>`
-                })
-                .submitData(formData);
+            fetch('http://localhost:3000/api/employees/full', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to save employees');
+                alert('Employees saved successfully!');
+            })
+            .catch(error => {
+                console.error('Error saving employees:', error);
+                alert('Failed to save employees.');
+            });
         }
-
-        // Add event listener to permitNumber input to auto-save on change
-        document.addEventListener('DOMContentLoaded', () => {
-            const permitInput = document.getElementById('permitNumber');
-            permitInput.addEventListener('change', () => {
-                submitForm();
-            });
-        });
-
-        document.querySelectorAll(".category-btn").forEach(btn => {
-            btn.addEventListener("click", function() {
-                document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
-                this.classList.add("active");
-            });
-        });
 
         document.getElementById("year2025Btn").addEventListener("click", () => {
             showYearTable("2025");

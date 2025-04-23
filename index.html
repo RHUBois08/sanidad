@@ -30,12 +30,20 @@
         .top-bar {
             position: relative;
         }
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="loadingMessage" style="display: none;">Loading data, please wait...</div>
     <div id="errorMessage" style="display: none; color: red;">Failed to load data. Please try again later.</div>
-    
+
     <div class="top-bar">
         <img src="image\My project (1).png" style="width: 90px; height: auto; float: left; margin-left: 2%">
         <img src="image\MUNICIPAL HEALTH OFFICE 2172025 (1).png" style="width: 90px; height: auto; float: left; margin-left: 10px">
@@ -59,7 +67,7 @@
     <div class="content">
         <div class="top-bars">
             <span><kbd></kbd></span>
-            <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button> 
+            <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button>
         </div>
         <table id="applicationTable" border="1" style="width: 100%; margin-top: 10px; height: 100%;">
             <thead>
@@ -68,45 +76,99 @@
                     <th>Owner/Applicant</th>
                     <th>Applicant Type</th>
                     <th>Application Date</th>
+                    <th>Address</th>
                     <th>Remarks</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="applicationTableBody">
-                <tr><td colspan="6">Loading data...</td></tr>
+                <tr><td colspan="8">Loading data...</td></tr>
             </tbody>
         </table>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tableBody = document.getElementById('applicationTableBody');
             const searchInput = document.getElementById('iframeSearchInput');
             const searchButton = document.getElementById('iframeSearchButton');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
 
             async function fetchData() {
+                loadingMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
                 try {
-                    // Fetch data from backend API connected to PostgreSQL
                     const response = await fetch('http://localhost:3000/api/owners');
-                    if (!response.ok) throw new Error('Network response was not ok');
+                    if (!response.ok) {
+                        let errorText;
+                        try {
+                            const errorJson = await response.json();
+                            errorText = errorJson.error || JSON.stringify(errorJson);
+                        } catch {
+                            errorText = await response.text();
+                        }
+                        throw new Error(errorText || 'Network response was not ok');
+                    }
                     const data = await response.json();
                     tableBody.innerHTML = '';
-                    data.forEach(row => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td><a href="add_employee.html?business_name=${encodeURIComponent(row.business_name)}&owner_name=${encodeURIComponent(row.owner_name)}">${row.business_name}</a></td>
-                            <td>${row.owner_name}</td>
-                            <td>${row.applicant_type}</td>
-                            <td>${new Date(row.application_date).toLocaleDateString()}</td>
-                            <td>${row.remarks}</td>
-                            <td>${row.status}</td>
-                        `;
-                        tableBody.appendChild(tr);
-                    });
+                    if (!Array.isArray(data) || data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="8">No data found.</td></tr>';
+                    } else {
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><a href="add_employee.html?business_name=${encodeURIComponent(row.business_name)}&owner_name=${encodeURIComponent(row.owner_name)}">${row.business_name || ''}</a></td>
+                                <td>${row.owner_name || ''}</td>
+                                <td>${row.applicant_type || ''}</td>
+                                <td>${row.application_date ? new Date(row.application_date).toLocaleDateString() : ''}</td>
+                                <td>${row.address || ''}</td>
+                                <td>${row.remarks || ''}</td>
+                                <td>${row.status || ''}</td>
+                                <td><button class="delete-button" data-business="${row.business_name}" data-owner="${row.owner_name}">Delete</button></td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                        addDeleteEventListeners();
+                    }
                 } catch (error) {
                     console.error('Error loading data:', error);
-                    tableBody.innerHTML = '<tr><td colspan="6">Error loading data.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="8">Error loading data.</td></tr>';
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'Failed to load data: ' + error.message;
+                } finally {
+                    loadingMessage.style.display = 'none';
                 }
+            }
+
+            function addDeleteEventListeners() {
+                const deleteButtons = document.querySelectorAll('.delete-button');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const businessName = button.getAttribute('data-business');
+                        const ownerName = button.getAttribute('data-owner');
+                        if (confirm(`Are you sure you want to delete the record for ${businessName} - ${ownerName}?`)) {
+                            try {
+                                const response = await fetch('http://localhost:3000/api/owners/delete', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ businessName, ownerName }),
+                                });
+                                if (!response.ok) {
+                                    const errorData = await response.json(); // Try to get error details from the server
+                                    console.error('Failed to delete record:', errorData);
+                                    throw new Error(errorData.error || 'Failed to delete record');
+                                }
+                                alert('Record deleted successfully');
+                                fetchData();
+                            } catch (error) {
+                                console.error('Error deleting record:', error);
+                                alert('Failed to delete record');
+                            }
+                        }
+                    });
+                });
             }
 
             function filterTable() {
