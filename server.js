@@ -62,13 +62,13 @@ async function createTables(pool) {
         id SERIAL PRIMARY KEY,
         business_name VARCHAR(255) NOT NULL,
         owner_name VARCHAR(255) NOT NULL,
-        classification VARCHAR(255),
+        classification VARCHAR(255) NOT NULL,
         applicant_type VARCHAR(255),
         application_date DATE,
         remarks VARCHAR(255),
         status VARCHAR(50),
         address VARCHAR(255) NOT NULL,
-        sanitary_permit_number VARCHAR(255)
+        sanitary_permit_number VARCHAR(255) NOT NULL
     );
     `;
 
