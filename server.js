@@ -23,8 +23,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const defaultDbConfig = {
     user: 'postgres',
     host: 'localhost',
-    database: 'postgres',
-    password: 'p@ssw0rd',
+    database: 'sanitary_permits_db',
+    password: 'password',
     port: 5432,
 };
 
@@ -33,7 +33,7 @@ const sanitaryDbConfig = {
     user: 'postgres',
     host: 'localhost',
     database: 'sanitary_permits_db',
-    password: 'p@ssw0rd',
+    password: 'password',
     port: 5432,
 };
 
