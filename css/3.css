@@ -35,3 +35,14 @@ body {
     width: 15%;
     font-weight: bold;
 }
+
+.applicationTAbleBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    background-color: #f0f0f0;
+    padding: 20px;
+    overflow-y: auto;
+}

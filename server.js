@@ -11,7 +11,7 @@ const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'sanitary_permits_db',
-  password: '1234',
+  password: 'password',
   port: 5432,
 });
 
