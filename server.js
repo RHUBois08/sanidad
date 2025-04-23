@@ -6,7 +6,15 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-// Configure CORS to allow requests from all origins for testing
+// PostgreSQL connection pool setup
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'sanitary_permits_db',
+  password: '1234',
+  port: 5432,
+});
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
