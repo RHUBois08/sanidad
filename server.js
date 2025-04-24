@@ -307,5 +307,4 @@ async function init() {
         process.exit(1);
     }
 }
-
 init();
