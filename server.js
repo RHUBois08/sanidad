@@ -294,5 +294,4 @@ async function init() {
         process.exit(1);
     }
 }
-// hotdog
 init();
