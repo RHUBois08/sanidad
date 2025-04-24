@@ -43,7 +43,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="employeeTableBody2025">
+            <tbody id="employeeTableBody2025">
             <tr>
                 <td class="employee-no-cell">1</td>
                 <td><input type="text" class="employee-name" required></td>
@@ -377,6 +377,10 @@
                 }
 
                 alert('Employees saved successfully!');
+                // Clear input fields after successful save
+                visibleTableBody.querySelectorAll("input").forEach(input => {
+                    input.value = "";
+                });
             } catch (error) {
                 console.error('Error saving employees:', error);
                 alert(`Failed to save employees: ${error.message}`);
