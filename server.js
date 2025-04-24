@@ -24,7 +24,7 @@ const defaultDbConfig = {
     user: 'postgres',
     host: 'localhost',
     database: 'sanitary_permits_db',
-    password: 'p@ssw0rd',
+    password: 'password',
     port: 5432,
 };
 
@@ -33,7 +33,7 @@ const sanitaryDbConfig = {
     user: 'postgres',
     host: 'localhost',
     database: 'sanitary_permits_db',
-    password: 'p@ssw0rd',
+    password: 'password',
     port: 5432,
 };
 
