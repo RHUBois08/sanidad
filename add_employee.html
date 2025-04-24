@@ -20,7 +20,6 @@
                 <input type="text" id="permitNumber">
             </div>
         </div>
-    <!-- Removed employeesDataDisplay container as per undo request -->
         <div class="mid-section">
             <label for="classification">Type of Establishment</label><br>
             <input type="text" id="classificationInput"><br><br>
@@ -46,22 +45,22 @@
                 </thead>
             <tbody id="employeeTableBody2025">
             <tr>
-                <td class="employee-no-cell"></td>
-                <td><input type="text" class="employee-name" value=""></td>
-                <td><input type="text" class="employee-address" value=""></td>
-                <td><input type="text" class="health-cert" value=""></td>
-                <td><input type="text" class="remarks" value=""></td>
-                <td><input type="date" class="x-ray-date" value=""></td>
+                <td class="employee-no-cell">1</td>
+                <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-address" required></td>
+                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="remarks" required></td>
+                <td><input type="date" class="x-ray-date" required></td>
                 <td><button onclick="removeRow(this)">X</button></td>
             </tr>
                 </tbody>
             </table>
         </div>
-        
         <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px;">
             <button class="submit-btn" onclick="submitForm()">Save</button>
             <button id="submitEmployeesBtn" style="margin-left: 10px;" onclick="saveEmployees()">Submit</button>
             <button id="printSaveBtn" style="margin-left: 10px;" onclick="printForm()">Print</button>
+        </div>
     </div>
     <!-- Removed the Add Year button as per user request -->
     <script>
@@ -99,36 +98,36 @@
                     console.error('Error fetching classification data:', error);
                 }
 
-            // Fetch and populate employees data
-            try {
-                const empResponse = await fetch(`http://localhost:3000/api/employees`);
-                if (empResponse.ok) {
-                    const employees = await empResponse.json();
-                    if (Array.isArray(employees) && employees.length > 0) {
-                        populateEmployeeTable(employees);
-                    } else {
-                        // Clear table and add a single empty row with input boxes for new data entry
-                        const tbody = document.getElementById("employeeTableBody2025");
-                        tbody.innerHTML = `
-                            <tr>
-                                <td class="employee-no-cell">1</td>
-                                <td><input type="text" class="employee-name" required></td>
-                                <td><input type="text" class="employee-address" required></td>
-                                <td><input type="text" class="health-cert" required></td>
-                                <td><input type="text" class="remarks" required></td>
-                                <td><input type="date" class="x-ray-date" required></td>
-                                <td><button onclick="removeRow(this)">X</button></td>
-                            </tr>
-                        `;
-                    }
+        // Fetch and populate employees data
+        try {
+            const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+            if (empResponse.ok) {
+                const employees = await empResponse.json();
+                if (Array.isArray(employees) && employees.length > 0) {
+                    populateEmployeeTable(employees);
                 } else {
-                    console.error('Failed to fetch employees data. Status:', empResponse.status);
-                    alert('Failed to fetch employees data from server.');
+                    // Clear table and add a single empty row with input boxes for new data entry
+                    const tbody = document.getElementById("employeeTableBody2025");
+                    tbody.innerHTML = `
+                        <tr>
+                            <td class="employee-no-cell">1</td>
+                            <td><input type="text" class="employee-name" required></td>
+                            <td><input type="text" class="employee-address" required></td>
+                            <td><input type="text" class="health-cert" required></td>
+                            <td><input type="text" class="remarks" required></td>
+                            <td><input type="date" class="x-ray-date" required></td>
+                            <td><button onclick="removeRow(this)">X</button></td>
+                        </tr>
+                    `;
                 }
-            } catch (error) {
-                console.error('Error fetching employees data:', error);
-                alert('Error fetching employees data. Please try again later.');
+            } else {
+                console.error('Failed to fetch employees data. Status:', empResponse.status);
+                alert('Failed to fetch employees data from server.');
             }
+        } catch (error) {
+            console.error('Error fetching employees data:', error);
+            alert('Error fetching employees data. Please try again later.');
+        }
             }
         });
 
@@ -249,32 +248,21 @@
             const permitNumber = document.getElementById("permitNumber").value.trim();
             const classification = document.getElementById("classificationInput").value.trim();
 
-            if (!businessName) {
-                alert('Business Name is required.');
-                return;
-            }
-            if (!ownerName) {
-                alert('Owner Name is required.');
-                return;
-            }
-            if (!permitNumber) {
-                alert('Sanitary Permit # is required.');
-                return;
-            }
-            if (!classification) {
-                alert('Classification is required.');
+            if (!permitNumber || !classification) {
+                alert('Sanitary Permit # and Classification are required.');
                 return;
             }
 
             // Validate required inputs in employee table
             const visibleTableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
             if (visibleTableBody) {
-                const inputs = visibleTableBody.querySelectorAll("input");
+                const inputs = visibleTableBody.querySelectorAll("input[required]");
                 for (const input of inputs) {
+                    // Removed alert for required employee fields as per user request
                     if (!input.value.trim()) {
-                        alert("Please fill in all employee fields before submitting.");
-                        input.focus();
-                        return;
+                        // alert("Please fill in all required employee fields.");
+                        // input.focus();
+                        // return;
                     }
                 }
             }
@@ -307,7 +295,7 @@
                 // Save selected categories in localStorage to persist checkbox state
                 localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
                 // Proceed with saving employees
-                await saveEmployees();
+                // await saveEmployees();
             } catch (error) {
                 console.error('Error saving Sanitary Permit # and Classification:', error);
                 alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
