@@ -23,8 +23,9 @@
         <div class="mid-section">
             <label for="classification">Type of Establishment</label><br>
             <input type="text" id="classificationInput"><br><br>
-            <label><input type="checkbox" id="categoryFood" name="category" value="Food"> Food</label>
-            <label><input type="checkbox" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
+            <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
+            <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
+            <button id="printNonFoodBtn" style="margin-left: 10px;" onclick="printForm()">Print</button>
         </div>
         <div class="list-header">
             List (202+)
@@ -45,65 +46,23 @@
                 <tbody id="employeeTableBody2025">
             <tr>
                 <td class="employee-no-cell">1</td>
-                <td><input type="text" class="employee-name"></td>
-                <td><input type="text" class="employee-address"></td>
-                <td><input type="text" class="health-cert"></td>
-                <td><input type="text" class="remarks"></td>
-                <td><input type="date" class="x-ray-date"></td>
+                <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-address" required></td>
+                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="remarks" required></td>
+                <td><input type="date" class="x-ray-date" required></td>
                 <td><button onclick="removeRow(this)">X</button></td>
             </tr>
                 </tbody>
             </table>
-            <table id="table2026" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Employee Name</th>
-                        <th>Address</th>
-                        <th>Health Cert. No.</th>
-                        <th>Remarks</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="employeeTableBody2026">
-                    <tr>
-                        <td><input type="text" class="employee-no"></td>
-                        <td><input type="text" class="employee-name"></td>
-                        <td><input type="text" class="employee-address"></td>
-                        <td><input type="text" class="health-cert"></td>
-                        <td><input type="text" class="remarks"></td>
-                        <td><button onclick="removeRow(this)">X</button></td>
-                    </tr>
-                </tbody>
-            </table>
-            <table id="table2027" style="display:none;">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Employee Name</th>
-                        <th>Address</th>
-                        <th>Health Cert. No.</th>
-                        <th>Remarks</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="employeeTableBody2027">
-                    <tr>
-                        <td><input type="text" class="employee-no"></td>
-                        <td><input type="text" class="employee-name"></td>
-                        <td><input type="text" class="employee-address"></td>
-                        <td><input type="text" class="health-cert"></td>
-                        <td><input type="text" class="remarks"></td>
-                        <td><button onclick="removeRow(this)">X</button></td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
-        <div class="submit-section" id="submitSection" style="display: flex; align-items: center;">
-            <button class="submit-btn" onclick="submitForm()">Submit</button>
+        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px;">
+            <button class="submit-btn" onclick="submitForm()">Save</button>
+            <button id="submitEmployeesBtn" style="margin-left: 10px;" onclick="saveEmployees()">Submit</button>
+            <button id="printSaveBtn" style="margin-left: 10px;" onclick="printForm()">Print</button>
         </div>
     </div>
-    <button id="addYearBtn" title="Add Year" style="margin: 10px 0; width: 30px; height: 30px; font-size: 20px; line-height: 20px; padding: 0; border-radius: 50%; background-color: #007bff; color: white; border: none; cursor: pointer;">+</button>
+    <!-- Removed the Add Year button as per user request -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -128,17 +87,147 @@
                         if (data) {
                             document.getElementById('classificationInput').value = data.classification || '';
                             document.getElementById('permitNumber').value = data.permit_number || '';
+                            // Restore radio button selection from categories
+                            if (data.categories && Array.isArray(data.categories)) {
+                                document.getElementById('categoryFood').checked = data.categories.includes('Food');
+                                document.getElementById('categoryNonFood').checked = data.categories.includes('Non-Food');
+                            }
                         }
                     }
                 } catch (error) {
                     console.error('Error fetching classification data:', error);
                 }
+
+        // Fetch and populate employees data
+        try {
+            const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+            if (empResponse.ok) {
+                const employees = await empResponse.json();
+                if (Array.isArray(employees) && employees.length > 0) {
+                    populateEmployeeTable(employees);
+                } else {
+                    // Clear table and add a single empty row with input boxes for new data entry
+                    const tbody = document.getElementById("employeeTableBody2025");
+                    tbody.innerHTML = `
+                        <tr>
+                            <td class="employee-no-cell">1</td>
+                            <td><input type="text" class="employee-name" required></td>
+                            <td><input type="text" class="employee-address" required></td>
+                            <td><input type="text" class="health-cert" required></td>
+                            <td><input type="text" class="remarks" required></td>
+                            <td><input type="date" class="x-ray-date" required></td>
+                            <td><button onclick="removeRow(this)">X</button></td>
+                        </tr>
+                    `;
+                }
+            } else {
+                console.error('Failed to fetch employees data. Status:', empResponse.status);
+                alert('Failed to fetch employees data from server.');
+            }
+        } catch (error) {
+            console.error('Error fetching employees data:', error);
+            alert('Error fetching employees data. Please try again later.');
+        }
             }
         });
 
         function removeRow(button) {
             button.parentElement.parentElement.remove();
             updateRowNumbers();
+        }
+
+        function populateEmployeeTable(employees) {
+            // Determine visible table body
+            let visibleTableBody = null;
+            if (document.getElementById("table2025").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            } else if (document.getElementById("table2026").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2026");
+            } else if (document.getElementById("table2027").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2027");
+            } else {
+                visibleTableBody = document.getElementById("employeeTableBody2025"); // default
+            }
+
+            // Clear existing rows
+            visibleTableBody.innerHTML = '';
+
+            // Populate rows
+            employees.forEach((emp, index) => {
+                const tr = document.createElement('tr');
+
+                // No.
+                const tdNo = document.createElement('td');
+                tdNo.className = 'employee-no-cell';
+                tdNo.textContent = emp.no || (index + 1);
+                tr.appendChild(tdNo);
+
+                // Employee Name
+                const tdName = document.createElement('td');
+                const inputName = document.createElement('input');
+                inputName.type = 'text';
+                inputName.className = 'employee-name';
+                inputName.value = emp.employee_name || '';
+                tdName.appendChild(inputName);
+                tr.appendChild(tdName);
+
+                // Address
+                const tdAddress = document.createElement('td');
+                const inputAddress = document.createElement('input');
+                inputAddress.type = 'text';
+                inputAddress.className = 'employee-address';
+                inputAddress.value = emp.address || '';
+                tdAddress.appendChild(inputAddress);
+                tr.appendChild(tdAddress);
+
+                // Health Cert No.
+                const tdCert = document.createElement('td');
+                const inputCert = document.createElement('input');
+                inputCert.type = 'text';
+                inputCert.className = 'health-cert';
+                inputCert.value = emp.health_cert_no || '';
+                tdCert.appendChild(inputCert);
+                tr.appendChild(tdCert);
+
+                // Remarks
+                const tdRemarks = document.createElement('td');
+                const inputRemarks = document.createElement('input');
+                inputRemarks.type = 'text';
+                inputRemarks.className = 'remarks';
+                inputRemarks.value = emp.remarks || '';
+                tdRemarks.appendChild(inputRemarks);
+                tr.appendChild(tdRemarks);
+
+                // Date of X-ray
+                const tdXray = document.createElement('td');
+                const inputXray = document.createElement('input');
+                inputXray.type = 'date';
+                inputXray.className = 'x-ray-date';
+                if (emp.date_of_xray) {
+                    inputXray.value = emp.date_of_xray.split('T')[0]; // format date
+                }
+                tdXray.appendChild(inputXray);
+                tr.appendChild(tdXray);
+
+                // Actions
+                const tdActions = document.createElement('td');
+                const btnRemove = document.createElement('button');
+                btnRemove.textContent = 'X';
+                btnRemove.onclick = () => {
+                    tr.remove();
+                    updateRowNumbers();
+                };
+                tdActions.appendChild(btnRemove);
+                tr.appendChild(tdActions);
+
+                visibleTableBody.appendChild(tr);
+            });
+
+            updateRowNumbers();
+        }
+
+        function printForm() {
+            window.print();
         }
 
         function updateRowNumbers() {
@@ -153,7 +242,7 @@
             });
         }
 
-        function submitForm() {
+        async function submitForm() {
             const businessName = document.getElementById("businessName").value.trim();
             const ownerName = document.getElementById("ownerName").value.trim();
             const permitNumber = document.getElementById("permitNumber").value.trim();
@@ -164,18 +253,32 @@
                 return;
             }
 
+            // Validate required inputs in employee table
+            const visibleTableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (visibleTableBody) {
+                const inputs = visibleTableBody.querySelectorAll("input[required]");
+                for (const input of inputs) {
+                    // Removed alert for required employee fields as per user request
+                    if (!input.value.trim()) {
+                        // alert("Please fill in all required employee fields.");
+                        // input.focus();
+                        // return;
+                    }
+                }
+            }
+
             // Save Sanitary Permit # and Classification with selected categories as linkable_texts
             const selectedCategories = [];
             if (document.getElementById("categoryFood").checked) selectedCategories.push("Food");
             if (document.getElementById("categoryNonFood").checked) selectedCategories.push("Non-Food");
 
-            fetch('http://localhost:3000/api/classifications/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
-            })
-            .then(async response => {
-                console.log('Server response:', response);
+            try {
+                const response = await fetch('http://localhost:3000/api/classifications/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
+                });
+
                 if (!response.ok) {
                     const contentType = response.headers.get('content-type');
                     if (contentType && contentType.includes('application/json')) {
@@ -187,19 +290,16 @@
                         throw new Error('Unexpected response from server');
                     }
                 }
-                return response.json();
-            })
-            .then(() => {
+
                 alert('Sanitary Permit # and Classification saved successfully!');
                 // Save selected categories in localStorage to persist checkbox state
                 localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
                 // Proceed with saving employees
-                saveEmployees();
-            })
-            .catch(error => {
+                // await saveEmployees();
+            } catch (error) {
                 console.error('Error saving Sanitary Permit # and Classification:', error);
                 alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
-            });
+            }
         }
 
         // On page load, restore checkbox states from localStorage
@@ -209,7 +309,7 @@
             document.getElementById('categoryNonFood').checked = savedCategories.includes('Non-Food');
         });
 
-        function saveEmployees() {
+        async function saveEmployees() {
             const categoryFood = document.getElementById("categoryFood").checked;
             const categoryNonFood = document.getElementById("categoryNonFood").checked;
             const categories = [];
@@ -218,40 +318,69 @@
 
             const employees = [];
             let visibleTableBody = null;
-            if (document.getElementById("table2025").style.display !== "none") {
+            const table2025 = document.getElementById("table2025");
+            const table2026 = document.getElementById("table2026");
+            const table2027 = document.getElementById("table2027");
+
+            if (table2025 && table2025.offsetParent !== null) {
                 visibleTableBody = document.getElementById("employeeTableBody2025");
-            } else if (document.getElementById("table2026").style.display !== "none") {
+            } else if (table2026 && table2026.offsetParent !== null) {
                 visibleTableBody = document.getElementById("employeeTableBody2026");
-            } else if (document.getElementById("table2027").style.display !== "none") {
+            } else if (table2027 && table2027.offsetParent !== null) {
                 visibleTableBody = document.getElementById("employeeTableBody2027");
             } else {
                 visibleTableBody = document.getElementById("employeeTableBody");
             }
 
+            if (!visibleTableBody) {
+                alert('No employee table is visible. Cannot save employees.');
+                return;
+            }
+
+            // Validate required inputs before submitting
+            const requiredInputs = visibleTableBody.querySelectorAll("input[required]");
+            for (const input of requiredInputs) {
+                if (!input.value.trim()) {
+                    alert("Please fill in all required fields before submitting.");
+                    input.focus();
+                    return;
+                }
+            }
+
             visibleTableBody.querySelectorAll("tr").forEach(row => {
-                const no = row.querySelector(".employee-no").value;
+                const noCell = row.querySelector(".employee-no-cell");
+                const no = noCell ? noCell.textContent.trim() : '';
                 const name = row.querySelector(".employee-name").value;
                 const address = row.querySelector(".employee-address").value;
                 const cert = row.querySelector(".health-cert").value;
                 const remarks = row.querySelector(".remarks").value;
-                employees.push({ no, name, address, cert, remarks });
+                let date_of_xray = row.querySelector(".x-ray-date") ? row.querySelector(".x-ray-date").value : null;
+                if (date_of_xray === "") {
+                    date_of_xray = null;
+                }
+                employees.push({ no, name, address, cert, remarks, date_of_xray });
             });
 
             const formData = { businessName, ownerName, categories, employees };
 
-            fetch('http://localhost:3000/api/employees/full', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to save employees');
+            try {
+                console.log("Employees to save:", employees);
+                const response = await fetch('http://localhost:3000/api/employees/full', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to save employees. Status: ${response.status}. Response: ${errorText}`);
+                }
+
                 alert('Employees saved successfully!');
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error saving employees:', error);
-                alert('Failed to save employees.');
-            });
+                alert(`Failed to save employees: ${error.message}`);
+            }
         }
 
         document.getElementById("year2025Btn").addEventListener("click", () => {
