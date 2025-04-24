@@ -24,7 +24,7 @@ const defaultDbConfig = {
     user: 'postgres',
     host: 'localhost',
     database: 'sanitary_permits_db',
-    password: 'password',
+    password: '1234',
     port: 5432,
 };
 
@@ -33,7 +33,7 @@ const sanitaryDbConfig = {
     user: 'postgres',
     host: 'localhost',
     database: 'sanitary_permits_db',
-    password: 'password',
+    password: '1234',
     port: 5432,
 };
 
@@ -223,10 +223,15 @@ async function init() {
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 `;
                 for (const emp of employees) {
+                    // Validate required employee fields
+                    if (!emp.name || !emp.address || !emp.cert) {
+                        return res.status(400).json({ error: 'Employee name, address, and health certificate number are required' });
+                    }
+                    const empNo = parseInt(emp.no);
                     await pool.query(insertQuery, [
                         businessName,
                         ownerName,
-                        emp.no,
+                        isNaN(empNo) ? null : empNo,
                         emp.name,
                         emp.address,
                         emp.cert,
@@ -236,8 +241,8 @@ async function init() {
                 }
                 res.json({ message: 'Employees saved successfully' });
             } catch (err) {
-                console.error('Error saving employees', err);
-                res.status(500).json({ error: 'Internal server error' });
+                console.error('Error saving employees', err.stack || err.message || err);
+                res.status(500).json({ error: err.message || 'Internal server error' });
             }
         });
 
@@ -268,17 +273,25 @@ async function init() {
         // API to get employees data by businessName and ownerName
         app.get('/api/employees', async (req, res) => {
             const { business_name, owner_name } = req.query;
-            if (!business_name || !owner_name) {
-                return res.status(400).json({ error: 'Missing required query parameters: business_name or owner_name' });
-            }
             try {
-                const query = `
-                    SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
-                    FROM employees
-                    WHERE business_name = $1 AND owner_name = $2
-                    ORDER BY no
-                `;
-                const result = await pool.query(query, [business_name, owner_name]);
+                let query;
+                let params = [];
+                if (business_name && owner_name) {
+                    query = `
+                        SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
+                        FROM employees
+                        WHERE business_name = $1 AND owner_name = $2
+                        ORDER BY no
+                    `;
+                    params = [business_name, owner_name];
+                } else {
+                    query = `
+                        SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
+                        FROM employees
+                        ORDER BY no
+                    `;
+                }
+                const result = await pool.query(query, params);
                 res.json(result.rows);
             } catch (err) {
                 console.error('Error fetching employees', err);
