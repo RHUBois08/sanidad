@@ -51,7 +51,11 @@
                 <td><input type="text" class="health-cert" required></td>
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
-                <td><button onclick="removeRow(this)">X</button></td>
+                <td>
+                    <button onclick="addRow()">+</button>
+                    <button onclick="removeRow(this)">x</button>
+                </td>
+            </tr>
             </tr>
                 </tbody>
             </table>
@@ -97,7 +101,7 @@
                 } catch (error) {
                     console.error('Error fetching classification data:', error);
                 }
-// ang pogi mo edwin
+
         // Fetch and populate employees data
         try {
             const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
@@ -116,7 +120,10 @@
                             <td><input type="text" class="health-cert" required></td>
                             <td><input type="text" class="remarks" required></td>
                             <td><input type="date" class="x-ray-date" required></td>
-                            <td><button onclick="removeRow(this)">X</button></td>
+                            <td>
+                                <button onclick="addRow()">+</button>
+                                <button onclick="removeRow(this)">x</button>
+                            </td>
                         </tr>
                     `;
                 }
@@ -136,7 +143,7 @@
             updateRowNumbers();
         }
 
-        function populateEmployeeTable(employees) {
+        function populateEmployeeTable(employees, unsavedRows = []) {
             // Determine visible table body
             let visibleTableBody = null;
             if (document.getElementById("table2025").style.display !== "none") {
@@ -152,10 +159,9 @@
             // Clear existing rows
             visibleTableBody.innerHTML = '';
 
-            // Populate rows
+            // Populate rows from DB (saved)
             employees.forEach((emp, index) => {
                 const tr = document.createElement('tr');
-
                 // No.
                 const tdNo = document.createElement('td');
                 tdNo.className = 'employee-no-cell';
@@ -204,24 +210,44 @@
                 inputXray.type = 'date';
                 inputXray.className = 'x-ray-date';
                 if (emp.date_of_xray) {
-                    inputXray.value = emp.date_of_xray.split('T')[0]; // format date
+                    inputXray.value = emp.date_of_xray.split('T')[0];
                 }
                 tdXray.appendChild(inputXray);
                 tr.appendChild(tdXray);
 
                 // Actions
                 const tdActions = document.createElement('td');
-                const btnRemove = document.createElement('button');
-                btnRemove.textContent = 'X';
-                btnRemove.onclick = () => {
-                    tr.remove();
-                    updateRowNumbers();
-                };
-                tdActions.appendChild(btnRemove);
+                tdActions.innerHTML = `
+                    <button onclick="addRow()">+</button>
+                    <button onclick="removeRow(this)">x</button>
+                `;
                 tr.appendChild(tdActions);
 
                 visibleTableBody.appendChild(tr);
             });
+
+            // Append unsaved/new rows (if any)
+            unsavedRows.forEach(rowData => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="employee-no-cell"></td>
+                    <td><input type="text" class="employee-name" required value="${rowData.name || ''}"></td>
+                    <td><input type="text" class="employee-address" required value="${rowData.address || ''}"></td>
+                    <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
+                    <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
+                    <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
+                    <td>
+                        <button onclick="addRow()">+</button>
+                        <button onclick="removeRow(this)">x</button>
+                    </td>
+                `;
+                visibleTableBody.appendChild(tr);
+            });
+
+            // If no rows at all, add a blank row
+            if (employees.length === 0 && unsavedRows.length === 0) {
+                addRow();
+            }
 
             updateRowNumbers();
         }
@@ -310,13 +336,14 @@
         });
 
         async function saveEmployees() {
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
             const categoryFood = document.getElementById("categoryFood").checked;
             const categoryNonFood = document.getElementById("categoryNonFood").checked;
             const categories = [];
             if (categoryFood) categories.push("Food");
             if (categoryNonFood) categories.push("Non-Food");
 
-            const employees = [];
             let visibleTableBody = null;
             const table2025 = document.getElementById("table2025");
             const table2026 = document.getElementById("table2026");
@@ -329,7 +356,7 @@
             } else if (table2027 && table2027.offsetParent !== null) {
                 visibleTableBody = document.getElementById("employeeTableBody2027");
             } else {
-                visibleTableBody = document.getElementById("employeeTableBody");
+                visibleTableBody = document.getElementById("employeeTableBody2025");
             }
 
             if (!visibleTableBody) {
@@ -337,34 +364,32 @@
                 return;
             }
 
-            // Validate required inputs before submitting
-            const requiredInputs = visibleTableBody.querySelectorAll("input[required]");
-            for (const input of requiredInputs) {
-                if (!input.value.trim()) {
-                    alert("Please fill in all required fields before submitting.");
-                    input.focus();
-                    return;
-                }
-            }
-
+            // Gather all rows (including unsaved/new)
+            const employees = [];
             visibleTableBody.querySelectorAll("tr").forEach(row => {
-                const noCell = row.querySelector(".employee-no-cell");
-                const no = noCell ? noCell.textContent.trim() : '';
-                const name = row.querySelector(".employee-name").value;
-                const address = row.querySelector(".employee-address").value;
-                const cert = row.querySelector(".health-cert").value;
-                const remarks = row.querySelector(".remarks").value;
-                let date_of_xray = row.querySelector(".x-ray-date") ? row.querySelector(".x-ray-date").value : null;
-                if (date_of_xray === "") {
-                    date_of_xray = null;
+                const name = row.querySelector(".employee-name")?.value.trim() || '';
+                const address = row.querySelector(".employee-address")?.value.trim() || '';
+                const cert = row.querySelector(".health-cert")?.value.trim() || '';
+                const remarks = row.querySelector(".remarks")?.value.trim() || '';
+                let date_of_xray = row.querySelector(".x-ray-date")?.value || '';
+                if (date_of_xray === "") date_of_xray = null;
+                // Only push if at least one field is filled
+                if (name || address || cert || remarks || date_of_xray) {
+                    employees.push({
+                        business_name: businessName,
+                        owner_name: ownerName,
+                        name,
+                        address,
+                        cert,
+                        remarks,
+                        date_of_xray
+                    });
                 }
-                employees.push({ no, name, address, cert, remarks, date_of_xray });
             });
 
             const formData = { businessName, ownerName, categories, employees };
 
             try {
-                console.log("Employees to save:", employees);
                 const response = await fetch('http://localhost:3000/api/employees/full', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -377,16 +402,27 @@
                 }
 
                 alert('Employees saved successfully!');
-                // Clear input fields after successful save
-                visibleTableBody.querySelectorAll("input").forEach(input => {
-                    input.value = "";
-                });
+                // After saving, reload all employees using only backend data (no unsaved rows)
+                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody);
             } catch (error) {
                 console.error('Error saving employees:', error);
                 alert(`Failed to save employees: ${error.message}`);
             }
         }
 
+        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody) {
+            try {
+                const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                let employees = [];
+                if (empResponse.ok) {
+                    employees = await empResponse.json();
+                }
+                populateEmployeeTable(employees, []); // do not append unsaved rows
+            } catch (error) {
+                console.error('Error fetching employees data:', error);
+                alert('Error fetching employees data. Please try again later.');
+            }
+        }
         document.getElementById("year2025Btn").addEventListener("click", () => {
             showYearTable("2025");
         });
@@ -477,12 +513,36 @@
                         <td><input type="text" class="employee-address"></td>
                         <td><input type="text" class="health-cert"></td>
                         <td><input type="text" class="remarks"></td>
-                        <td><button onclick="removeRow(this)">X</button></td>
+                        <td>
+                            <button onclick="addRow()">+</button>
+                            <button onclick="removeRow(this)">x</button>
+                        </td>
                     </tr>
                 </tbody>
             `;
 
             tableContainer.appendChild(newTable);
+        }
+
+        function addRow() {
+            const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (!tableBody) return;
+
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td class="employee-no-cell"></td>
+                <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-address" required></td>
+                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="remarks" required></td>
+                <td><input type="date" class="x-ray-date" required></td>
+                <td>
+                    <button onclick="addRow()">+</button>
+                    <button onclick="removeRow(this)">x</button>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+            updateRowNumbers();
         }
     </script>
     <script src="style.js"></script>
