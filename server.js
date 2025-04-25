@@ -1,4 +1,3 @@
-Edwin
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool, Client } = require('pg');

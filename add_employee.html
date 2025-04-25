@@ -25,7 +25,7 @@
             <input type="text" id="classificationInput"><br><br>
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-            <button id="printNonFoodBtn" style="margin-left: 10px;" onclick="submit">Print</button>
+            <button id="print-permit" style="margin-left: 10px;" onclick="generateSanitaryPermit()">Print</button>
         </div>
         <div class="list-header">
             List (202+)
@@ -545,6 +545,6 @@
             updateRowNumbers();
         }
     </script>
-    <script src="style.js"></script>
+    <script src="print.js"></script>
 </body>
 </html>
