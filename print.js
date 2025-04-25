@@ -44,7 +44,7 @@ try {
     process.exit(1);
 }
 
-// Generate the new document
+// Generate document
 let buffer;
 try {
     buffer = doc.getZip().generate({
@@ -55,7 +55,7 @@ try {
     process.exit(1);
 }
 
-// Save it
+// Save
 try {
     fs.writeFileSync("C:/Users/DELL/Desktop/sanidad/sample_outputs/sample_output.docx", buffer);
     console.log("Document generated successfully: sample_output.docx");
