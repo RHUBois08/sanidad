@@ -79,18 +79,26 @@ async function generateSanitaryPermit() {
 
     try {
         // Fetch owner details from the server
-        const response = await fetch(`http://localhost:3000/api/owners?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
-        console.log("API Response Status:", response.status); // Debugging
+        const apiUrl = `http://localhost:3000/api/owners?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
+        const response = await fetch(apiUrl);
+
         if (!response.ok) {
-            throw new Error(`Failed to fetch owner details. Status: ${response.status}`);
+            console.error("Failed to fetch owner details. Response status:", response.status);
+            alert("Failed to fetch owner details. Please try again later.");
+            return;
         }
 
         const ownerData = await response.json();
-        console.log("Owner Data:", ownerData); // Debugging
 
-        // Ensure required fields are present
-        if (!ownerData || !ownerData.business_name || !ownerData.owner_name) {
+        if (!ownerData || Object.keys(ownerData).length === 0) {
+            console.error("Owner details not found. API returned empty or invalid data:", ownerData);
             alert("Owner details not found. Please check the input fields.");
+            return;
+        }
+
+        if (!ownerData.business_name || !ownerData.owner_name) {
+            console.error("Incomplete owner details received:", ownerData);
+            alert("Owner details are incomplete. Please verify the data.");
             return;
         }
 

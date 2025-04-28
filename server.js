@@ -62,13 +62,11 @@ async function createTables(pool) {
         id SERIAL PRIMARY KEY,
         business_name VARCHAR(255) NOT NULL,
         owner_name VARCHAR(255) NOT NULL,
-        classification VARCHAR(255) NOT NULL,
         applicant_type VARCHAR(255),
         application_date DATE,
         remarks VARCHAR(255),
         status VARCHAR(50),
-        address VARCHAR(255) NOT NULL,
-        sanitary_permit_number VARCHAR(255) NOT NULL
+        address VARCHAR(255) NOT NULL
     );
     `;
 
@@ -121,7 +119,7 @@ async function init() {
         app.get('/api/owners', async (req, res) => {
             try {
                 const result = await pool.query(
-                    `SELECT id, business_name, owner_name, classification, applicant_type, application_date, remarks, status, address, sanitary_permit_number
+                    `SELECT id, business_name, owner_name, applicant_type, application_date, remarks, status, address
                      FROM owners
                      ORDER BY id DESC`
                 );
@@ -134,17 +132,17 @@ async function init() {
 
         // API to add a new owner
         app.post('/api/owners', async (req, res) => {
-            const { businessName, ownerName, classification, applicantType, applicationDate, remarks, status, address, sanitaryPermitNumber } = req.body;
+            const { businessName, ownerName, applicantType, applicationDate, remarks, status, address } = req.body;
             if (!businessName || !ownerName || !address) {
                 return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or address' });
             }
             try {
                 const insertQuery = `
-                    INSERT INTO owners (business_name, owner_name, classification, applicant_type, application_date, remarks, status, address, sanitary_permit_number)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    INSERT INTO owners (business_name, owner_name, applicant_type, application_date, remarks, status, address)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
                     RETURNING *;
                 `;
-                const values = [businessName, ownerName, classification, applicantType, applicationDate, remarks, status, address, sanitaryPermitNumber];
+                const values = [businessName, ownerName, applicantType, applicationDate, remarks, status, address];
                 const result = await pool.query(insertQuery, values);
                 res.status(201).json(result.rows[0]);
             } catch (err) {
