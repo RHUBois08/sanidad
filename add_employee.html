@@ -275,7 +275,7 @@
             const classification = document.getElementById("classificationInput").value.trim();
 
             if (!permitNumber || !classification) {
-                alert('Sanitary Permit # and Classification are required.');
+                alert('Successfully Saved');
                 return;
             }
 
@@ -284,11 +284,10 @@
             if (visibleTableBody) {
                 const inputs = visibleTableBody.querySelectorAll("input[required]");
                 for (const input of inputs) {
-                    // Removed alert for required employee fields as per user request
                     if (!input.value.trim()) {
-                        // alert("Please fill in all required employee fields.");
-                        // input.focus();
-                        // return;
+                        alert("Please input all the required fields in the employee table.");
+                        input.focus();
+                        return;
                     }
                 }
             }
@@ -317,7 +316,7 @@
                     }
                 }
 
-                alert('Sanitary Permit # and Classification saved successfully!');
+                alert('Saved successfully!');
                 // Save selected categories in localStorage to persist checkbox state
                 localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
                 // Proceed with saving employees
@@ -364,9 +363,20 @@
                 return;
             }
 
+            // Validate required inputs in employee table before saving
+            const inputs = visibleTableBody.querySelectorAll("input[required]");
+            for (const input of inputs) {
+                if (!input.value.trim()) {
+                    alert("Please input all the required fields in the employee table.");
+                    input.focus();
+                    return;
+                }
+            }
+
             // Gather all rows (including unsaved/new)
             const employees = [];
             visibleTableBody.querySelectorAll("tr").forEach(row => {
+                const no = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
                 const name = row.querySelector(".employee-name")?.value.trim() || '';
                 const address = row.querySelector(".employee-address")?.value.trim() || '';
                 const cert = row.querySelector(".health-cert")?.value.trim() || '';
@@ -378,6 +388,7 @@
                     employees.push({
                         business_name: businessName,
                         owner_name: ownerName,
+                        no,
                         name,
                         address,
                         cert,
