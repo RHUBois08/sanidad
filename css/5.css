@@ -6,14 +6,43 @@ body {
 }
 
 .container {
-    width: 90%;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1357px;
     margin: 20px auto;
-    background-color: #e0f2fe; /* Light blue container */
-    padding: 20px;
+    background-color :#afd3e2; /* Light blue container */
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: -20px;
+
 }
+.top-bar {
+    background-color: #003366; 
+    color: white;
+    padding: 40px;
+    text-align: right;
+    height: 120px;
+}
+
+.top-bar span {
+    background-color: #003366;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+input[type='radio']:after {
+      
+        background-color: #d1d3d1;
+     
+        display: inline-block;
+
+    }
+
+    input[type='radio']:checked:after {
+        
+        background-color: #000000;
+        content: '';
+        display: inline-block;
+
+    }
 
 .header, .mid-section, .table-container, .submit-section {
     margin-bottom: 20px;
@@ -28,10 +57,12 @@ body {
     display: flex;
     flex-direction: column;
     width: 30%;
+    margin-left: -10px;
 }
 
 label {
     margin-bottom: 5px;
+    text-align: center;
 }
 
 input[type="text"] {
@@ -43,6 +74,7 @@ input[type="text"] {
 .mid-section {
     display: flex;
     align-items: center;
+
 }
 
 .category-btn, .classification-btn {
@@ -52,6 +84,7 @@ input[type="text"] {
     border-radius: 4px;
     background-color: white;
     cursor: pointer;
+    margin-top: 100px;
 }
 
 .classification-btn {
@@ -60,7 +93,7 @@ input[type="text"] {
 }
 
 .list-header {
-    background-color: #4c7b8b; /* Dark blue header */
+    background-color: #ffffff; /* Dark blue header */
     color: white;
     padding: 10px;
     border-radius: 4px;
@@ -70,23 +103,23 @@ input[type="text"] {
 table {
     width: 100%;
     border-collapse: collapse;
-    background-color: white;
+    background-color:none;
 }
 
 th, td {
-    border: 1px solid #ccc;
+    border: 1px solid #0a06068c;
     padding: 10px;
     text-align: center;
 }
 
 th {
-    background-color: #d0e8ff; /* Lighter blue header */
+    background-color: #ffffff; /* Lighter blue header */
 }
 
 .submit-btn {
-    padding: 10px 20px;
-    background-color: #0047AB; /* Dark blue button */
-    color: white;
+    padding: 5px 20px;
+    background-color: #0047abc9; /* Dark blue button */
+    color: rgb(0, 0, 0);
     border: none;
     border-radius: 4px;
     cursor: pointer;

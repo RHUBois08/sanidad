@@ -292,4 +292,4 @@ async function init() {
         process.exit(1);
     }
 }
-init();
+init();3

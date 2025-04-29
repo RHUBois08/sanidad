@@ -6,29 +6,37 @@
 </head>
 <body>
     <div class="container">
+          <div class="top-bar">
+            <a href="index.html"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left:-40px;
+    z-index:100; margin-top:-1%;"></a>
         <div class="header">
             <div class="input-group">
                 <label for="businessName">Business Name</label>
-                <input type="text" id="businessName">
+                <input style="height: 30px; "type="text" id="businessName">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="margin-left: 10px;">
                 <label for="ownerName">Name of Owner/Applicant</label>
-                <input type="text" id="ownerName">
+                <input style="height: 30px; " type="text" id="ownerName">
             </div>
-            <div class="input-group">
+            <div class="input-group" style="margin-left: 10px;">
                 <label for="permitNumber">Sanitary Permit #</label>
-                <input type="text" id="permitNumber">
+                <input style="height: 30px; " type="text" id="permitNumber">
             </div>
+            <div style="margin-top: 90px; margin-left: 440px; position: absolute; ">
+                <label for="classification" style="margin-right: 110px;">Type of Establishment</label><br>
+                <input style=" width: 366px; height: 30px;" type="text" id="classificationInput">
         </div>
-        <div class="mid-section">
-            <label for="classification">Type of Establishment</label><br>
-            <input type="text" id="classificationInput"><br><br>
+        </div>
+        <div class="mid-section" style="margin-top: 10px; position: absolute;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-            <button id="print-permit" style="margin-left: 10px;" onclick="generate_sanitary_permit()">Print</button>
-        </div>
-        <div class="list-header">
-            List (202+)
+<button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 50px; height:30px; border-radius: 5px; border: none;" onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
+    </svg>
+</button>
+            <span><kbd></kbd></span>
+          </div>
         </div>
         <div class="table-container">
             <table id="table2025" style="display: table;">
@@ -52,19 +60,41 @@
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
-                    <button onclick="addRow()">+</button>
-                    <button onclick="removeRow(this)">x</button>
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
                 </td>
             </tr>
             </tr>
                 </tbody>
             </table>
         </div>
-        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px;">
-            <button class="submit-btn" onclick="submitForm()">Save</button>
-            <button id="submitEmployeesBtn" style="margin-left: 10px;" onclick="saveEmployees()">Submit</button>
-            <button id="printSaveBtn" style="margin-left: 10px;" onclick="printForm()">Print</button>
+        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
+<button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7 10.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-3-7A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h8a1.5 1.5 0 0 0 1.5-1.5V5A1.5 1.5 0 0 0 12 3.5H4zm0 1h8a.5.5 0 0 1 .5.5v1H3.5v-1a.5.5 0 0 1 .5-.5zM3 8h10v3.5a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5V8z"/>
+    </svg>
+</button>
+<button id="submitEmployeesBtn" style="margin-left: -70px; color: black; border-radius: 4px; cursor: pointer; border:100cm; position: absolute;" onclick="saveEmployees()" aria-label="Submit" title="Submit" >
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M15.854 0.146a.5.5 0 0 0-.707 0L1 14.293V9.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
+    </svg>
+</button>
+<button id="printSaveBtn" style="margin-left: 65px; position: absolute; z-index: 2; border-radius: 4px; border:none;" onclick="printForm()" aria-label="Print" title="Print">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
+    </svg>
+</button>
         </div>
+        <div></div>
     </div>
     <!-- Removed the Add Year button as per user request -->
     <script>
@@ -114,18 +144,27 @@
                     const tbody = document.getElementById("employeeTableBody2025");
                     tbody.innerHTML = `
                         <tr>
-                            <td class="employee-no-cell">1</td>
-                            <td><input type="text" class="employee-name" required></td>
-                            <td><input type="text" class="employee-address" required></td>
-                            <td><input type="text" class="health-cert" required></td>
-                            <td><input type="text" class="remarks" required></td>
-                            <td><input type="date" class="x-ray-date" required></td>
-                            <td>
-                                <button onclick="addRow()">+</button>
-                                <button onclick="removeRow(this)">x</button>
-                            </td>
-                        </tr>
-                    `;
+                    <td class="employee-no-cell">1</td>
+                    <td><input type="text" class="employee-name" required></td>
+                    <td><input type="text" class="employee-address" required></td>
+                    <td><input type="text" class="health-cert" required></td>
+                    <td><input type="text" class="remarks" required></td>
+                    <td><input type="date" class="x-ray-date" required></td>
+                    <td>
+                        <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `;
                 }
             } else {
                 console.error('Failed to fetch employees data. Status:', empResponse.status);
@@ -218,8 +257,17 @@
                 // Actions
                 const tdActions = document.createElement('td');
                 tdActions.innerHTML = `
-                    <button onclick="addRow()">+</button>
-                    <button onclick="removeRow(this)">x</button>
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;color:black;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
                 `;
                 tr.appendChild(tdActions);
 
@@ -236,11 +284,16 @@
                     <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
                     <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
                     <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
-                    <td>
-                        <button onclick="addRow()">+</button>
-                        <button onclick="removeRow(this)">x</button>
-                    </td>
-                `;
+                <td>
+                    <button onclick="addRow()">+</button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; font-size:20px; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
+                </td>
+            `;
                 visibleTableBody.appendChild(tr);
             });
 
@@ -540,7 +593,7 @@
             if (!tableBody) return;
 
             const newRow = document.createElement("tr");
-            newRow.innerHTML = `
+                newRow.innerHTML = `
                 <td class="employee-no-cell"></td>
                 <td><input type="text" class="employee-name" required></td>
                 <td><input type="text" class="employee-address" required></td>
@@ -548,8 +601,17 @@
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
-                    <button onclick="addRow()">+</button>
-                    <button onclick="removeRow(this)">x</button>
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
                 </td>
             `;
             tableBody.appendChild(newRow);
