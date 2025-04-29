@@ -3,14 +3,14 @@ const { Client} = require('pg')
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'sanitary_permits_d',
+    database: 'sanitary_permits_db',
     password: 'passsword',
     port: 5432,
 });
 
 async function generate_sanitary_permit() {
 
-    fetch_owners()
+    fetch_owners();
 
     async function fetch_owners() {
 
@@ -36,15 +36,15 @@ async function generate_sanitary_permit() {
             });
     }
 
-    async function fetch_classifications() {
+    // async function fetch_classifications() {
 
-    }
+    // }
 
-    async function fetch_employees() {
+    // async function fetch_employees() {
 
-    }
+    // }
 
-    function permit_format() {
+    // function permit_format() {
 
-    }
+    // }
 }
