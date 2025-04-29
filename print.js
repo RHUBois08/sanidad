@@ -1,141 +1,50 @@
-new print.js
+const { Client} = require('pg')
 
+const client = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'sanitary_permits_d',
+    password: 'passsword',
+    port: 5432,
+});
 
-const PizZip = require("pizzip");
-const Docxtemplater = require("docxtemplater");
-const fs = require("fs");
+async function generate_sanitary_permit() {
 
-// Load the Word template as binary
-let content;
-try {
-    content = fs.readFileSync("C:/Users/DELL/Desktop/sanidad/assests/sanitary_certificate_format.docx", "binary");
-} catch (error) {
-    console.error("Error reading the template file:", error);
-    process.exit(1);
-}
+    fetch_owners()
 
-// Unzip the content
-let zip;
-try {
-    zip = new PizZip(content);
-} catch (error) {
-    console.error("Error unzipping the template file:", error);
-    process.exit(1);
-}
+    async function fetch_owners() {
 
-// Create the doc from template
-let doc;
-try {
-    doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-    });
-} catch (error) {
-    console.error("Error initializing Docxtemplater:", error);
-    process.exit(1);
-}
+        client.connect()
+            .then(() => {
+                console.log('Connected to the database');
 
-// Replace placeholders with actual data
-try {
-    doc.render({
-        Date: "April 21, 2025",
-        BUSINESS_NAME: "Adrian's Samgyupsalamat",
-        BUSINESS_OWNER: "Adrian Pogi"
-    });
-} catch (error) {
-    console.error("Error rendering the document:", error);
-    process.exit(1);
-}
+                const business = "Adrian's Samgyupsalamat" 
 
-// Generate the new document
-let buffer;
-try {
-    buffer = doc.getZip().generate({
-        type: "nodebuffer",
-    });
-} catch (error) {
-    console.error("Error generating the document buffer:", error);
-    process.exit(1);
-}
+                return client.query('SELECT owner_name FROM owners WHERE business_name = $1', [business]);
+            })
+            .then((res) => {
+                if(res.rows.lenth > 0){
+                    console.log('Data Fetched: ', res.rows[0].owner_name);
+                }
+                else {
+                    console.log('No user found with that name.');
+                }
 
-// Save it
-try {
-    fs.writeFileSync("C:/Users/DELL/Desktop/sanidad/sample_outputs/sample_output.docx", buffer);
-    console.log("Document generated successfully: sample_output.docx");
-} catch (error) {
-    console.error("Error saving the document:", error);
-    process.exit(1);
-}
-
-async function generateSanitaryPermit() {
-    // Fetch visible data from the form
-    const businessName = document.getElementById("businessName").value.trim();
-    const ownerName = document.getElementById("ownerName").value.trim();
-
-    if (!businessName || !ownerName) {
-        alert("Please fill in the Business Name and Owner Name fields.");
-        return;
+            })
+            .catch((err) => {
+                console.error('Error executing query', err.stack);
+            });
     }
 
-    try {
-        // Fetch owner details from the server
-        const apiUrl = `http://localhost:3000/api/owners?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
-        const response = await fetch(apiUrl);
+    async function fetch_classifications() {
 
-        if (!response.ok) {
-            console.error("Failed to fetch owner details. Response status:", response.status);
-            alert("Failed to fetch owner details. Please try again later.");
-            return;
-        }
+    }
 
-        const ownerData = await response.json();
+    async function fetch_employees() {
 
-        if (!ownerData || Object.keys(ownerData).length === 0) {
-            console.error("Owner details not found. API returned empty or invalid data:", ownerData);
-            alert("Owner details not found. Please check the input fields.");
-            return;
-        }
+    }
 
-        if (!ownerData.business_name || !ownerData.owner_name) {
-            console.error("Incomplete owner details received:", ownerData);
-            alert("Owner details are incomplete. Please verify the data.");
-            return;
-        }
+    function permit_format() {
 
-        // Map required fields from the owners table
-        const mappedData = {
-            BUSINESS_NAME: ownerData.business_name,
-            BUSINESS_OWNER: ownerData.owner_name,
-            Address: ownerData.address || "N/A",
-            Sanitary_Permit_No: ownerData.sanitary_permit_number || "N/A",
-            Date_Issued: ownerData.application_date ? new Date(ownerData.application_date).toLocaleDateString() : "N/A",
-        };
-
-        console.log("Mapped Data:", mappedData); // Debugging
-
-        // Load the Word template
-        const PizZip = require("pizzip");
-        const Docxtemplater = require("docxtemplater");
-        const fs = require("fs");
-
-        const templatePath = "C:/Users/DELL/Desktop/sanidad/assests/sanitary_permit_format.docx";
-        const outputPath = "C:/Users/DELL/Desktop/sanidad/sample_outputs/permit_output.docx";
-
-        const content = fs.readFileSync(templatePath, "binary");
-        const zip = new PizZip(content);
-        const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-
-        // Replace placeholders with actual data
-        doc.render(mappedData);
-
-        // Generate and save the document
-        const buffer = doc.getZip().generate({ type: "nodebuffer" });
-        fs.writeFileSync(outputPath, buffer);
-
-        alert("Sanitary Permit generated successfully!");
-        console.log(`Document saved at: ${outputPath}`);
-    } catch (error) {
-        console.error("Error generating the sanitary permit:", error);
-        alert(`Failed to generate the sanitary permit: ${error.message}`);
     }
 }
