@@ -3,10 +3,70 @@
 <head>
     <title>Sanitary Permit Form</title>
     <link rel="stylesheet" href="css\5.css">
-    <script src="print.js" defer></script>
+    <link rel="icon" href="assets\sanidad_logo.png" type="image/png">
+    <script>
+        let isClientConnected = false; // Track connection status
+        let connectionReadyCallbacks = []; // Queue for functions waiting for connection
+
+        const client = new window.pg.Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'sanitary_permits_db',
+            password: 'passsword',
+            port: 5432,
+        });
+
+        client.connect()
+            .then(() => {
+                console.log('Connected to the database');
+                isClientConnected = true; // Mark client as connected
+                connectionReadyCallbacks.forEach(callback => callback()); // Execute queued callbacks
+                connectionReadyCallbacks = []; // Clear the queue
+                document.getElementById('connectionStatus').textContent = 'Database connected'; // Update status
+                document.getElementById('connectionStatus').style.color = 'green';
+                document.getElementById('print-permit').disabled = false; // Enable the button
+            })
+            .catch((err) => {
+                console.error('Error connecting to the database', err.stack);
+                document.getElementById('connectionStatus').textContent = 'Database connection failed'; // Update status
+                document.getElementById('connectionStatus').style.color = 'red';
+            });
+
+        function safeGenerateSanitaryPermit() {
+            if (!isClientConnected) {
+                console.warn('Database client is not connected yet. Queuing the request.');
+                connectionReadyCallbacks.push(() => {
+                    console.log('Executing queued request after connection.');
+                    generate_sanitary_permit();
+                }); // Queue the function
+                return;
+            }
+            generate_sanitary_permit();
+        }
+
+        function generate_sanitary_permit() {
+            const business = "Papa P Massage Parlor";
+
+            client.query('SELECT owner_name FROM owners WHERE business_name = $1', [business])
+                .then((res) => {
+                    if (res.rows.length > 0) {
+                        console.log('Data Fetched: ', res.rows[0].owner_name);
+                    } else {
+                        console.log('No user found with that name.');
+                    }
+                })
+                .catch((err) => {
+                    console.error('Error executing query', err.stack);
+                });
+        }
+
+        // Attach the function to the global scope
+        window.safeGenerateSanitaryPermit = safeGenerateSanitaryPermit;
+    </script>
 </head>
 <body>
     <div class="container">
+        <div id="connectionStatus" style="margin-bottom: 10px; font-weight: bold;">Connecting to database...</div>
           <div class="top-bar">
             <a href="index.html"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left:-40px;
     z-index:100; margin-top:-1%;"></a>
@@ -31,13 +91,12 @@
         <div class="mid-section" style="margin-top: 10px; position: absolute;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-<button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 50px; height:30px; border-radius: 5px; border: none;" onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
+<button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 50px; height:30px; border-radius: 5px; border: none;" onclick="safeGenerateSanitaryPermit()" aria-label="Print" title="Print">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
         <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
     </svg>
 </button>
-            <span><kbd></kbd></span>
-          </div>
+        </div>
         </div>
         <div class="table-container">
             <table id="table2025" style="display: table;">
@@ -140,38 +199,42 @@
                 const employees = await empResponse.json();
                 if (Array.isArray(employees) && employees.length > 0) {
                     populateEmployeeTable(employees);
-                } else {
+                } 
+                
+                else {
                     // Clear table and add a single empty row with input boxes for new data entry
                     const tbody = document.getElementById("employeeTableBody2025");
                     tbody.innerHTML = `
-                        <tr>
-                    <td class="employee-no-cell">1</td>
-                    <td><input type="text" class="employee-name" required></td>
-                    <td><input type="text" class="employee-address" required></td>
-                    <td><input type="text" class="health-cert" required></td>
-                    <td><input type="text" class="remarks" required></td>
-                    <td><input type="date" class="x-ray-date" required></td>
-                    <td>
-                        <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                            </svg>
-                        </button>
-                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                            </svg>
-                        </button>
-                    </td>
-                </tr>
-            `;
+                        <td class="employee-no-cell">1</td>
+                        <td><input type="text" class="employee-name" required></td>
+                        <td><input type="text" class="employee-address" required></td>
+                        <td><input type="text" class="health-cert" required></td>
+                        <td><input type="text" class="remarks" required></td>
+                        <td><input type="date" class="x-ray-date" required></td>
+                        <td>
+                            <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                            </button>
+                            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>`;
                 }
-            } else {
+            } 
+            
+            else {
                 console.error('Failed to fetch employees data. Status:', empResponse.status);
                 alert('Failed to fetch employees data from server.');
             }
-        } catch (error) {
+        } 
+        
+        catch (error) {
             console.error('Error fetching employees data:', error);
             alert('Error fetching employees data. Please try again later.');
         }
