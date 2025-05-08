@@ -73,25 +73,25 @@
         <div class="header">
             <div class="input-group">
                 <label for="businessName">Business Name</label>
-                <input style="height: 30px; "type="text" id="businessName">
+                <input style="height: 20px; "type="text" id="businessName">
             </div>
             <div class="input-group" style="margin-left: 10px;">
                 <label for="ownerName">Name of Owner/Applicant</label>
-                <input style="height: 30px; " type="text" id="ownerName">
+                <input style="height: 20px; " type="text" id="ownerName">
             </div>
             <div class="input-group" style="margin-left: 10px;">
                 <label for="permitNumber">Sanitary Permit #</label>
-                <input style="height: 30px; " type="text" id="permitNumber">
+                <input style="height: 20px; " type="text" id="permitNumber">
             </div>
-            <div style="margin-top: 90px; margin-left: 440px; position: absolute; ">
-                <label for="classification" style="margin-right: 110px;">Type of Establishment</label><br>
-                <input style=" width: 366px; height: 30px;" type="text" id="classificationInput">
+            <div style="margin-top: 80px; margin-left: 505px; position: absolute; ">
+                <label for="classification" style="margin-right: 55px;">Type of Establishment</label><br>
+                <input style=" width: 239px; height: 20px;" type="text" id="classificationInput">
         </div>
         </div>
         <div class="mid-section" style="margin-top: 10px; position: absolute;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-<button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 50px; height:30px; border-radius: 5px; border: none;" onclick="safeGenerateSanitaryPermit()" aria-label="Print" title="Print">
+<button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 50px; height:30px; border-radius: 5px; border: none;" onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
         <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
     </svg>
@@ -136,6 +136,13 @@
             </tr>
                 </tbody>
             </table>
+        </div>
+        <!-- Yearly Record Date dropdown under the table -->
+        <div style="margin-top: 20px;">
+            <select id="yearlyRecordDateDropdown" style="width: 70px;">
+                <option value="2025">2025</option>
+            </select>
+            <button id="addYearDropdownBtn" type="button" style="margin-left: 8px;">Add Year</button>
         </div>
         <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
 <button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save">
@@ -205,26 +212,28 @@
                     // Clear table and add a single empty row with input boxes for new data entry
                     const tbody = document.getElementById("employeeTableBody2025");
                     tbody.innerHTML = `
-                        <td class="employee-no-cell">1</td>
-                        <td><input type="text" class="employee-name" required></td>
-                        <td><input type="text" class="employee-address" required></td>
-                        <td><input type="text" class="health-cert" required></td>
-                        <td><input type="text" class="remarks" required></td>
-                        <td><input type="date" class="x-ray-date" required></td>
-                        <td>
-                            <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                                </svg>
-                            </button>
-                            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                                </svg>
-                            </button>
-                        </td>
-                    </tr>`;
+                        <tr>
+                    <td class="employee-no-cell">1</td>
+                    <td><input type="text" class="employee-name" required></td>
+                    <td><input type="text" class="employee-address" required></td>
+                    <td><input type="text" class="health-cert" required></td>
+                    <td><input type="text" class="remarks" required></td>
+                    <td><input type="date" class="x-ray-date" required></td>
+                    <td>
+                        <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `;
                 }
             } 
             
@@ -651,6 +660,36 @@
 
             tableContainer.appendChild(newTable);
         }
+
+        // Function to add a year to the Yearly Record Date dropdown
+        function addYearToDropdown(year) {
+            const dropdown = document.getElementById('yearlyRecordDateDropdown');
+            // Check if year already exists
+            for (let i = 0; i < dropdown.options.length; i++) {
+                if (dropdown.options[i].value === year) {
+                    alert('Year already exists.');
+                    return false;
+                }
+            }
+            let option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            dropdown.appendChild(option);
+            dropdown.value = year;
+            return true;
+        }
+
+        // Add Year button for Yearly Record Date dropdown
+        document.getElementById('addYearDropdownBtn').addEventListener('click', function() {
+            let newYear = prompt('Enter new year:');
+            if (!newYear) return;
+            newYear = newYear.trim();
+            if (!/^\d{4}$/.test(newYear)) {
+                alert('Please enter a valid 4-digit year.');
+                return;
+            }
+            addYearToDropdown(newYear);
+        });
 
         function addRow() {
             const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
