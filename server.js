@@ -37,6 +37,16 @@ const sanitaryDbConfig = {
     port: 5432,
 };
 
+const dbConfig = {
+    user: 'postgres',
+    host: 'localhost',
+    database: 'sanitary_permits_db',
+    password: 'passsword',
+    port: 5432,
+};
+
+module.exports = dbConfig;
+
 async function createDatabaseIfNotExists() {
     const client = new Client(defaultDbConfig);
     try {
@@ -292,4 +302,4 @@ async function init() {
         process.exit(1);
     }
 }
-init();3
+init();
