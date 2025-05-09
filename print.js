@@ -1,7 +1,7 @@
 const { Client } = require('pg');
-const dbConfig = require('./server');
+const sanitaryDbConfig = require('./server');
 
-const client = new Client(dbConfig);
+const client = new Client(sanitaryDbConfig);
 
 let isClientConnected = false; // Track connection status
 let connectionReadyCallbacks = []; // Queue for functions waiting for connection

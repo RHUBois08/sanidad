@@ -353,4 +353,374 @@
                 tr.innerHTML = `
                     <td class="employee-no-cell"></td>
                     <td><input type="text" class="employee-name" required value="${rowData.name || ''}"></td>
-                   
+                    <td><input type="text" class="employee-address" required value="${rowData.address || ''}"></td>
+                    <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
+                    <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
+                    <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
+                <td>
+                    <button onclick="addRow()">+</button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; font-size:20px; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
+                </td>
+            `;
+                visibleTableBody.appendChild(tr);
+            });
+
+            // If no rows at all, add a blank row
+            if (employees.length === 0 && unsavedRows.length === 0) {
+                addRow();
+            }
+
+            updateRowNumbers();
+        }
+
+        function printForm() {
+            window.print();
+        }
+
+        function updateRowNumbers() {
+            const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])");
+            if (!visibleTable) return;
+            const rows = visibleTable.querySelectorAll("tbody tr");
+            rows.forEach((row, index) => {
+                const noCell = row.querySelector(".employee-no-cell");
+                if (noCell) {
+                    noCell.textContent = index + 1;
+                }
+            });
+        }
+
+        async function submitForm() {
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+            const permitNumber = document.getElementById("permitNumber").value.trim();
+            const classification = document.getElementById("classificationInput").value.trim();
+
+            if (!permitNumber || !classification) {
+                alert('Successfully Saved');
+                return;
+            }
+
+            // Validate required inputs in employee table
+            const visibleTableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (visibleTableBody) {
+                const inputs = visibleTableBody.querySelectorAll("input[required]");
+                for (const input of inputs) {
+                    if (!input.value.trim()) {
+                        alert("Please input all the required fields in the employee table.");
+                        input.focus();
+                        return;
+                    }
+                }
+            }
+
+            // Save Sanitary Permit # and Classification with selected categories as linkable_texts
+            const selectedCategories = [];
+            if (document.getElementById("categoryFood").checked) selectedCategories.push("Food");
+            if (document.getElementById("categoryNonFood").checked) selectedCategories.push("Non-Food");
+
+            try {
+                const response = await fetch('http://localhost:3000/api/classifications/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
+                });
+
+                if (!response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to save Sanitary Permit # and Classification');
+                    } else {
+                        const errorText = await response.text();
+                        console.error('Unexpected response:', errorText);
+                        throw new Error('Unexpected response from server');
+                    }
+                }
+
+                alert('Saved successfully!');
+                // Save selected categories in localStorage to persist checkbox state
+                localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
+                // Proceed with saving employees
+                // await saveEmployees();
+            } catch (error) {
+                console.error('Error saving Sanitary Permit # and Classification:', error);
+                alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
+            }
+        }
+
+        // On page load, restore checkbox states from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedCategories = JSON.parse(localStorage.getItem('selectedCategories') || '[]');
+            document.getElementById('categoryFood').checked = savedCategories.includes('Food');
+            document.getElementById('categoryNonFood').checked = savedCategories.includes('Non-Food');
+        });
+
+        async function saveEmployees() {
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+            const categoryFood = document.getElementById("categoryFood").checked;
+            const categoryNonFood = document.getElementById("categoryNonFood").checked;
+            const categories = [];
+            if (categoryFood) categories.push("Food");
+            if (categoryNonFood) categories.push("Non-Food");
+
+            let visibleTableBody = null;
+            const table2025 = document.getElementById("table2025");
+            const table2026 = document.getElementById("table2026");
+            const table2027 = document.getElementById("table2027");
+
+            if (table2025 && table2025.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            } else if (table2026 && table2026.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2026");
+            } else if (table2027 && table2027.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2027");
+            } else {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            }
+
+            if (!visibleTableBody) {
+                alert('No employee table is visible. Cannot save employees.');
+                return;
+            }
+
+            // Validate required inputs in employee table before saving
+            const inputs = visibleTableBody.querySelectorAll("input[required]");
+            for (const input of inputs) {
+                if (!input.value.trim()) {
+                    alert("Please input all the required fields in the employee table.");
+                    input.focus();
+                    return;
+                }
+            }
+
+            // Gather all rows (including unsaved/new)
+            const employees = [];
+            visibleTableBody.querySelectorAll("tr").forEach(row => {
+                const no = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
+                const name = row.querySelector(".employee-name")?.value.trim() || '';
+                const address = row.querySelector(".employee-address")?.value.trim() || '';
+                const cert = row.querySelector(".health-cert")?.value.trim() || '';
+                const remarks = row.querySelector(".remarks")?.value.trim() || '';
+                let date_of_xray = row.querySelector(".x-ray-date")?.value || '';
+                if (date_of_xray === "") date_of_xray = null;
+                // Only push if at least one field is filled
+                if (name || address || cert || remarks || date_of_xray) {
+                    employees.push({
+                        business_name: businessName,
+                        owner_name: ownerName,
+                        no,
+                        name,
+                        address,
+                        cert,
+                        remarks,
+                        date_of_xray
+                    });
+                }
+            });
+
+            const formData = { businessName, ownerName, categories, employees };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/employees/full', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to save employees. Status: ${response.status}. Response: ${errorText}`);
+                }
+
+                alert('Employees saved successfully!');
+                // After saving, reload all employees using only backend data (no unsaved rows)
+                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody);
+            } catch (error) {
+                console.error('Error saving employees:', error);
+                alert(`Failed to save employees: ${error.message}`);
+            }
+        }
+
+        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody) {
+            try {
+                const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                let employees = [];
+                if (empResponse.ok) {
+                    employees = await empResponse.json();
+                }
+                populateEmployeeTable(employees, []); // do not append unsaved rows
+            } catch (error) {
+                console.error('Error fetching employees data:', error);
+                alert('Error fetching employees data. Please try again later.');
+            }
+        }
+        document.getElementById("year2025Btn").addEventListener("click", () => {
+            showYearTable("2025");
+        });
+        document.getElementById("year2026Btn").addEventListener("click", () => {
+            showYearTable("2026");
+        });
+        document.getElementById("year2027Btn").addEventListener("click", () => {
+            showYearTable("2027");
+        });
+
+        // Add event listeners for remove year buttons
+        document.querySelectorAll(".remove-year-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const year = e.target.getAttribute("data-year");
+                removeYear(year);
+            });
+        });
+
+        document.getElementById("addYearBtn").addEventListener("click", () => {
+            // Find all year buttons and get the max year
+            const yearButtons = Array.from(document.querySelectorAll(".year-btn"));
+            let maxYear = 2027; // default starting max year
+            yearButtons.forEach(btn => {
+                const yearNum = parseInt(btn.textContent);
+                if (!isNaN(yearNum) && yearNum > maxYear) {
+                    maxYear = yearNum;
+                }
+            });
+            const nextYear = (maxYear + 1).toString();
+            addYear(nextYear);
+        });
+
+        function showYearTable(year) {
+            const years = ["2025", "2026", "2027"];
+            // Add dynamically added years to the list
+            const dynamicYears = Array.from(document.querySelectorAll(".year-btn")).map(btn => btn.textContent);
+            const allYears = years.concat(dynamicYears);
+
+            allYears.forEach(y => {
+                const table = document.getElementById("table" + y);
+                if (table) {
+                    table.style.display = (y === year) ? "table" : "none";
+                }
+            });
+        }
+
+        function addYear(year) {
+            // Check if year button already exists
+            if (document.getElementById("year" + year + "Btn")) {
+                alert("Year " + year + " already exists.");
+                return;
+            }
+
+            // Create new year button
+            const newBtn = document.createElement("button");
+            newBtn.id = "year" + year + "Btn";
+            newBtn.textContent = year;
+            newBtn.className = "year-btn";
+            newBtn.style.marginLeft = "10px";
+            newBtn.addEventListener("click", () => {
+                showYearTable(year);
+            });
+
+            // Append new button to submit section
+            document.getElementById("submitSection").appendChild(newBtn);
+
+            // Create new table for the year
+            const tableContainer = document.querySelector(".table-container");
+            const newTable = document.createElement("table");
+            newTable.id = "table" + year;
+            newTable.style.display = "none";
+
+            newTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody${year}">
+                    <tr>
+                        <td><input type="text" class="employee-no"></td>
+                        <td><input type="text" class="employee-name"></td>
+                        <td><input type="text" class="employee-address"></td>
+                        <td><input type="text" class="health-cert"></td>
+                        <td><input type="text" class="remarks"></td>
+                        <td>
+                            <button onclick="addRow()">+</button>
+                            <button onclick="removeRow(this)">x</button>
+                        </td>
+                    </tr>
+                </tbody>
+            `;
+
+            tableContainer.appendChild(newTable);
+        }
+
+        // Function to add a year to the Yearly Record Date dropdown
+        function addYearToDropdown(year) {
+            const dropdown = document.getElementById('yearlyRecordDateDropdown');
+            // Check if year already exists
+            for (let i = 0; i < dropdown.options.length; i++) {
+                if (dropdown.options[i].value === year) {
+                    alert('Year already exists.');
+                    return false;
+                }
+            }
+            let option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            dropdown.appendChild(option);
+            dropdown.value = year;
+            return true;
+        }
+
+        // Add Year button for Yearly Record Date dropdown
+        document.getElementById('addYearDropdownBtn').addEventListener('click', function() {
+            let newYear = prompt('Enter new year:');
+            if (!newYear) return;
+            newYear = newYear.trim();
+            if (!/^\d{4}$/.test(newYear)) {
+                alert('Please enter a valid 4-digit year.');
+                return;
+            }
+            addYearToDropdown(newYear);
+        });
+
+        function addRow() {
+            const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (!tableBody) return;
+
+            const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+                <td class="employee-no-cell"></td>
+                <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-address" required></td>
+                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="remarks" required></td>
+                <td><input type="date" class="x-ray-date" required></td>
+                <td>
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(newRow);
+            updateRowNumbers();
+        }
+    </script>
+    <script src="print.js"></script>
+</body>
+</html>
