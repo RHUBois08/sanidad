@@ -19,7 +19,7 @@ body {
     color: white;
     padding: 40px;
     text-align: right;
-    height: 85px;
+    height: 90px;
     margin-top: -10px;
 }
 
@@ -64,7 +64,6 @@ input[type='radio']:after {
 label {
     margin-bottom: 5px;
     text-align: center;
-    margin-top: -15px;
 }
 
 input[type="text"] {
