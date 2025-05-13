@@ -34,6 +34,7 @@ input[type='radio']:after {
         background-color: #d1d3d1;
      
         display: inline-block;
+        
 
     }
 
@@ -58,12 +59,13 @@ input[type='radio']:after {
     display: flex;
     flex-direction: column;
     width: 20%;
-    margin-left: -10px;
+    margin-left: 20px;
 }
 
 label {
     margin-bottom: 5px;
     text-align: center;
+    margin-top: -15px;
 }
 
 input[type="text"] {
