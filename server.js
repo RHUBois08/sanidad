@@ -96,12 +96,22 @@ async function createTables(pool) {
         id SERIAL PRIMARY KEY,
         business_name VARCHAR(255),
         owner_name VARCHAR(255),
+        year INTEGER,
         no INTEGER,
         employee_name VARCHAR(255),
         address VARCHAR(255),
         health_cert_no VARCHAR(255),
         remarks VARCHAR(255),
-        date_of_xray DATE
+        date_of_xray DATE,
+        FOREIGN KEY (year) REFERENCES years(year) ON DELETE CASCADE
+    );
+    `;
+
+    const createYearsTableQuery = `
+    CREATE TABLE IF NOT EXISTS years (
+        id SERIAL PRIMARY KEY,
+        year INTEGER UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     `;
 
@@ -112,6 +122,8 @@ async function createTables(pool) {
         console.log('Table "classifications" is ready');
         await pool.query(createEmployeesTableQuery);
         console.log('Table "employees" is ready');
+        await pool.query(createYearsTableQuery);
+        console.log('Table "years" is ready');
     } catch (err) {
         console.error('Error creating tables', err);
         throw err;
@@ -273,9 +285,9 @@ async function init() {
             }
         });
 
-        // API to get employees data by businessName and ownerName
+        // API to get employees data by businessName, ownerName and year
         app.get('/api/employees', async (req, res) => {
-            const { business_name, owner_name } = req.query;
+            const { business_name, owner_name, year } = req.query;
             if (!business_name || !owner_name) {
                 return res.status(400).json({ error: 'Missing required query parameters: business_name or owner_name' });
             }
@@ -284,12 +296,66 @@ async function init() {
                     SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
                     FROM employees
                     WHERE business_name = $1 AND owner_name = $2
+                    ${year ? 'AND year = $3' : ''}
                     ORDER BY no
                 `;
-                const result = await pool.query(query, [business_name, owner_name]);
+                const params = year ? [business_name, owner_name, year] : [business_name, owner_name];
+                const result = await pool.query(query, params);
                 res.json(result.rows);
             } catch (err) {
-                console.error('Error fetching employees', err);
+                console.error('Error fetching employees:', err);
+                res.status(500).json({ error: 'Error fetching employees data', details: err.message });
+            }
+        });
+
+        // API to get all years
+        app.get('/api/years', async (req, res) => {
+            try {
+                const result = await pool.query('SELECT year FROM years ORDER BY year');
+                res.json(result.rows);
+            } catch (err) {
+                console.error('Error fetching years:', err);
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+
+        // API to add a new year
+        app.post('/api/years/add', async (req, res) => {
+            const { year } = req.body;
+            
+            if (!year || isNaN(parseInt(year))) {
+                return res.status(400).json({ error: 'Valid year is required' });
+            }
+
+            try {
+                const result = await pool.query(
+                    'INSERT INTO years (year) VALUES ($1) ON CONFLICT (year) DO NOTHING RETURNING year',
+                    [parseInt(year)]
+                );
+                res.status(201).json({ 
+                    year: parseInt(year), 
+                    added: result.rowCount > 0,
+                    message: result.rowCount > 0 ? 'Year added successfully' : 'Year already exists'
+                });
+            } catch (err) {
+                console.error('Error adding year:', err);
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+
+        // API to delete a year
+        app.delete('/api/years/:year', async (req, res) => {
+            const { year } = req.params;
+            
+            try {
+                await pool.query('BEGIN');
+                // Due to CASCADE, this will automatically delete related employee records
+                await pool.query('DELETE FROM years WHERE year = $1', [year]);
+                await pool.query('COMMIT');
+                res.json({ message: 'Year and associated data deleted successfully' });
+            } catch (err) {
+                await pool.query('ROLLBACK');
+                console.error('Error deleting year:', err);
                 res.status(500).json({ error: 'Internal server error' });
             }
         });
