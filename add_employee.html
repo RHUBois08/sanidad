@@ -136,33 +136,102 @@
             </tr>
                 </tbody>
             </table>
+            <table id="table2026" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Date of X-ray</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody2026">
+                    <tr>
+                        <td class="employee-no-cell">1</td>
+                        <td><input type="text" class="employee-name" required></td>
+                        <td><input type="text" class="employee-address" required></td>
+                        <td><input type="text" class="health-cert" required></td>
+                        <td><input type="text" class="remarks" required></td>
+                        <td><input type="date" class="x-ray-date" required></td>
+                        <td>
+                            <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </button>
+                            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="table2027" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Date of X-ray</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody2027">
+                    <tr>
+                        <td class="employee-no-cell">1</td>
+                        <td><input type="text" class="employee-name" required></td>
+                        <td><input type="text" class="employee-address" required></td>
+                        <td><input type="text" class="health-cert" required></td>
+                        <td><input type="text" class="remarks" required></td>
+                        <td><input type="date" class="x-ray-date" required></td>
+                        <td>
+                            <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </button>
+                            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <!-- Yearly Record Date dropdown under the table -->
-        <div style="margin-top: 20px;">
-            <select id="yearlyRecordDateDropdown" style="width: 70px;">
-                <option value="2025">2025</option>
-            </select>
-            <button id="addYearDropdownBtn" type="button" style="margin-left: 8px;">Add Year</button>
-        </div>
-        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
-<button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M7 10.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-3-7A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h8a1.5 1.5 0 0 0 1.5-1.5V5A1.5 1.5 0 0 0 12 3.5H4zm0 1h8a.5.5 0 0 1 .5.5v1H3.5v-1a.5.5 0 0 1 .5-.5zM3 8h10v3.5a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5V8z"/>
-    </svg>
-</button>
-<button id="submitEmployeesBtn" style="margin-left: -70px; color: black; border-radius: 4px; cursor: pointer; border:100cm; position: absolute;" onclick="saveEmployees()" aria-label="Submit" title="Submit" >
-    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M15.854 0.146a.5.5 0 0 0-.707 0L1 14.293V9.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
-    </svg>
-</button>
-<button id="printSaveBtn" style="margin-left: 65px; position: absolute; z-index: 2; border-radius: 4px; border:none;" onclick="printForm()" aria-label="Print" title="Print">
-    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
-    </svg>
-</button>
-        </div>
-        <div></div>
-    </div>
+        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:10px; z-index: 10; justify-content: space-between; width: calc(100% - 100px);">
+<div style="display: flex;">
+    <button id="year2025Btn" class="year-btn" style="border-radius: 4px;color: black; border-color:rgba(0, 0, 0, 0.712); cursor: pointer; position: relative; margin-left: 0px;">2025</button>
+    <button id="addYearBtn" style="border-radius: 4px; color: black; border-color:rgba(53, 45, 45, 0.712); cursor: pointer;position: relative; margin-left: 10px;">+</button>
+</div>
+
+<div style="display: flex; margin-left: 20px;">
+    <button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save" style="margin-right: 5px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M7 10.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-3-7A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h8a1.5 1.5 0 0 0 1.5-1.5V5A1.5 0 0 0 12 3.5H4zm0 1h8a.5.5 0 0 1 .5.5v1H3.5v-1a.5.5 0 0 1 .5-.5zM3 8h10v3.5a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5V8z"/>
+        </svg>
+    </button>
+    <button id="submitEmployeesBtn" onclick="saveEmployees()" aria-label="Submit" title="Submit" style="margin-right: 5px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M15.854 0.146a.5.5 0 0 0-.707 0L1 14.293V9.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
+        </svg>
+    </button>
+    <button id="printSaveBtn" onclick="printForm()" aria-label="Print" title="Print" style="margin-right: -80px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
+        </svg>
+    </button>
+</div>
+</div>
+</div>
     <!-- Removed the Add Year button as per user request -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -223,13 +292,12 @@
                         <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                            </svg>
                         </button>
                         <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                            </svg>
+                        </svg>
                         </button>
                     </td>
                 </tr>
@@ -333,7 +401,6 @@
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;color:black;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
                     </button>
                     <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -514,6 +581,7 @@
                     employees.push({
                         business_name: businessName,
                         owner_name: ownerName,
+                        year: visibleTableBody.id.replace('employeeTableBody', ''),
                         no,
                         name,
                         address,
@@ -549,7 +617,8 @@
 
         async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody) {
             try {
-                const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                const year = visibleTableBody.id.replace('employeeTable', '');
+                const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}&year=${year}`);
                 let employees = [];
                 if (empResponse.ok) {
                     employees = await empResponse.json();
@@ -578,20 +647,6 @@
             });
         });
 
-        document.getElementById("addYearBtn").addEventListener("click", () => {
-            // Find all year buttons and get the max year
-            const yearButtons = Array.from(document.querySelectorAll(".year-btn"));
-            let maxYear = 2027; // default starting max year
-            yearButtons.forEach(btn => {
-                const yearNum = parseInt(btn.textContent);
-                if (!isNaN(yearNum) && yearNum > maxYear) {
-                    maxYear = yearNum;
-                }
-            });
-            const nextYear = (maxYear + 1).toString();
-            addYear(nextYear);
-        });
-
         function showYearTable(year) {
             const years = ["2025", "2026", "2027"];
             // Add dynamically added years to the list
@@ -618,13 +673,20 @@
             newBtn.id = "year" + year + "Btn";
             newBtn.textContent = year;
             newBtn.className = "year-btn";
+            newBtn.style.color = "black";
+            newBtn.style.borderRadius = "4px";
+            newBtn.style.cursor = "pointer";
+            newBtn.style.borderColor = "rgba(0, 0, 0, 0.712)";
+            newBtn.style.position = "relative";
             newBtn.style.marginLeft = "10px";
             newBtn.addEventListener("click", () => {
                 showYearTable(year);
             });
 
             // Append new button to submit section
-            document.getElementById("submitSection").appendChild(newBtn);
+            const submitSection = document.getElementById("submitSection").querySelector("div:first-child");
+            const addYearBtn = document.getElementById("addYearBtn");
+            submitSection.insertBefore(newBtn, addYearBtn);
 
             // Create new table for the year
             const tableContainer = document.querySelector(".table-container");
@@ -640,19 +702,29 @@
                         <th>Address</th>
                         <th>Health Cert. No.</th>
                         <th>Remarks</th>
+                        <th>Date of X-ray</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="employeeTableBody${year}">
                     <tr>
-                        <td><input type="text" class="employee-no"></td>
-                        <td><input type="text" class="employee-name"></td>
-                        <td><input type="text" class="employee-address"></td>
-                        <td><input type="text" class="health-cert"></td>
-                        <td><input type="text" class="remarks"></td>
+                        <td class="employee-no-cell">1</td>
+                        <td><input type="text" class="employee-name" required></td>
+                        <td><input type="text" class="employee-address" required></td>
+                        <td><input type="text" class="health-cert" required></td>
+                        <td><input type="text" class="remarks" required></td>
+                        <td><input type="date" class="x-ray-date" required></td>
                         <td>
-                            <button onclick="addRow()">+</button>
-                            <button onclick="removeRow(this)">x</button>
+                            <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </button>
+                            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                </svg>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -676,20 +748,49 @@
             option.textContent = year;
             dropdown.appendChild(option);
             dropdown.value = year;
+
+            // Send the new year to the server to save it in the database
+            fetch('http://localhost:3000/api/years/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ year: year })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to save year to database.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Year saved to database:', data);
+            })
+            .catch(error => {
+                console.error('Error saving year to database:', error);
+                alert('Failed to save year to database.');
+            });
+
             return true;
         }
 
-        // Add Year button for Yearly Record Date dropdown
-        document.getElementById('addYearDropdownBtn').addEventListener('click', function() {
-            let newYear = prompt('Enter new year:');
-            if (!newYear) return;
-            newYear = newYear.trim();
-            if (!/^\d{4}$/.test(newYear)) {
-                alert('Please enter a valid 4-digit year.');
+        // Removed the Add Year button functionality as per user request
+        function removeYear(year) {
+            // Confirm before removing
+            if (!confirm("Are you sure you want to remove the year " + year + "?")) {
                 return;
             }
-            addYearToDropdown(newYear);
-        });
+            // Hide the table for the year
+            const table = document.getElementById("table" + year);
+            if (table) {
+                table.style.display = "none";
+            }
+            // Remove the year button
+            const button = document.getElementById("year" + year + "Btn");
+            if (button) {
+                button.remove();
+            }
+        }
 
         function addRow() {
             const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
@@ -724,3 +825,11 @@
     <script src="print.js"></script>
 </body>
 </html>
+<script>
+        document.getElementById("addYearBtn").addEventListener("click", () => {
+            const year = prompt("Enter a year to add:");
+            if (year) {
+                addYear(year);
+            }
+        });
+    </script>
