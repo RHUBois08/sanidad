@@ -154,13 +154,23 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData),
           });
-          if (!response.ok) throw new Error('Network response was not ok');
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            if (data.error === 'A business owner with this name already exists') {
+              alert('This business owner already exists in the database. Cannot create duplicate entry.');
+              return;
+            }
+            throw new Error(data.error || 'Failed to submit data');
+          }
+
           // Clear form
           form.reset();
           alert('Data submitted successfully!');
         } catch (error) {
           console.error('Error submitting data:', error);
-          alert('Failed to submit data.');
+          alert(error.message || 'Failed to submit data.');
         }
       });
     });
