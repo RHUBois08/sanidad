@@ -71,7 +71,7 @@
             <a href="index.html"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left:-40px;
     z-index:100; margin-top:-2%;"></a>
         <div class="header">
-            <div class="input-group" style="margin-left: 50px;">
+            <div class="input-group">
                 <label for="businessName">Business Name</label>
                 <input style="height: 20px; "type="text" id="businessName">
             </div>
@@ -79,19 +79,19 @@
                 <label for="ownerName">Name of Owner/Applicant</label>
                 <input style="height: 20px; " type="text" id="ownerName">
             </div>
-            <div class="input-group" style="margin-right: 50px;">
+            <div class="input-group" style="margin-left: 10px;">
                 <label for="permitNumber">Sanitary Permit #</label>
                 <input style="height: 20px; " type="text" id="permitNumber">
             </div>
-            <div style="margin-top: 70px; margin-left: 505px; position: absolute; ">
-                <label for="classification" style="margin-right: 55px; margin-top: -30px;">Type of Establishment</label><br>
+            <div style="margin-top: 80px; margin-left: 505px; position: absolute; ">
+                <label for="classification" style="margin-right: 55px;">Type of Establishment</label><br>
                 <input style=" width: 239px; height: 20px;" type="text" id="classificationInput">
         </div>
         </div>
-        <div class="mid-section" style="margin-top: 10px; position: absolute; margin-left: 50px;">
+        <div class="mid-section" style="margin-top: 10px; position: absolute;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-<button id="print-permit" style="margin-left: 1115px; width: 60px; position: absolute; margin-top: 55px; height:30px; border-radius: 5px; border: none;" onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
+<button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 30px; height:30px; border-radius: 5px; border: none;" onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
         <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
     </svg>
@@ -99,61 +99,73 @@
         </div>
         </div>
         <div class="table-container">
+            <table id="table2025" style="display: table;">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Date of X-ray</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+            <tbody id="employeeTableBody2025">
+            <tr>
+                <td class="employee-no-cell">1</td>
+                <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-address" required></td>
+                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="remarks" required></td>
+                <td><input type="date" class="x-ray-date" required></td>
+                <td>
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+            </tr>
+                </tbody>
+            </table>
         </div>
-        <!-- Replace the year buttons container with a dropdown -->
-<div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:10px; z-index: 10; justify-content: space-between; width: calc(100% - 100px);">
-    <div style="display: flex;">
-        <select id="yearSelect" style="margin-right: 10px; padding: 5px; border-radius: 4px;">
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-            <option value="2029">2029</option>
-            <option value="2030">2030</option>
-            <option value="2031">2031</option>
-            <option value="2032">2032</option>
-            <option value="2033">2033</option>
-            <option value="2034">2034</option>
-            <option value="2035">2035</option>
-            <option value="2036">2036</option>
-            <option value="2037">2037</option>
-            <option value="2038">2038</option>
-            <option value="2039">2039</option>
-            <option value="2040">2040</option>
-        </select>
+        <!-- Yearly Record Date dropdown under the table -->
+        <div style="margin-top: 20px;">
+            <select id="yearlyRecordDateDropdown" style="width: 70px;">
+                <option value="2025">2025</option>
+            </select>
+            <button id="addYearDropdownBtn" type="button" style="margin-left: 8px;">Add Year</button>
+        </div>
+        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
+<button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7 10.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-3-7A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h8a1.5 1.5 0 0 0 1.5-1.5V5A1.5 1.5 0 0 0 12 3.5H4zm0 1h8a.5.5 0 0 1 .5.5v1H3.5v-1a.5.5 0 0 1 .5-.5zM3 8h10v3.5a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5V8z"/>
+    </svg>
+</button>
+<button id="submitEmployeesBtn" style="margin-left: -70px; color: black; border-radius: 4px; cursor: pointer; border:100cm; position: absolute;" onclick="saveEmployees()" aria-label="Submit" title="Submit" >
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M15.854 0.146a.5.5 0 0 0-.707 0L1 14.293V9.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
+    </svg>
+</button>
+<button id="printSaveBtn" style="margin-left: 65px; position: absolute; z-index: 2; border-radius: 4px; border:none;" onclick="printForm()" aria-label="Print" title="Print">
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
+    </svg>
+</button>
+        </div>
+        <div></div>
     </div>
-
-    <div style="display: flex; margin-left: 20px;">
-        <button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save" style="margin-right: 5px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M7 10.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-3-7A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h8a1.5 1.5 0 0 0 1.5-1.5V5A1.5 0 0 0 12 3.5H4zm0 1h8a.5.5 0 0 1 .5.5v1H3.5v-1a.5.5 0 0 1 .5-.5zM3 8h10v3.5a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5V8z"/>
-        </svg>
-    </button>
-    <button id="submitEmployeesBtn" onclick="saveEmployees()" aria-label="Submit" title="Submit" style="margin-right: 5px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M15.854 0.146a.5.5 0 0 0-.707 0L1 14.293V9.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
-        </svg>
-    </button>
-    <button id="printSaveBtn" onclick="printForm()" aria-label="Print" title="Print" style="margin-right: -80px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="24" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
-        </svg>
-    </button>
-</div>
-</div>
     <!-- Removed the Add Year button as per user request -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const yearSelect = document.getElementById('yearSelect');
-                // Select 2025 by default and show its table
-                yearSelect.value = "2025";
-                createYearTable("2025");
-                showYearTable("2025");
-            } catch (error) {
-                console.error('Error setting up years:', error);
-            }
-            
             const urlParams = new URLSearchParams(window.location.search);
             const businessName = urlParams.get('business_name');
             const ownerName = urlParams.get('owner_name');
@@ -211,12 +223,13 @@
                         <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
                         </button>
                         <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                        </svg>
+                            </svg>
                         </button>
                     </td>
                 </tr>
@@ -243,19 +256,16 @@
         }
 
         function populateEmployeeTable(employees, unsavedRows = []) {
-            // Get the currently visible table or the first available table
-            const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])") || 
-                                document.querySelector(".table-container table");
-            
-            if (!visibleTable) {
-                console.error('No table found in the container');
-                return;
-            }
-
-            const visibleTableBody = visibleTable.querySelector('tbody');
-            if (!visibleTableBody) {
-                console.error('No tbody found in the table');
-                return;
+            // Determine visible table body
+            let visibleTableBody = null;
+            if (document.getElementById("table2025").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            } else if (document.getElementById("table2026").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2026");
+            } else if (document.getElementById("table2027").style.display !== "none") {
+                visibleTableBody = document.getElementById("employeeTableBody2027");
+            } else {
+                visibleTableBody = document.getElementById("employeeTableBody2025"); // default
             }
 
             // Clear existing rows
@@ -323,6 +333,7 @@
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;color:black;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
                     </button>
                     <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -352,7 +363,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                    </svg>
+                        </svg>
                     </button>
                 </td>
             `;
@@ -452,39 +463,58 @@
         async function saveEmployees() {
             const businessName = document.getElementById("businessName").value.trim();
             const ownerName = document.getElementById("ownerName").value.trim();
-            const selectedYear = document.getElementById("yearSelect").value;
-            
-            if (!businessName || !ownerName) {
-                alert('Please enter business name and owner name');
-                return;
-            }
-            
-            if (!selectedYear) {
-                alert('Please select a year first');
-                return;
+            const categoryFood = document.getElementById("categoryFood").checked;
+            const categoryNonFood = document.getElementById("categoryNonFood").checked;
+            const categories = [];
+            if (categoryFood) categories.push("Food");
+            if (categoryNonFood) categories.push("Non-Food");
+
+            let visibleTableBody = null;
+            const table2025 = document.getElementById("table2025");
+            const table2026 = document.getElementById("table2026");
+            const table2027 = document.getElementById("table2027");
+
+            if (table2025 && table2025.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            } else if (table2026 && table2026.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2026");
+            } else if (table2027 && table2027.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2027");
+            } else {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
             }
 
-            // Get the visible table body
-            const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])");
-            if (!visibleTable) {
+            if (!visibleTableBody) {
                 alert('No employee table is visible. Cannot save employees.');
                 return;
             }
-            const visibleTableBody = visibleTable.querySelector('tbody');
 
-            // Gather all rows
+            // Validate required inputs in employee table before saving
+            const inputs = visibleTableBody.querySelectorAll("input[required]");
+            for (const input of inputs) {
+                if (!input.value.trim()) {
+                    alert("Please input all the required fields in the employee table.");
+                    input.focus();
+                    return;
+                }
+            }
+
+            // Gather all rows (including unsaved/new)
             const employees = [];
-            let rowNumber = 1;
             visibleTableBody.querySelectorAll("tr").forEach(row => {
+                const no = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
                 const name = row.querySelector(".employee-name")?.value.trim() || '';
                 const address = row.querySelector(".employee-address")?.value.trim() || '';
                 const cert = row.querySelector(".health-cert")?.value.trim() || '';
                 const remarks = row.querySelector(".remarks")?.value.trim() || '';
-                const date_of_xray = row.querySelector(".x-ray-date")?.value || null;
-                
+                let date_of_xray = row.querySelector(".x-ray-date")?.value || '';
+                if (date_of_xray === "") date_of_xray = null;
+                // Only push if at least one field is filled
                 if (name || address || cert || remarks || date_of_xray) {
                     employees.push({
-                        no: rowNumber++,
+                        business_name: businessName,
+                        owner_name: ownerName,
+                        no,
                         name,
                         address,
                         cert,
@@ -494,54 +524,40 @@
                 }
             });
 
-            const formData = { 
-                businessName, 
-                ownerName, 
-                year: parseInt(selectedYear),
-                employees 
-            };
+            const formData = { businessName, ownerName, categories, employees };
 
             try {
                 const response = await fetch('http://localhost:3000/api/employees/full', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to save employees');
+                    const errorText = await response.text();
+                    throw new Error(`Failed to save employees. Status: ${response.status}. Response: ${errorText}`);
                 }
 
                 alert('Employees saved successfully!');
-                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, selectedYear);
+                // After saving, reload all employees using only backend data (no unsaved rows)
+                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody);
             } catch (error) {
                 console.error('Error saving employees:', error);
                 alert(`Failed to save employees: ${error.message}`);
             }
         }
 
-        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, year) {
+        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody) {
             try {
-                const empResponse = await fetch(
-                    `http://localhost:3000/api/employees?` + 
-                    `business_name=${encodeURIComponent(businessName)}&` +
-                    `owner_name=${encodeURIComponent(ownerName)}&` +
-                    `year=${year}`
-                );
-
-                if (!empResponse.ok) {
-                    const errorData = await empResponse.json();
-                    throw new Error(errorData.error || 'Failed to fetch employees');
+                const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                let employees = [];
+                if (empResponse.ok) {
+                    employees = await empResponse.json();
                 }
-
-                const employees = await empResponse.json();
                 populateEmployeeTable(employees, []); // do not append unsaved rows
             } catch (error) {
                 console.error('Error fetching employees data:', error);
-                alert('Failed to load employee data: ' + (error.message || 'Unknown error occurred'));
+                alert('Error fetching employees data. Please try again later.');
             }
         }
         document.getElementById("year2025Btn").addEventListener("click", () => {
@@ -562,230 +578,119 @@
             });
         });
 
+        document.getElementById("addYearBtn").addEventListener("click", () => {
+            // Find all year buttons and get the max year
+            const yearButtons = Array.from(document.querySelectorAll(".year-btn"));
+            let maxYear = 2027; // default starting max year
+            yearButtons.forEach(btn => {
+                const yearNum = parseInt(btn.textContent);
+                if (!isNaN(yearNum) && yearNum > maxYear) {
+                    maxYear = yearNum;
+                }
+            });
+            const nextYear = (maxYear + 1).toString();
+            addYear(nextYear);
+        });
+
         function showYearTable(year) {
-            const tables = document.querySelectorAll(".table-container table");
-            tables.forEach(table => {
-                table.style.display = table.id === "table" + year ? "table" : "none";
+            const years = ["2025", "2026", "2027"];
+            // Add dynamically added years to the list
+            const dynamicYears = Array.from(document.querySelectorAll(".year-btn")).map(btn => btn.textContent);
+            const allYears = years.concat(dynamicYears);
+
+            allYears.forEach(y => {
+                const table = document.getElementById("table" + y);
+                if (table) {
+                    table.style.display = (y === year) ? "table" : "none";
+                }
             });
         }
 
-        function createYearUI(year) {
-    // Create table for the year
-    const tableContainer = document.querySelector(".table-container");
-    const newTable = document.createElement("table");
-    newTable.id = "table" + year;
-    // Don't hide the table if it's the first one
-    const existingTables = tableContainer.querySelectorAll('table');
-    newTable.style.display = existingTables.length === 0 ? "table" : "none";
-    
-    newTable.innerHTML = `
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Employee Name</th>
-                <th>Address</th>
-                <th>Health Cert. No.</th>
-                <th>Remarks</th>
-                <th>Date of X-ray</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="employeeTableBody${year}">
-            <tr>
-                <td class="employee-no-cell">1</td>
-                <td><input type="text" class="employee-name" required></td>
-                <td><input type="text" class="employee-address" required></td>
-                <td><input type="text" class="health-cert" required></td>
-                <td><input type="text" class="remarks" required></td>
-                <td><input type="date" class="x-ray-date" required></td>
-                <td>
-                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </button>
-                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                        </svg>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    `;
-
-    tableContainer.appendChild(newTable);
-
-    // If this is the first table, show it and add a default row
-    if (existingTables.length === 0) {
-        showYearTable(year);
-        addRow();
-    }
-}
-
-        function addYearOption(year, selectYear = true) {
-    const yearSelect = document.getElementById('yearSelect');
-    if (!yearSelect.querySelector(`option[value="${year}"]`)) {
-        const option = document.createElement('option');
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-        
-        // Only select the year if selectYear is true
-        if (selectYear) {
-            yearSelect.value = year;
-        }
-
-        // Create table for the new year
-        createYearTable(year);
-        
-        // Only show the table if selectYear is true
-        if (selectYear) {
-            showYearTable(year);
-        }
-    }
-}
-
-function createYearTable(year) {
-    const tableContainer = document.querySelector(".table-container");
-    const newTable = document.createElement("table");
-    newTable.id = "table" + year;
-    newTable.style.display = "none";
-    
-    newTable.innerHTML = `
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Employee Name</th>
-                <th>Address</th>
-                <th>Health Cert. No.</th>
-                <th>Remarks</th>
-                <th>Date of X-ray</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="employeeTableBody${year}">
-            <tr>
-                <td class="employee-no-cell">1</td>
-                <td><input type="text" class="employee-name" required></td>
-                <td><input type="text" class="employee-address" required></td>
-                <td><input type="text" class="health-cert" required></td>
-                <td><input type="text" class="remarks" required></td>
-                <td><input type="date" class="x-ray-date" required></td>
-                <td>
-                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </button>
-                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                        </svg>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    `;
-
-    tableContainer.appendChild(newTable);
-    addRow(); // Add initial empty row
-}
-
-// Update the year selection handler
-document.getElementById('yearSelect').addEventListener('change', function(e) {
-    const selectedYear = e.target.value;
-    if (selectedYear) {
-        const tableExists = document.getElementById("table" + selectedYear);
-        if (!tableExists) {
-            createYearTable(selectedYear);
-        }
-        showYearTable(selectedYear);
-    }
-});
-
-function addYear(year, saveToDb = true) {
-    const yearNum = parseInt(year);
-    if (!year || isNaN(yearNum)) {
-        alert("Please enter a valid year");
-        return;
-    }
-
-    if (yearNum < 2025 || yearNum > 2040) {
-        alert("Year must be between 2025 and 2040");
-        return;
-    }
-
-    if (document.querySelector(`#yearSelect option[value="${year}"]`)) {
-        alert("Year " + year + " already exists.");
-        return;
-    }
-
-    if (saveToDb) {
-        fetch('http://localhost:3000/api/years/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ year: yearNum })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to save year');
-            return response.json();
-        })
-        .then(data => {
-            if (data.added) {
-                addYearOption(year); // This will also create the table
-                console.log('Year added successfully');
-            } else {
-                console.log('Year already exists in database');
-            }
-        })
-        .catch(error => {
-            console.error('Error saving year:', error);
-            alert('Failed to save year to database: ' + error.message);
-        });
-    } else {
-        addYearOption(year);
-    }
-}
-
-        function removeYear(year) {
-            if (!confirm("Are you sure you want to remove the year " + year + "? This will delete all employee data for this year.")) {
+        function addYear(year) {
+            // Check if year button already exists
+            if (document.getElementById("year" + year + "Btn")) {
+                alert("Year " + year + " already exists.");
                 return;
             }
 
-            fetch(`http://localhost:3000/api/years/${year}`, {
-                method: 'DELETE'
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to remove year');
-                }
-                // Remove UI elements
-                const table = document.getElementById("table" + year);
-                if (table) table.remove();
-                
-                // Remove from dropdown
-                const option = document.querySelector(`#yearSelect option[value="${year}"]`);
-                if (option) {
-                    option.remove();
-                    // Select first available year
-                    const firstOption = document.querySelector('#yearSelect option:not([value=""])');
-                    if (firstOption) {
-                        document.getElementById('yearSelect').value = firstOption.value;
-                        showYearTable(firstOption.value);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error removing year:', error);
-                alert('Failed to remove year and associated data');
+            // Create new year button
+            const newBtn = document.createElement("button");
+            newBtn.id = "year" + year + "Btn";
+            newBtn.textContent = year;
+            newBtn.className = "year-btn";
+            newBtn.style.marginLeft = "10px";
+            newBtn.addEventListener("click", () => {
+                showYearTable(year);
             });
+
+            // Append new button to submit section
+            document.getElementById("submitSection").appendChild(newBtn);
+
+            // Create new table for the year
+            const tableContainer = document.querySelector(".table-container");
+            const newTable = document.createElement("table");
+            newTable.id = "table" + year;
+            newTable.style.display = "none";
+
+            newTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Employee Name</th>
+                        <th>Address</th>
+                        <th>Health Cert. No.</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody${year}">
+                    <tr>
+                        <td><input type="text" class="employee-no"></td>
+                        <td><input type="text" class="employee-name"></td>
+                        <td><input type="text" class="employee-address"></td>
+                        <td><input type="text" class="health-cert"></td>
+                        <td><input type="text" class="remarks"></td>
+                        <td>
+                            <button onclick="addRow()">+</button>
+                            <button onclick="removeRow(this)">x</button>
+                        </td>
+                    </tr>
+                </tbody>
+            `;
+
+            tableContainer.appendChild(newTable);
         }
 
-        // Removed the duplicate removeYear function since it's no longer needed
-        // ...existing code...
+        // Function to add a year to the Yearly Record Date dropdown
+        function addYearToDropdown(year) {
+            const dropdown = document.getElementById('yearlyRecordDateDropdown');
+            // Check if year already exists
+            for (let i = 0; i < dropdown.options.length; i++) {
+                if (dropdown.options[i].value === year) {
+                    alert('Year already exists.');
+                    return false;
+                }
+            }
+            let option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            dropdown.appendChild(option);
+            dropdown.value = year;
+            return true;
+        }
+
+        // Add Year button for Yearly Record Date dropdown
+        document.getElementById('addYearDropdownBtn').addEventListener('click', function() {
+            let newYear = prompt('Enter new year:');
+            if (!newYear) return;
+            newYear = newYear.trim();
+            if (!/^\d{4}$/.test(newYear)) {
+                alert('Please enter a valid 4-digit year.');
+                return;
+            }
+            addYearToDropdown(newYear);
+        });
+
         function addRow() {
             const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
             if (!tableBody) return;
@@ -802,11 +707,12 @@ function addYear(year, saveToDb = true) {
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </button>
-                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
                         </svg>
                     </button>
                 </td>
@@ -818,19 +724,3 @@ function addYear(year, saveToDb = true) {
     <script src="print.js"></script>
 </body>
 </html>
-<script>
-        document.getElementById("addYearBtn").addEventListener("click", () => {
-            const year = prompt("Enter a year to add:");
-            if (year) {
-                addYear(year);
-            }
-        });
-
-        // Add function to handle year selection
-document.getElementById('yearSelect').addEventListener('change', function(e) {
-    const selectedYear = e.target.value;
-    if (selectedYear) {
-        showYearTable(selectedYear);
-    }
-});
-    </script>
