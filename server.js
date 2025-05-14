@@ -230,34 +230,60 @@ async function init() {
 
         // API to save employees data
         app.post('/api/employees/full', async (req, res) => {
-            const { businessName, ownerName, categories, employees } = req.body;
-            if (!businessName || !ownerName || !employees) {
-                return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or employees' });
+            const { businessName, ownerName, employees, year } = req.body;
+            
+            if (!businessName || !ownerName || !employees || !year) {
+                return res.status(400).json({ 
+                    error: 'Missing required fields', 
+                    received: { businessName, ownerName, employeesCount: employees?.length, year }
+                });
             }
+
             try {
-                // Delete existing employees for this business and owner
-                await pool.query('DELETE FROM employees WHERE business_name = $1 AND owner_name = $2', [businessName, ownerName]);
+                await pool.query('BEGIN');
+                
+                // First ensure the year exists
+                await pool.query(
+                    'INSERT INTO years (year) VALUES ($1) ON CONFLICT (year) DO NOTHING',
+                    [year]
+                );
+                
+                // Delete existing employees for this combination
+                await pool.query(
+                    'DELETE FROM employees WHERE business_name = $1 AND owner_name = $2 AND year = $3',
+                    [businessName, ownerName, year]
+                );
+                
                 // Insert new employees
-                const insertQuery = `
-                    INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-                `;
                 for (const emp of employees) {
-                    await pool.query(insertQuery, [
-                        businessName,
-                        ownerName,
-                        emp.no,
-                        emp.name,
-                        emp.address,
-                        emp.cert,
-                        emp.remarks,
-                        emp.date_of_xray || null
-                    ]);
+                    await pool.query(
+                        `INSERT INTO employees 
+                        (business_name, owner_name, year, no, employee_name, address, health_cert_no, remarks, date_of_xray)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+                        [
+                            businessName,
+                            ownerName,
+                            year,
+                            emp.no || null,
+                            emp.name || '',
+                            emp.address || '',
+                            emp.cert || '',
+                            emp.remarks || '',
+                            emp.date_of_xray || null
+                        ]
+                    );
                 }
-                res.json({ message: 'Employees saved successfully' });
+                
+                await pool.query('COMMIT');
+                res.json({ success: true, message: 'Employees saved successfully' });
             } catch (err) {
-                console.error('Error saving employees', err);
-                res.status(500).json({ error: 'Internal server error' });
+                await pool.query('ROLLBACK');
+                console.error('Error saving employees:', err);
+                res.status(500).json({ 
+                    error: 'Error saving employees',
+                    details: err.message,
+                    stack: err.stack
+                });
             }
         });
 
@@ -288,19 +314,19 @@ async function init() {
         // API to get employees data by businessName, ownerName and year
         app.get('/api/employees', async (req, res) => {
             const { business_name, owner_name, year } = req.query;
-            if (!business_name || !owner_name) {
-                return res.status(400).json({ error: 'Missing required query parameters: business_name or owner_name' });
+            if (!business_name || !owner_name || !year) {
+                return res.status(400).json({ 
+                    error: 'Missing required query parameters: business_name, owner_name, or year' 
+                });
             }
             try {
                 const query = `
                     SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
                     FROM employees
-                    WHERE business_name = $1 AND owner_name = $2
-                    ${year ? 'AND year = $3' : ''}
+                    WHERE business_name = $1 AND owner_name = $2 AND year = $3
                     ORDER BY no
                 `;
-                const params = year ? [business_name, owner_name, year] : [business_name, owner_name];
-                const result = await pool.query(query, params);
+                const result = await pool.query(query, [business_name, owner_name, year]);
                 res.json(result.rows);
             } catch (err) {
                 console.error('Error fetching employees:', err);

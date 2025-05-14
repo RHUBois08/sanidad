@@ -100,9 +100,15 @@
         </div>
         <div class="table-container">
         </div>
-        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:10px; z-index: 10; justify-content: space-between; width: calc(100% - 100px);">
-    <div style="display: flex;">
-        <button id="addYearBtn" style="border-radius: 4px; color: black; border-color:rgba(53, 45, 45, 0.712); cursor: pointer; position: relative; margin-left: 10px;">+</button>
+        <!-- Replace the year buttons container with a dropdown -->
+<div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:10px; z-index: 10; justify-content: space-between; width: calc(100% - 100px);">
+    <div style="display: flex; flex-direction: column;">
+        <select id="yearSelect" style="margin-right: 10px; padding: 5px; border-radius: 4px; position: relative;">
+            <option value="">Select Year</option>
+        </select>
+        <div style="position: absolute; top: 100%; left: 0; margin-top: 5px;">
+            <button id="addYearBtn" style="border-radius: 4px; color: black; border-color:rgba(53, 45, 45, 0.712); cursor: pointer; padding: 2px 8px;">+</button>
+        </div>
     </div>
 
     <div style="display: flex; margin-left: 20px;">
@@ -126,19 +132,31 @@
     <!-- Removed the Add Year button as per user request -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Add this near the beginning of the DOMContentLoaded event
             try {
-                const response = await fetch('http://localhost:3000/api/years');
-                if (response.ok) {
-                    const years = await response.json();
-                    years.forEach(yearObj => {
-                        if (yearObj.year !== 2025) { // Skip 2025 as it's the default
-                            addYear(yearObj.year, false);
-                        }
-                    });
+                const yearSelect = document.getElementById('yearSelect');
+                
+                // Clear existing options except the first one
+                while (yearSelect.options.length > 1) {
+                    yearSelect.remove(1);
                 }
+                
+                // Generate years from 2025 to 2040 in ascending order
+                const years = Array.from({length: 16}, (_, i) => 2025 + i);
+                
+                years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                });
+                
+                // Select 2025 by default and show its table
+                yearSelect.value = years[0];
+                createYearTable(years[0]);
+                showYearTable(years[0]);
+                
             } catch (error) {
-                console.error('Error loading years:', error);
+                console.error('Error setting up years:', error);
             }
             
             const urlParams = new URLSearchParams(window.location.search);
@@ -439,59 +457,39 @@
         async function saveEmployees() {
             const businessName = document.getElementById("businessName").value.trim();
             const ownerName = document.getElementById("ownerName").value.trim();
-            const categoryFood = document.getElementById("categoryFood").checked;
-            const categoryNonFood = document.getElementById("categoryNonFood").checked;
-            const categories = [];
-            if (categoryFood) categories.push("Food");
-            if (categoryNonFood) categories.push("Non-Food");
-
-            let visibleTableBody = null;
-            const table2025 = document.getElementById("table2025");
-            const table2026 = document.getElementById("table2026");
-            const table2027 = document.getElementById("table2027");
-
-            if (table2025 && table2025.offsetParent !== null) {
-                visibleTableBody = document.getElementById("employeeTableBody2025");
-            } else if (table2026 && table2026.offsetParent !== null) {
-                visibleTableBody = document.getElementById("employeeTableBody2026");
-            } else if (table2027 && table2027.offsetParent !== null) {
-                visibleTableBody = document.getElementById("employeeTableBody2027");
-            } else {
-                visibleTableBody = document.getElementById("employeeTableBody2025");
+            const selectedYear = document.getElementById("yearSelect").value;
+            
+            if (!businessName || !ownerName) {
+                alert('Please enter business name and owner name');
+                return;
             }
-
-            if (!visibleTableBody) {
-                alert('No employee table is visible. Cannot save employees.');
+            
+            if (!selectedYear) {
+                alert('Please select a year first');
                 return;
             }
 
-            // Validate required inputs in employee table before saving
-            const inputs = visibleTableBody.querySelectorAll("input[required]");
-            for (const input of inputs) {
-                if (!input.value.trim()) {
-                    alert("Please input all the required fields in the employee table.");
-                    input.focus();
-                    return;
-                }
+            // Get the visible table body
+            const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])");
+            if (!visibleTable) {
+                alert('No employee table is visible. Cannot save employees.');
+                return;
             }
+            const visibleTableBody = visibleTable.querySelector('tbody');
 
-            // Gather all rows (including unsaved/new)
+            // Gather all rows
             const employees = [];
+            let rowNumber = 1;
             visibleTableBody.querySelectorAll("tr").forEach(row => {
-                const no = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
                 const name = row.querySelector(".employee-name")?.value.trim() || '';
                 const address = row.querySelector(".employee-address")?.value.trim() || '';
                 const cert = row.querySelector(".health-cert")?.value.trim() || '';
                 const remarks = row.querySelector(".remarks")?.value.trim() || '';
-                let date_of_xray = row.querySelector(".x-ray-date")?.value || '';
-                if (date_of_xray === "") date_of_xray = null;
-                // Only push if at least one field is filled
+                const date_of_xray = row.querySelector(".x-ray-date")?.value || null;
+                
                 if (name || address || cert || remarks || date_of_xray) {
                     employees.push({
-                        business_name: businessName,
-                        owner_name: ownerName,
-                        year: visibleTableBody.id.replace('employeeTable', ''),
-                        no,
+                        no: rowNumber++,
                         name,
                         address,
                         cert,
@@ -501,37 +499,37 @@
                 }
             });
 
-            const formData = { businessName, ownerName, categories, employees };
+            const formData = { 
+                businessName, 
+                ownerName, 
+                year: parseInt(selectedYear),
+                employees 
+            };
 
             try {
                 const response = await fetch('http://localhost:3000/api/employees/full', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Failed to save employees. Status: ${response.status}. Response: ${errorText}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to save employees');
                 }
 
                 alert('Employees saved successfully!');
-                // After saving, reload all employees using only backend data (no unsaved rows)
-                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody);
+                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, selectedYear);
             } catch (error) {
                 console.error('Error saving employees:', error);
                 alert(`Failed to save employees: ${error.message}`);
             }
         }
 
-        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody) {
+        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, year) {
             try {
-                if (!visibleTableBody) {
-                    console.error('No table body provided');
-                    return;
-                }
-
-                const year = visibleTableBody.id.replace('employeeTableBody', '');
                 const empResponse = await fetch(
                     `http://localhost:3000/api/employees?` + 
                     `business_name=${encodeURIComponent(businessName)}&` +
@@ -577,56 +575,83 @@
         }
 
         function createYearUI(year) {
-    // Create container with relative positioning
-    const buttonContainer = document.createElement("div");
-    buttonContainer.style.display = "inline-block";
-    buttonContainer.style.position = "relative";
-    buttonContainer.style.marginLeft = "10px";
-
-    // Create year button
-    const newBtn = document.createElement("button");
-    newBtn.id = "year" + year + "Btn";
-    newBtn.textContent = year;
-    newBtn.className = "year-btn";
-    newBtn.style.color = "black";
-    newBtn.style.borderRadius = "4px";
-    newBtn.style.cursor = "pointer";
-    newBtn.style.borderColor = "rgba(0, 0, 0, 0.712)";
-    newBtn.style.paddingRight = "20px"; // Make space for remove button
-    newBtn.addEventListener("click", () => {
-        showYearTable(year);
-    });
-
-    // Create remove button with absolute positioning
-    const removeBtn = document.createElement("button");
-    removeBtn.innerHTML = "×";
-    removeBtn.style.position = "absolute";
-    removeBtn.style.right = "2px";
-    removeBtn.style.top = "50%";
-    removeBtn.style.transform = "translateY(-50%)";
-    removeBtn.style.color = "red";
-    removeBtn.style.border = "none";
-    removeBtn.style.background = "none";
-    removeBtn.style.cursor = "pointer";
-    removeBtn.style.fontSize = "16px";
-    removeBtn.style.padding = "0";
-    removeBtn.style.lineHeight = "1";
-    removeBtn.title = "Remove year";
-    removeBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent year button click
-        removeYear(year);
-    });
-
-    // Add buttons to container
-    buttonContainer.appendChild(newBtn);
-    buttonContainer.appendChild(removeBtn);
-
-    // Add container to page
-    const submitSection = document.getElementById("submitSection").querySelector("div:first-child");
-    const addYearBtn = document.getElementById("addYearBtn");
-    submitSection.insertBefore(buttonContainer, addYearBtn);
-
     // Create table for the year
+    const tableContainer = document.querySelector(".table-container");
+    const newTable = document.createElement("table");
+    newTable.id = "table" + year;
+    // Don't hide the table if it's the first one
+    const existingTables = tableContainer.querySelectorAll('table');
+    newTable.style.display = existingTables.length === 0 ? "table" : "none";
+    
+    newTable.innerHTML = `
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Employee Name</th>
+                <th>Address</th>
+                <th>Health Cert. No.</th>
+                <th>Remarks</th>
+                <th>Date of X-ray</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTableBody${year}">
+            <tr>
+                <td class="employee-no-cell">1</td>
+                <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-address" required></td>
+                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="remarks" required></td>
+                <td><input type="date" class="x-ray-date" required></td>
+                <td>
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    `;
+
+    tableContainer.appendChild(newTable);
+
+    // If this is the first table, show it and add a default row
+    if (existingTables.length === 0) {
+        showYearTable(year);
+        addRow();
+    }
+}
+
+        function addYearOption(year, selectYear = true) {
+    const yearSelect = document.getElementById('yearSelect');
+    if (!yearSelect.querySelector(`option[value="${year}"]`)) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+        
+        // Only select the year if selectYear is true
+        if (selectYear) {
+            yearSelect.value = year;
+        }
+
+        // Create table for the new year
+        createYearTable(year);
+        
+        // Only show the table if selectYear is true
+        if (selectYear) {
+            showYearTable(year);
+        }
+    }
+}
+
+function createYearTable(year) {
     const tableContainer = document.querySelector(".table-container");
     const newTable = document.createElement("table");
     newTable.id = "table" + year;
@@ -656,12 +681,11 @@
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
-                    </button>
-                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
                         </svg>
                     </button>
                 </td>
@@ -670,48 +694,66 @@
     `;
 
     tableContainer.appendChild(newTable);
+    addRow(); // Add initial empty row
 }
 
-        function addYear(year, saveToDb = true) {
-            const yearNum = parseInt(year);
-            if (!year || isNaN(yearNum)) {
-                alert("Please enter a valid year");
-                return;
-            }
-
-            if (document.getElementById("year" + year + "Btn")) {
-                alert("Year " + year + " already exists.");
-                return;
-            }
-
-            if (saveToDb) {
-                fetch('http://localhost:3000/api/years/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ year: yearNum })
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error('Failed to save year');
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.added) {
-                        createYearUI(year);
-                        console.log('Year added successfully');
-                    } else {
-                        console.log('Year already exists in database');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error saving year:', error);
-                    alert('Failed to save year to database: ' + error.message);
-                });
-            } else {
-                createYearUI(year);
-            }
+// Update the year selection handler
+document.getElementById('yearSelect').addEventListener('change', function(e) {
+    const selectedYear = e.target.value;
+    if (selectedYear) {
+        const tableExists = document.getElementById("table" + selectedYear);
+        if (!tableExists) {
+            createYearTable(selectedYear);
         }
+        showYearTable(selectedYear);
+    }
+});
+
+function addYear(year, saveToDb = true) {
+    const yearNum = parseInt(year);
+    if (!year || isNaN(yearNum)) {
+        alert("Please enter a valid year");
+        return;
+    }
+
+    if (yearNum < 2025 || yearNum > 2040) {
+        alert("Year must be between 2025 and 2040");
+        return;
+    }
+
+    if (document.querySelector(`#yearSelect option[value="${year}"]`)) {
+        alert("Year " + year + " already exists.");
+        return;
+    }
+
+    if (saveToDb) {
+        fetch('http://localhost:3000/api/years/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ year: yearNum })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to save year');
+            return response.json();
+        })
+        .then(data => {
+            if (data.added) {
+                addYearOption(year); // This will also create the table
+                console.log('Year added successfully');
+            } else {
+                console.log('Year already exists in database');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving year:', error);
+            alert('Failed to save year to database: ' + error.message);
+        });
+    } else {
+        addYearOption(year);
+    }
+}
 
         function removeYear(year) {
             if (!confirm("Are you sure you want to remove the year " + year + "? This will delete all employee data for this year.")) {
@@ -729,19 +771,16 @@
                 const table = document.getElementById("table" + year);
                 if (table) table.remove();
                 
-                const yearBtn = document.getElementById("year" + year + "Btn");
-                if (yearBtn) {
-                    const container = yearBtn.parentElement;
-                    if (container) {
-                        container.remove();
+                // Remove from dropdown
+                const option = document.querySelector(`#yearSelect option[value="${year}"]`);
+                if (option) {
+                    option.remove();
+                    // Select first available year
+                    const firstOption = document.querySelector('#yearSelect option:not([value=""])');
+                    if (firstOption) {
+                        document.getElementById('yearSelect').value = firstOption.value;
+                        showYearTable(firstOption.value);
                     }
-                }
-                
-                // Show another year table if available
-                const firstTable = document.querySelector(".table-container table");
-                if (firstTable) {
-                    const firstYear = firstTable.id.replace("table", "");
-                    showYearTable(firstYear);
                 }
             })
             .catch(error => {
@@ -792,4 +831,12 @@
                 addYear(year);
             }
         });
+
+        // Add function to handle year selection
+document.getElementById('yearSelect').addEventListener('change', function(e) {
+    const selectedYear = e.target.value;
+    if (selectedYear) {
+        showYearTable(selectedYear);
+    }
+});
     </script>
