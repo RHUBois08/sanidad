@@ -70,47 +70,13 @@ async function createTables(pool) {
     const createOwnersTableQuery = `
     CREATE TABLE IF NOT EXISTS owners (
         id SERIAL PRIMARY KEY,
-        business_name VARCHAR(255) NOT NULL,
-        owner_name VARCHAR(255) NOT NULL,
+        business_name VARCHAR(255),
+        owner_name VARCHAR(255),
         applicant_type VARCHAR(255),
         application_date DATE,
         remarks VARCHAR(255),
         status VARCHAR(50),
-        address VARCHAR(255) NOT NULL
-    );
-    `;
-
-    const createClassificationsTableQuery = `
-    CREATE TABLE IF NOT EXISTS classifications (
-        id SERIAL PRIMARY KEY,
-        business_name VARCHAR(255),
-        owner_name VARCHAR(255),
-        permit_number VARCHAR(255),
-        classification VARCHAR(255),
-        categories TEXT[]
-    );
-    `;
-
-    const createEmployeesTableQuery = `
-    CREATE TABLE IF NOT EXISTS employees (
-        id SERIAL PRIMARY KEY,
-        business_name VARCHAR(255),
-        owner_name VARCHAR(255),
-        year INTEGER,
-        no INTEGER,
-        employee_name VARCHAR(255),
         address VARCHAR(255),
-        health_cert_no VARCHAR(255),
-        remarks VARCHAR(255),
-        date_of_xray DATE,
-        FOREIGN KEY (year) REFERENCES years(year) ON DELETE CASCADE
-    );
-    `;
-
-    const createYearsTableQuery = `
-    CREATE TABLE IF NOT EXISTS years (
-        id SERIAL PRIMARY KEY,
-        year INTEGER UNIQUE NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     `;
@@ -118,12 +84,6 @@ async function createTables(pool) {
     try {
         await pool.query(createOwnersTableQuery);
         console.log('Table "owners" is ready');
-        await pool.query(createClassificationsTableQuery);
-        console.log('Table "classifications" is ready');
-        await pool.query(createEmployeesTableQuery);
-        console.log('Table "employees" is ready');
-        await pool.query(createYearsTableQuery);
-        console.log('Table "years" is ready');
     } catch (err) {
         console.error('Error creating tables', err);
         throw err;
@@ -140,11 +100,12 @@ async function init() {
         // API to get all owners (include all relevant columns)
         app.get('/api/owners', async (req, res) => {
             try {
-                const result = await pool.query(
-                    `SELECT id, business_name, owner_name, applicant_type, application_date, remarks, status, address
-                     FROM owners
-                     ORDER BY id DESC`
-                );
+                const result = await pool.query(`
+                    SELECT id, business_name, owner_name, applicant_type, 
+                           application_date, remarks, status, address
+                    FROM owners
+                    ORDER BY application_date DESC, id DESC
+                `);
                 res.json(result.rows);
             } catch (err) {
                 console.error('Error fetching owners', err);
@@ -152,21 +113,44 @@ async function init() {
             }
         });
 
-        // API to add a new owner
+        // Modify the add owner API endpoint
         app.post('/api/owners', async (req, res) => {
             const { businessName, ownerName, applicantType, applicationDate, remarks, status, address } = req.body;
-            if (!businessName || !ownerName || !address) {
-                return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or address' });
+            if (!businessName || !ownerName || !address || !applicationDate) {
+                return res.status(400).json({ error: 'Missing required fields' });
             }
+            
             try {
-                const insertQuery = `
-                    INSERT INTO owners (business_name, owner_name, applicant_type, application_date, remarks, status, address)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7)
-                    RETURNING *;
+                // Check if owner already exists
+                const checkQuery = `
+                    SELECT * FROM owners 
+                    WHERE LOWER(business_name) = LOWER($1) 
+                    AND LOWER(owner_name) = LOWER($2)
+                    AND LOWER(applicant_type) = LOWER($3)
+                    AND application_date = $4
+                    AND LOWER(address) = LOWER($5)
+                    AND LOWER(remarks) = LOWER($6)
+                    AND LOWER(status) = LOWER($7)
                 `;
-                const values = [businessName, ownerName, applicantType, applicationDate, remarks, status, address];
-                const result = await pool.query(insertQuery, values);
-                res.status(201).json(result.rows[0]);
+                const existingOwner = await pool.query(checkQuery, [businessName, ownerName, applicantType, applicationDate, address, remarks, status]);
+
+                if (existingOwner.rows.length > 0) {
+                    return res.status(400).json({ 
+                        error: 'A business owner with this information already exists',
+                        existingData: existingOwner.rows[0]
+                    });
+                } else {
+                    // If no duplicate found, insert the new owner
+                    const insertQuery = `
+                        INSERT INTO owners 
+                        (business_name, owner_name, applicant_type, application_date, remarks, status, address)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)
+                        RETURNING *;
+                    `;
+                    const values = [businessName, ownerName, applicantType, applicationDate, remarks, status, address];
+                    const result = await pool.query(insertQuery, values);
+                    res.status(201).json(result.rows[0]);
+                }
             } catch (err) {
                 console.error('Error inserting owner', err);
                 res.status(500).json({ error: 'Internal server error' });
@@ -199,28 +183,12 @@ async function init() {
                 return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, permitNumber, or classification' });
             }
             try {
-                // Check if record exists
-                const existingQuery = `
-                    SELECT id FROM classifications
-                    WHERE business_name = $1 AND owner_name = $2
+                // Insert new record without checking for duplicates
+                const insertQuery = `
+                    INSERT INTO classifications (business_name, owner_name, permit_number, classification, categories)
+                    VALUES ($1, $2, $3, $4, $5)
                 `;
-                const existingResult = await pool.query(existingQuery, [businessName, ownerName]);
-                if (existingResult.rowCount > 0) {
-                    // Update existing record
-                    const updateQuery = `
-                        UPDATE classifications
-                        SET permit_number = $1, classification = $2, categories = $3
-                        WHERE business_name = $4 AND owner_name = $5
-                    `;
-                    await pool.query(updateQuery, [permitNumber, classification, linkable_texts, businessName, ownerName]);
-                } else {
-                    // Insert new record
-                    const insertQuery = `
-                        INSERT INTO classifications (business_name, owner_name, permit_number, classification, categories)
-                        VALUES ($1, $2, $3, $4, $5)
-                    `;
-                    await pool.query(insertQuery, [businessName, ownerName, permitNumber, classification, linkable_texts]);
-                }
+                await pool.query(insertQuery, [businessName, ownerName, permitNumber, classification, linkable_texts]);
                 res.json({ message: 'Classification saved successfully' });
             } catch (err) {
                 console.error('Error saving classification', err);
@@ -230,61 +198,34 @@ async function init() {
 
         // API to save employees data
         app.post('/api/employees/full', async (req, res) => {
-            const { businessName, ownerName, employees, year } = req.body;
-            
-            if (!businessName || !ownerName || !employees || !year) {
-                return res.status(400).json({ 
-                    error: 'Missing required fields', 
-                    received: { businessName, ownerName, employeesCount: employees?.length, year }
-                });
+            const { businessName, ownerName, categories, employees } = req.body;
+            if (!businessName || !ownerName || !employees) {
+                return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or employees' });
             }
-
             try {
-                await pool.query('BEGIN');
-                
-                // First ensure the year exists
-                await pool.query(
-                    'INSERT INTO years (year) VALUES ($1) ON CONFLICT (year) DO NOTHING',
-                    [year]
-                );
-                
-                // Delete existing employees for this combination
-                await pool.query(
-                    'DELETE FROM employees WHERE business_name = $1 AND owner_name = $2 AND year = $3',
-                    [businessName, ownerName, year]
-                );
-                
+                // Delete existing employees for this business and owner
+                await pool.query('DELETE FROM employees WHERE business_name = $1 AND owner_name = $2', [businessName, ownerName]);
                 // Insert new employees
                 const insertQuery = `
-                    INSERT INTO employees 
-                    (business_name, owner_name, year, no, employee_name, address, health_cert_no, remarks, date_of_xray)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 `;
-                
                 for (const emp of employees) {
                     await pool.query(insertQuery, [
                         businessName,
                         ownerName,
-                        year,
-                        emp.no || null,
-                        emp.name || '',
-                        emp.address || '',
-                        emp.cert || '',
-                        emp.remarks || '',
+                        emp.no,
+                        emp.name,
+                        emp.address,
+                        emp.cert,
+                        emp.remarks,
                         emp.date_of_xray || null
                     ]);
                 }
-                
-                await pool.query('COMMIT');
-                res.json({ success: true, message: 'Employees saved successfully' });
+                res.json({ message: 'Employees saved successfully' });
             } catch (err) {
-                await pool.query('ROLLBACK');
-                console.error('Error saving employees:', err);
-                res.status(500).json({ 
-                    error: 'Error saving employees',
-                    details: err.message,
-                    stack: err.stack
-                });
+                console.error('Error saving employees', err);
+                res.status(500).json({ error: 'Internal server error' });
             }
         });
 
@@ -315,19 +256,19 @@ async function init() {
         // API to get employees data by businessName, ownerName and year
         app.get('/api/employees', async (req, res) => {
             const { business_name, owner_name, year } = req.query;
-            if (!business_name || !owner_name || !year) {
-                return res.status(400).json({ 
-                    error: 'Missing required query parameters: business_name, owner_name, or year' 
-                });
+            if (!business_name || !owner_name) {
+                return res.status(400).json({ error: 'Missing required query parameters: business_name or owner_name' });
             }
             try {
                 const query = `
                     SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
                     FROM employees
-                    WHERE business_name = $1 AND owner_name = $2 AND year = $3
+                    WHERE business_name = $1 AND owner_name = $2
+                    ${year ? 'AND year = $3' : ''}
                     ORDER BY no
                 `;
-                const result = await pool.query(query, [business_name, owner_name, year]);
+                const params = year ? [business_name, owner_name, year] : [business_name, owner_name];
+                const result = await pool.query(query, params);
                 res.json(result.rows);
             } catch (err) {
                 console.error('Error fetching employees:', err);
@@ -383,6 +324,44 @@ async function init() {
             } catch (err) {
                 await pool.query('ROLLBACK');
                 console.error('Error deleting year:', err);
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+
+        // API to get all owners including duplicates
+        app.get('/api/owners/all', async (req, res) => {
+            try {
+                const result = await pool.query(`
+                    SELECT 
+                        id,
+                        business_name,
+                        owner_name,
+                        applicant_type,
+                        application_date,
+                        remarks,
+                        status,
+                        address,
+                        created_at,
+                        false as is_duplicate
+                    FROM owners
+                    UNION ALL
+                    SELECT 
+                        id,
+                        business_name,
+                        owner_name,
+                        applicant_type,
+                        application_date,
+                        remarks,
+                        status,
+                        address,
+                        created_at,
+                        true as is_duplicate
+                    FROM duplicate_owners
+                    ORDER BY created_at DESC;
+                `);
+                res.json(result.rows);
+            } catch (err) {
+                console.error('Error fetching all owners', err);
                 res.status(500).json({ error: 'Internal server error' });
             }
         });
