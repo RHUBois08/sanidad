@@ -255,23 +255,24 @@ async function init() {
                 );
                 
                 // Insert new employees
+                const insertQuery = `
+                    INSERT INTO employees 
+                    (business_name, owner_name, year, no, employee_name, address, health_cert_no, remarks, date_of_xray)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                `;
+                
                 for (const emp of employees) {
-                    await pool.query(
-                        `INSERT INTO employees 
-                        (business_name, owner_name, year, no, employee_name, address, health_cert_no, remarks, date_of_xray)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
-                        [
-                            businessName,
-                            ownerName,
-                            year,
-                            emp.no || null,
-                            emp.name || '',
-                            emp.address || '',
-                            emp.cert || '',
-                            emp.remarks || '',
-                            emp.date_of_xray || null
-                        ]
-                    );
+                    await pool.query(insertQuery, [
+                        businessName,
+                        ownerName,
+                        year,
+                        emp.no || null,
+                        emp.name || '',
+                        emp.address || '',
+                        emp.cert || '',
+                        emp.remarks || '',
+                        emp.date_of_xray || null
+                    ]);
                 }
                 
                 await pool.query('COMMIT');
