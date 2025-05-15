@@ -26,7 +26,7 @@
                 <label for="permitNumber" style="margin-right: 30px;">Sanitary Permit #</label>
                 <input style="height: 20px; width: 80%;" type="text" id="permitNumber">
             </div>
-            <div style="margin-top: 65px; margin-left: 597px; position: absolute; ">
+            <div style="margin-top: 65px; margin-left:597px; position: absolute; ">
                 <label for="classification" style="margin-right: 55px;">Type of Establishment</label><br>
                 <input style=" width: 239px; height: 20px;width: 131%; margin-left: -68px;" type="text" id="classificationInput">
         </div>
@@ -66,7 +66,7 @@
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                         </svg>
                     </button>
-                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background: #ff4d4d; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
@@ -155,8 +155,8 @@
                         </button>
                         <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                <path d="M2 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H2zm13 2H1v-1a0 0 0 0 1 0 0h14a0 0 0 0 1 0 0v1z"/>
+                            <path d="M1.152 3.078A.5.5 0 0 0 1 3.5v9a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.152-.422L9.5 12.086l-2.854-2.853a.5.5 0 0 0-.707 0L1.152 3.078zM6.5 5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 1 .5-.5zm3 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 1 .5-.5z"/>
                         </svg>
                         </button>
                     </td>
@@ -258,12 +258,15 @@
                 // Actions
                 const tdActions = document.createElement('td');
                 tdActions.innerHTML = `
-                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;color:black;">
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                    onmouseover="this.style.backgroundColor='#002e63'"
+                    onmouseout="this.style.backgroundColor='#0047abc9'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
+                            <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </button>
-                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background: #ff4d4d; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                    onmouseover="this.style.backgroundColor='#cc0000'"
+                    onmouseout="this.style.backgroundColor='#ff4d4d'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
@@ -502,12 +505,15 @@
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
-                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                    onmouseover="this.style.backgroundColor='#002e63'"
+                    onmouseout="this.style.backgroundColor='#0047abc9'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
+                            <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </button>
-                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; margin-left: 5px;">
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                    onmouseover="this.style.backgroundColor='#cc0000'"
+                    onmouseout="this.style.backgroundColor='#ff4d4d'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
