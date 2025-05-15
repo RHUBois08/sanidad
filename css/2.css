@@ -51,6 +51,9 @@ body {
     border-radius: 5px;
 
 }
+.content .add-button:hover {
+    background-color: #003366;
+}
 
 table {
     border: 10px solid #4c7b8b;
