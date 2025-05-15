@@ -83,9 +83,26 @@ async function createTables(pool) {
     );
     `;
 
+    const createEmployeesTableQuery = `
+        CREATE TABLE IF NOT EXISTS employees (
+            id SERIAL PRIMARY KEY,
+            business_name VARCHAR(255),
+            owner_name VARCHAR(255),
+            no INTEGER,
+            employee_name VARCHAR(255),
+            address VARCHAR(255),
+            health_cert_no VARCHAR(255),
+            remarks VARCHAR(255),
+            date_of_xray DATE,
+            application_date DATE
+        );
+    `;
+
     try {
         await pool.query(createOwnersTableQuery);
         console.log('Table "owners" is ready');
+        await pool.query(createEmployeesTableQuery);
+        console.log('Table "employees" is ready');
     } catch (err) {
         console.error('Error creating tables', err);
         throw err;
@@ -209,8 +226,8 @@ async function init() {
                 await pool.query('DELETE FROM employees WHERE business_name = $1 AND owner_name = $2', [businessName, ownerName]);
                 // Insert new employees
                 const insertQuery = `
-                    INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                    INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 `;
                 for (const emp of employees) {
                     await pool.query(insertQuery, [
@@ -221,7 +238,8 @@ async function init() {
                         emp.address,
                         emp.cert,
                         emp.remarks,
-                        emp.date_of_xray || null
+                        emp.date_of_xray || null,
+                        emp.application_date || null
                     ]);
                 }
                 res.json({ message: 'Employees saved successfully' });
