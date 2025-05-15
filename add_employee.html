@@ -33,9 +33,7 @@
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
 <button id="print-permit" style="margin-left: 1175px; width: 102px; position: absolute; margin-top: 30px; height:30px; border-radius: 5px; border: none;" onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
-    </svg>
+    <img src="image/print_icon.png" alt="Print" style="width: 16px; height: 16px; vertical-align: middle;">
 </button>
         </div>
         </div>
@@ -79,20 +77,14 @@
             </table>
         </div>
         <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
-<button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M7 10.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-3-7A1.5 1.5 0 0 0 2.5 5v6A1.5 1.5 0 0 0 4 12.5h8a1.5 1.5 0 0 0 1.5-1.5V5A1.5 1.5 0 0 0 12 3.5H4zm0 1h8a.5.5 0 0 1 .5.5v1H3.5v-1a.5.5 0 0 1 .5-.5zM3 8h10v3.5a.5.5 0 0 1-.5.5H3.5a.5.5 0 0 1-.5-.5V8z"/>
-    </svg>
+<button class="submit-btn"  onclick="submitForm()" aria-label="Save" title="Save">
+    <img src="image/save_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
-<button id="submitEmployeesBtn" style="margin-left: -70px; color: black; border-radius: 4px; cursor: pointer; border:100cm; position: absolute;" onclick="saveEmployees()" aria-label="Submit" title="Submit" >
-    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M15.854 0.146a.5.5 0 0 0-.707 0L1 14.293V9.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1H1.707l14.147-14.147a.5.5 0 0 0 0-.707z"/>
-    </svg>
+<button id="submitEmployeesBtn" style="margin-left: -55px; color: black; border-radius: 4px; cursor: pointer; border:100cm; position: absolute;background-color: #4a6a97" onclick="saveEmployees()" aria-label="Submit" title="Submit" >
+    <img src="image/submit_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
-<button id="printSaveBtn" style="margin-left: 65px; position: absolute; z-index: 2; border-radius: 4px; border:none;" onclick="printForm()" aria-label="Print" title="Print">
-    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="24" fill="currentColor" viewBox="0 0 16 16">
-        <path d="M2 7a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H2zm11 1v3H3v-3h10zM5 10h6v1H5v-1zM4 1h8a1 1 0 0 1 1 1v3H3V2a1 1 0 0 1 1-1zM3 5h10v1H3V5z"/>
-    </svg>
+<button id="printSaveBtn" style="margin-left: 65px; position: absolute; z-index: 2; border-radius: 4px; border:none; background-color: #4a6a97" onclick="printForm()" aria-label="Print" title="Print">
+    <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
         </div>
         <div></div>
@@ -157,13 +149,13 @@
                         <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                            </svg>
+                        </svg>
                         </button>
                         <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                            </svg>
+                        </svg>
                         </button>
                     </td>
                 </tr>
