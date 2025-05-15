@@ -58,8 +58,8 @@ input[type='radio']:after {
 .input-group {
     display: flex;
     flex-direction: column;
-    width: 20%;
-    margin-left: 20px;
+    width:19%;
+    margin-left: 50px;
 }
 
 label {
