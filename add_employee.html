@@ -61,12 +61,16 @@
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
-                    <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
+                    <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                    onmouseover="this.style.backgroundColor='#002e63'"
+                    onmouseout="this.style.backgroundColor='#0047abc9'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
+                            <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
                     </button>
-                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background: #ff4d4d; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;">
+                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                    onmouseover="this.style.backgroundColor='#cc0000'"
+                    onmouseout="this.style.backgroundColor='#ff4d4d'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                             <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
@@ -127,59 +131,102 @@
                     console.error('Error fetching classification data:', error);
                 }
 
-        // Fetch and populate employees data
-        try {
-            const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
-            if (empResponse.ok) {
-                const employees = await empResponse.json();
-                if (Array.isArray(employees) && employees.length > 0) {
-                    populateEmployeeTable(employees);
+            // Fetch and populate employees data
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const applicationYear = urlParams.get('application_year');
+
+                let fetchUrl = `http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
+                if (applicationYear) {
+                    fetchUrl += `&year=${encodeURIComponent(applicationYear)}`;
+                }
+
+                const empResponse = await fetch(fetchUrl);
+                if (empResponse.ok) {
+                    const employees = await empResponse.json();
+                    if (Array.isArray(employees) && employees.length > 0) {
+                        populateEmployeeTable(employees);
+                    } 
+                    
+                    else {
+                        // Clear table and add a single empty row with input boxes for new data entry
+                        const tbody = document.getElementById("employeeTableBody2025");
+                        tbody.innerHTML = `
+                            <tr>
+                        <td class="employee-no-cell">1</td>
+                        <td><input type="text" class="employee-name" required></td>
+                        <td><input type="text" class="employee-address" required></td>
+                        <td><input type="text" class="health-cert" required></td>
+                        <td><input type="text" class="remarks" required></td>
+                        <td><input type="date" class="x-ray-date" required></td>
+                        <td>
+                            <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.backgroundColor='#002e63'"
+                        onmouseout="this.style.backgroundColor='#0047abc9'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.backgroundColor='#cc0000'"
+                        onmouseout="this.style.backgroundColor='#ff4d4d'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
+                        </button>
+                        </td>
+                    </tr>
+                `;
+                    }
                 } 
                 
                 else {
-                    // Clear table and add a single empty row with input boxes for new data entry
-                    const tbody = document.getElementById("employeeTableBody2025");
-                    tbody.innerHTML = `
-                        <tr>
-                    <td class="employee-no-cell">1</td>
-                    <td><input type="text" class="employee-name" required></td>
-                    <td><input type="text" class="employee-address" required></td>
-                    <td><input type="text" class="health-cert" required></td>
-                    <td><input type="text" class="remarks" required></td>
-                    <td><input type="date" class="x-ray-date" required></td>
-                    <td>
-                        <button onclick="addRow()" aria-label="Add" title="Add" style="background:none; border:none; cursor:pointer; padding:0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                        </svg>
-                        </button>
-                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M2 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H2zm13 2H1v-1a0 0 0 0 1 0 0h14a0 0 0 0 1 0 0v1z"/>
-                            <path d="M1.152 3.078A.5.5 0 0 0 1 3.5v9a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.152-.422L9.5 12.086l-2.854-2.853a.5.5 0 0 0-.707 0L1.152 3.078zM6.5 5a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 1 .5-.5zm3 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 1 .5-.5z"/>
-                        </svg>
-                        </button>
-                    </td>
-                </tr>
-            `;
+                    console.error('Failed to fetch employees data. Status:', empResponse.status);
+                    alert('Failed to fetch employees data from server.');
                 }
             } 
             
-            else {
-                console.error('Failed to fetch employees data. Status:', empResponse.status);
-                alert('Failed to fetch employees data from server.');
+            catch (error) {
+                console.error('Error fetching employees data:', error);
+                alert('Error fetching employees data. Please try again later.');
             }
-        } 
-        
-        catch (error) {
-            console.error('Error fetching employees data:', error);
-            alert('Error fetching employees data. Please try again later.');
-        }
             }
         });
 
-        function removeRow(button) {
-            button.parentElement.parentElement.remove();
+        async function removeRow(button) {
+            const row = button.parentElement.parentElement;
+            const employeeNoCell = row.querySelector('.employee-no-cell');
+            const employeeNameInput = row.querySelector('.employee-name');
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+
+            // Check if this row has a data-employee-id attribute (existing employee)
+            const employeeId = row.getAttribute('data-employee-id');
+
+            if (employeeId) {
+                // Confirm deletion
+                if (!confirm(`Are you sure you want to delete employee "${employeeNameInput.value}"?`)) {
+                    return;
+                }
+                try {
+                    const response = await fetch(`http://localhost:3000/api/employees/${employeeId}`, {
+                        method: 'DELETE',
+                    });
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        alert(`Failed to delete employee: ${errorData.error || 'Unknown error'}`);
+                        return;
+                    }
+                    alert('Employee deleted successfully');
+                } catch (error) {
+                    alert(`Error deleting employee: ${error.message}`);
+                    return;
+                }
+            }
+
+            // Remove row from DOM and update row numbers
+            row.remove();
             updateRowNumbers();
         }
 
@@ -202,6 +249,9 @@
             // Populate rows from DB (saved)
             employees.forEach((emp, index) => {
                 const tr = document.createElement('tr');
+                // Set employee id as data attribute
+                tr.setAttribute('data-employee-id', emp.id || '');
+
                 // No.
                 const tdNo = document.createElement('td');
                 tdNo.className = 'employee-no-cell';
@@ -377,7 +427,7 @@
                 // Save selected categories in localStorage to persist checkbox state
                 localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
                 // Proceed with saving employees
-                // await saveEmployees();
+                await saveEmployees();
             } catch (error) {
                 console.error('Error saving Sanitary Permit # and Classification:', error);
                 alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
@@ -399,6 +449,14 @@
             const categories = [];
             if (categoryFood) categories.push("Food");
             if (categoryNonFood) categories.push("Non-Food");
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const applicationYear = urlParams.get('application_year');
+            let applicationDate = null;
+            if (applicationYear) {
+                // Construct applicationDate as January 1st of the applicationYear
+                applicationDate = `${applicationYear}-01-01`;
+            }
 
             let visibleTableBody = null;
             const table2025 = document.getElementById("table2025");
@@ -433,7 +491,9 @@
             // Gather all rows (including unsaved/new)
             const employees = [];
             visibleTableBody.querySelectorAll("tr").forEach(row => {
-                const no = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
+                const id = row.getAttribute('data-employee-id') || null;
+                const noText = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
+                const no = noText ? parseInt(noText, 10) : null;
                 const name = row.querySelector(".employee-name")?.value.trim() || '';
                 const address = row.querySelector(".employee-address")?.value.trim() || '';
                 const cert = row.querySelector(".health-cert")?.value.trim() || '';
@@ -443,6 +503,7 @@
                 // Only push if at least one field is filled
                 if (name || address || cert || remarks || date_of_xray) {
                     employees.push({
+                        id,
                         business_name: businessName,
                         owner_name: ownerName,
                         no,
@@ -450,7 +511,8 @@
                         address,
                         cert,
                         remarks,
-                        date_of_xray
+                        date_of_xray,
+                        application_date: applicationDate
                     });
                 }
             });
