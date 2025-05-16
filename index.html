@@ -85,30 +85,38 @@
             padding: 0;
             overflow: auto;
         }
+        /* Responsive table container */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
-    <div class="content">
-        <div class="top-bars">
-            <span><kbd></kbd></span>
-            <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button>
+        <div class="content">
+            <div class="top-bars">
+                <span><kbd></kbd></span>
+                <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button>
+            </div>
+            <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
+                <table id="applicationTable" border="1" style="width: 100%; margin-top: 10px; height: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Business Name</th>
+                            <th>Owner/Applicant</th>
+                            <th>Applicant Type</th>
+                            <th>Application Date</th>
+                            <th>Address</th>
+                            <th>Remarks</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationTableBody">
+                        <tr><td colspan="8">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <table id="applicationTable" border="1" style="width: 100%; margin-top: 10px; height: 100%;">
-            <thead>
-                <tr>
-                    <th>Business Name</th>
-                    <th>Owner/Applicant</th>
-                    <th>Applicant Type</th>
-                    <th>Application Date</th>
-                    <th>Address</th>
-                    <th>Remarks</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="applicationTableBody">
-                <tr><td colspan="8">Loading data...</td></tr>
-            </tbody>
-        </table>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
