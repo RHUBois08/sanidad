@@ -121,7 +121,7 @@ async function init() {
             try {
                 const result = await pool.query(`
                     SELECT id, business_name, owner_name, applicant_type, 
-                           application_date, remarks, status, address
+                           application_date, EXTRACT(YEAR FROM application_date) as application_year, remarks, status, address
                     FROM owners
                     ORDER BY application_date DESC, id DESC
                 `);
@@ -215,37 +215,67 @@ async function init() {
             }
         });
 
-        // API to save employees data
+        // API to save employees data with upsert (insert or update)
         app.post('/api/employees/full', async (req, res) => {
             const { businessName, ownerName, categories, employees } = req.body;
             if (!businessName || !ownerName || !employees) {
                 return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or employees' });
             }
             try {
-                // Delete existing employees for this business and owner
-                await pool.query('DELETE FROM employees WHERE business_name = $1 AND owner_name = $2', [businessName, ownerName]);
-                // Insert new employees
+                const upsertQuery = `
+                    INSERT INTO employees (id, business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    ON CONFLICT (id) DO UPDATE SET
+                        business_name = EXCLUDED.business_name,
+                        owner_name = EXCLUDED.owner_name,
+                        no = EXCLUDED.no,
+                        employee_name = EXCLUDED.employee_name,
+                        address = EXCLUDED.address,
+                        health_cert_no = EXCLUDED.health_cert_no,
+                        remarks = EXCLUDED.remarks,
+                        date_of_xray = EXCLUDED.date_of_xray,
+                        application_date = EXCLUDED.application_date
+                `;
+
                 const insertQuery = `
                     INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 `;
+
                 for (const emp of employees) {
-                    await pool.query(insertQuery, [
-                        businessName,
-                        ownerName,
-                        emp.no,
-                        emp.name,
-                        emp.address,
-                        emp.cert,
-                        emp.remarks,
-                        emp.date_of_xray || null,
-                        emp.application_date || null
-                    ]);
+                    if (emp.id) {
+                        // Update existing employee
+                        await pool.query(upsertQuery, [
+                            emp.id,
+                            businessName,
+                            ownerName,
+                            emp.no,
+                            emp.name,
+                            emp.address,
+                            emp.cert,
+                            emp.remarks,
+                            emp.date_of_xray || null,
+                            emp.application_date || null // application_date can be null
+                        ]);
+                    } else {
+                        // Insert new employee without id
+                        await pool.query(insertQuery, [
+                            businessName,
+                            ownerName,
+                            emp.no,
+                            emp.name,
+                            emp.address,
+                            emp.cert,
+                            emp.remarks,
+                            emp.date_of_xray || null,
+                            emp.application_date || null
+                        ]);
+                    }
                 }
                 res.json({ message: 'Employees saved successfully' });
             } catch (err) {
-                console.error('Error saving employees', err);
-                res.status(500).json({ error: 'Internal server error' });
+                console.error('Error saving employees:', err);
+                res.status(500).json({ error: 'Internal server error', details: err });
             }
         });
 
@@ -276,15 +306,20 @@ async function init() {
         // API to get employees data by businessName, ownerName and year
         app.get('/api/employees', async (req, res) => {
             const { business_name, owner_name, year } = req.query;
+
+            console.log('business_name:', business_name);
+            console.log('owner_name:', owner_name);
+            console.log('year:', year);
+
             if (!business_name || !owner_name) {
                 return res.status(400).json({ error: 'Missing required query parameters: business_name or owner_name' });
             }
             try {
                 const query = `
-                    SELECT no, employee_name, address, health_cert_no, remarks, date_of_xray
+                    SELECT id, no, employee_name, address, health_cert_no, remarks, date_of_xray
                     FROM employees
                     WHERE business_name = $1 AND owner_name = $2
-                    ${year ? 'AND year = $3' : ''}
+                    ${year ? 'AND EXTRACT(YEAR FROM application_date) = $3' : ''}
                     ORDER BY no
                 `;
                 const params = year ? [business_name, owner_name, year] : [business_name, owner_name];
@@ -382,6 +417,25 @@ async function init() {
                 res.json(result.rows);
             } catch (err) {
                 console.error('Error fetching all owners', err);
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+
+        // API to delete an employee by id
+        app.delete('/api/employees/:id', async (req, res) => {
+            const { id } = req.params;
+            if (!id) {
+                return res.status(400).json({ error: 'Missing employee id' });
+            }
+            try {
+                const deleteQuery = 'DELETE FROM employees WHERE id = $1';
+                const result = await pool.query(deleteQuery, [id]);
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ error: 'Employee not found' });
+                }
+                res.json({ message: 'Employee deleted successfully' });
+            } catch (err) {
+                console.error('Error deleting employee:', err);
                 res.status(500).json({ error: 'Internal server error' });
             }
         });
