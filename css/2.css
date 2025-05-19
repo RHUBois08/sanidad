@@ -108,7 +108,27 @@ th {
     padding: 10px;
     text-align: right;
     position: relative;
+    margin-top: 6px; /* Adjusted from 10px to -10px */
 }
+
+.top-bars::before {
+    content: '';
+    position: absolute;
+    top: -5px; /* Adjusted from 10 to -5px */
+    left: 0;
+    right: 0;
+    height: 50px;
+    background-color: white;
+    z-index: 0;
+}
+
+.add-button {
+    position: relative;
+    z-index: 1;
+    margin-top: -8px;
+    margin-bottom: 5px; /* Adjusted from 10px to 5px */
+}
+
 ::placeholder{
     align-items: center;
     text-align: center;
