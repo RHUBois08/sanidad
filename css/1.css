@@ -84,12 +84,14 @@ h2 {
     color: white;
     padding: 10px 40px;
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 1.2em;
     text-decoration: none;
 }
 
 .enter-button:hover {
-    background-color: #2980b9;
+    background-color: #002e63;
+            background-position: 0 0;
+            transition: 0.5s;
 }

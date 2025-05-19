@@ -46,14 +46,15 @@ body {
     background-color: #4c7b8b;
     position: relative; 
     padding: 10px;
-    width: 100px;
+    width: 70px;
     margin-left: 5px;
     border: none;
     border-radius: 5px;
-
+    transition: background-color 0.3s ease;
 }
 .add-button:hover {
-    background-color: #003366;
+    background-color: #081330;
+    color: #ffffff;
 }
 
 table {
@@ -69,7 +70,10 @@ th, td {
     background-color: #afd3e2;
     color: black;
 }
-
+th,td:hover {
+    background-color: #f0e5e5c7;
+    color: black;
+}
 th {
     background-color: #f0e5e5c7;
     color: black;
@@ -113,3 +117,14 @@ th {
     margin-left: 47.2%;
     margin-top: 27%;
   }
+a {
+    color: #000000;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0127ff;
+    text-decoration: underline;
+    transition: 0.5s;
+    background-position: 0 0;
+}

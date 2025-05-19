@@ -56,9 +56,26 @@
         }
         .submit-button:hover{
             background-color: #002e63;
+            background-position: 0 0;
+            transition: 0.5s;
         }
         .submit-button:hover {
             color: white; /* Change text color on hover */
+            background-position: 0 0;
+            transition: 0.4s;
+        }
+        .home-link img {
+            width: 40px;
+            height: auto;
+            float: left;
+            margin-left: -17.5%;
+            z-index: 100;
+            margin-top: 14px;
+            transition: transform 0.3s ease;
+        }
+        
+        .home-link img:hover {
+            transform: scale(1.2);
         }
         @media (max-width: 768px) {
             .form-group {
@@ -77,7 +94,9 @@
         <img src="image\My project (1).png" style="width: 90px; height: auto; float: left; margin-left: 2%; margin-top: 20px;">
         <img src="image\MUNICIPAL HEALTH OFFICE 2172025 (1).png" style="width: 90px; height: auto; float: left; margin-left: 10px;margin-top: 20px;">
         <span style="margin-top: 30px; display: inline-block;">Issuance of Sanitary Permit</span>
-        <a href="index.html"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left: -17%; z-index:100; margin-top:14px;margin-left:-17.5%;"></a>
+        <a href="index.html" class="home-link">
+            <img src="image\jhjhj.png" alt="Home">
+        </a>
     </div>
     <div class="content">
         <div class="employee-list">
