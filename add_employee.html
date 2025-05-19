@@ -6,6 +6,7 @@
     <title>Sanitary Permit Form</title>
     <link rel="stylesheet" href="css\5.css">
     <link rel="icon" href="image\sanidad_logo.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.0/mammoth.browser.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -31,10 +32,11 @@
                 <input style=" width: 239px; height: 20px;width: 131%; margin-left: -68px;" type="text" id="classificationInput">
         </div>
         </div>
+        <input type="hidden" id="classificationId">
         <div class="mid-section" style="margin-top: 30px; position: absolute; margin-left: 45px;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-<button id="print-permit"onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
+<button id="print-permit" onclick="generate_permit()" aria-label="Print" title="Print">
     <img src="image/print_icon.png" alt="Print" style="width: 40px; height: 35px; vertical-align: middle; margin-left: 4px;">
 </button>
         </div>
@@ -86,10 +88,10 @@
 <button class="submit-btn"  onclick="submitForm()" aria-label="Save" title="Save">
     <img src="image/save_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
-<button id="submitEmployeesBtn"onclick="saveEmployees()" aria-label="Submit" title="Submit" >
+<!-- <button id="submitEmployeesBtn"onclick="saveEmployees()" aria-label="Submit" title="Submit" >
     <img src="image/submit_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
-</button>
-<button id="printSaveBtn" onclick="printForm()" aria-label="Print" title="Print">
+</button> -->
+<button id="printSaveBtn" onclick="generate_certificate()" aria-label="Print" title="Print">
     <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
         </div>
@@ -359,10 +361,6 @@
             updateRowNumbers();
         }
 
-        function printForm() {
-            window.print();
-        }
-
         function updateRowNumbers() {
             const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])");
             if (!visibleTable) return;
@@ -376,15 +374,15 @@
         }
 
         async function submitForm() {
-            const businessName = document.getElementById("businessName").value.trim();
-            const ownerName = document.getElementById("ownerName").value.trim();
-            const permitNumber = document.getElementById("permitNumber").value.trim();
-            const classification = document.getElementById("classificationInput").value.trim();
+            let businessName = document.getElementById("businessName").value.trim();
+            let ownerName = document.getElementById("ownerName").value.trim();
+            let permitNumber = document.getElementById("permitNumber").value.trim();
+            let classification = document.getElementById("classificationInput").value.trim();
+            const classificationId = document.getElementById("classificationId").value;
 
-            if (!permitNumber || !classification) {
-                alert('Successfully Saved');
-                return;
-            }
+            // Send empty strings if the fields are empty
+            permitNumber = permitNumber || "";
+            classification = classification || "";
 
             // Validate required inputs in employee table
             const visibleTableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
@@ -408,7 +406,14 @@
                 const response = await fetch('http://localhost:3000/api/classifications/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
+                    body: JSON.stringify({ 
+                        id: classificationId,
+                        businessName, 
+                        ownerName, 
+                        permitNumber, 
+                        classification, 
+                        linkable_texts: selectedCategories 
+                    }),
                 });
 
                 if (!response.ok) {
@@ -428,18 +433,36 @@
                 localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
                 // Proceed with saving employees
                 await saveEmployees();
+
+                // Refetch classification data to update input fields
+                await fetchClassificationData(businessName, ownerName);
+
             } catch (error) {
                 console.error('Error saving Sanitary Permit # and Classification:', error);
                 alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
             }
         }
 
-        // On page load, restore checkbox states from localStorage
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedCategories = JSON.parse(localStorage.getItem('selectedCategories') || '[]');
-            document.getElementById('categoryFood').checked = savedCategories.includes('Food');
-            document.getElementById('categoryNonFood').checked = savedCategories.includes('Non-Food');
-        });
+        async function fetchClassificationData(businessName, ownerName) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/classifications?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data) {
+                        document.getElementById('classificationInput').value = data.classification || '';
+                        document.getElementById('permitNumber').value = data.permit_number || '';
+                        document.getElementById('classificationId').value = data.id || ''; // Store the ID
+                        // Restore radio button selection from categories
+                        if (data.categories && Array.isArray(data.categories)) {
+                            document.getElementById('categoryFood').checked = data.categories.includes('Food');
+                            document.getElementById('categoryNonFood').checked = data.categories.includes('Non-Food');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching classification data:', error);
+            }
+        }
 
         async function saveEmployees() {
             const businessName = document.getElementById("businessName").value.trim();
@@ -586,7 +609,157 @@
             tableBody.appendChild(newRow);
             updateRowNumbers();
         }
+
+        async function generate_permit() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let businessName = urlParams.get('business_name');
+            let ownerName = urlParams.get('owner_name');
+
+            if (!businessName) {
+                businessName = document.getElementById('businessName').value.trim();
+                if (!businessName) {
+                    alert('Please enter or select a business name.');
+                    return;
+                }
+            } else {
+                businessName = decodeURIComponent(businessName); // Decode if it comes from URL
+            }
+
+            if (!ownerName) {
+                ownerName = document.getElementById('ownerName').value.trim();
+                 if (!ownerName) {
+                    alert('Please enter owner name.');
+                    return;
+                }
+            } else {
+                ownerName = decodeURIComponent(ownerName); // Decode if it comes from URL
+            }
+
+            try {
+                // Owner and address info
+                const ownerRes = await fetch(`http://localhost:3000/api/owners?business_name=${encodeURIComponent(businessName)}`);
+                if (!ownerRes.ok) throw new Error('Failed to fetch owner info');
+                const owners = await ownerRes.json();
+                
+                // Filter owners array to find the entry matching both businessName and ownerName
+                const ownerData = owners && owners.find(owner => 
+                    owner.business_name.toUpperCase() === businessName.toUpperCase() && 
+                    owner.owner_name.toUpperCase() === ownerName.toUpperCase()
+                );
+
+                // If no matching owner data is found, display an error and return
+                if (!ownerData) {
+                    alert('No matching owner found for the given Business Name and Owner Name.');
+                    return;
+                }
+
+                // Classification and permit number
+                const classificationUrl = `http://localhost:3000/api/classifications?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
+                console.log('Fetching classification data from:', classificationUrl); // Log the URL
+                const classRes = await fetch(classificationUrl);
+                if (!classRes.ok) {
+                    console.error('Classification fetch failed with status:', classRes.status);
+                    throw new Error(`Failed to fetch classification info. Status: ${classRes.status}`);
+                }
+                const classData = await classRes.json();
+
+                // Fetch employee count
+                let employeeCountUrl = `http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
+                const applicationYear = urlParams.get('application_year');
+                if (applicationYear) {
+                    employeeCountUrl += `&year=${encodeURIComponent(applicationYear)}`;
+                }
+                const employeeRes = await fetch(employeeCountUrl);
+                if (!employeeRes.ok) {
+                    console.error('Employee fetch failed with status:', employeeRes.status);
+                    throw new Error(`Failed to fetch employee info. Status: ${employeeRes.status}`);
+                }
+                const employees = await employeeRes.json();
+                const employeeCount = employees.length;
+
+                const ownerNameFromData = ownerData.owner_name ? ownerData.owner_name.toUpperCase() : '';
+                const address = ownerData.address || '';
+                const permitNumber = classData.permit_number || '';
+                const classification = classData.classification || '';
+
+                if (!ownerNameFromData || !permitNumber || !classification) {
+                    alert('Some required data is missing from the database.');
+                    return;
+                }
+
+                // Calculate expiration date (December 31 of the current year)
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear();
+                const expirationDate = `December 31, ${currentYear}`;
+
+                // Get application date and format it
+                const rawApplicationDate = ownerData.application_date;
+                let applicationDate = 'Not Available';
+                if (rawApplicationDate) {
+                    const date = new Date(rawApplicationDate);
+                    const month = date.toLocaleString('default', { month: 'long' }); // Full month name
+                    const day = date.getDate();
+                    const year = date.getFullYear();
+                    applicationDate = `${month} ${day}, ${year}`;
+                }
+
+                // Construct the URL for the API endpoint
+                const url = `http://localhost:3000/api/generatePermit?businessName=${encodeURIComponent(businessName)}&ownerName=${encodeURIComponent(ownerName)}&classification=${encodeURIComponent(classification)}&address=${encodeURIComponent(address)}&permitNumber=${encodeURIComponent(permitNumber)}&applicationDate=${encodeURIComponent(applicationDate)}&employeeCount=${encodeURIComponent(employeeCount)}&expirationDate=${encodeURIComponent(expirationDate)}`;
+
+                // Open a new window to trigger the download
+                window.open(url, '_blank');
+                
+            } catch (error) {
+                alert('Error fetching permit data: ' + error.message);
+            }
+        }
+
+        async function generate_certificate() {
+            const businessName = document.getElementById('businessName').value.trim();
+            const ownerName = document.getElementById('ownerName').value.trim();
+
+            if (!businessName || !ownerName) {
+                alert('Please enter both business name and owner name.');
+                return;
+            }
+
+            try {
+                // Fetch owner info to get application_date
+                const ownerRes = await fetch(`http://localhost:3000/api/owners?business_name=${encodeURIComponent(businessName)}`);
+                if (!ownerRes.ok) throw new Error('Failed to fetch owner info');
+                const owners = await ownerRes.json();
+
+                // Find the owner matching both businessName and ownerName
+                const ownerData = owners && owners.find(owner =>
+                    owner.business_name.toUpperCase() === businessName.toUpperCase() &&
+                    owner.owner_name.toUpperCase() === ownerName.toUpperCase()
+                );
+
+                if (!ownerData) {
+                    alert('No matching owner found for the given Business Name and Owner Name.');
+                    return;
+                }
+
+                let applicationYear = null;
+                if (ownerData.application_date) {
+                    applicationYear = new Date(ownerData.application_date).getFullYear();
+                }
+
+                // Construct the URL for the API endpoint with applicationYear
+                let url = `http://localhost:3000/api/generateCertificate?businessName=${encodeURIComponent(businessName)}&ownerName=${encodeURIComponent(ownerName)}`;
+
+                if (applicationYear) {
+                    url += `&year=${encodeURIComponent(applicationYear)}`;
+                }
+
+                // Open a new window to trigger the download
+                window.open(url, '_blank');
+
+            } catch (error) {
+                alert('Error fetching owner data: ' + error.message);
+            }
+        }
     </script>
-    <script src="print.js"></script>
+<!-- <script src="print.js"></script> -->
 </body>
 </html>
