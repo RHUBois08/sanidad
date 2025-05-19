@@ -8,7 +8,7 @@ body {
 }
 .container {
     width: 100%;
-    max-width: 1357px;
+    max-width: 1358px;
     margin: 20px auto;
     background-color :#afd3e2; /* Light blue container */
     border-radius: 8px;
@@ -26,14 +26,11 @@ body {
 
 .top-bar span {
     background-color: #003366;
-    padding: 5px 10px;
     border-radius: 5px;
     text-align: center;
     margin-right: 340px;
     font-size: 50px;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    margin-top: 30px;
-    display: inline-block;
 }
 
 .add-button{
@@ -46,15 +43,14 @@ body {
     background-color: #4c7b8b;
     position: relative; 
     padding: 10px;
-    width: 70px;
+    width: 100px;
     margin-left: 5px;
     border: none;
     border-radius: 5px;
-    transition: background-color 0.3s ease;
+
 }
 .add-button:hover {
-    background-color: #081330;
-    color: #ffffff;
+    background-color: #003366;
 }
 
 table {
@@ -70,10 +66,7 @@ th, td {
     background-color: #afd3e2;
     color: black;
 }
-th,td:hover {
-    background-color: #f0e5e5c7;
-    color: black;
-}
+
 th {
     background-color: #f0e5e5c7;
     color: black;
@@ -108,27 +101,7 @@ th {
     padding: 10px;
     text-align: right;
     position: relative;
-    margin-top: 6px; /* Adjusted from 10px to -10px */
 }
-
-.top-bars::before {
-    content: '';
-    position: absolute;
-    top: -5px; /* Adjusted from 10 to -5px */
-    left: 0;
-    right: 0;
-    height: 50px;
-    background-color: white;
-    z-index: 0;
-}
-
-.add-button {
-    position: relative;
-    z-index: 1;
-    margin-top: -8px;
-    margin-bottom: 5px; /* Adjusted from 10px to 5px */
-}
-
 ::placeholder{
     align-items: center;
     text-align: center;
@@ -137,14 +110,3 @@ th {
     margin-left: 47.2%;
     margin-top: 27%;
   }
-a {
-    color: #000000;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #0127ff;
-    text-decoration: underline;
-    transition: 0.5s;
-    background-position: 0 0;
-}

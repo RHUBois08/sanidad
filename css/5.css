@@ -7,7 +7,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1357px;
+    max-width: 1358px;
     margin: 20px auto;
     background-color :#afd3e2;
     border-radius: 8px;
@@ -139,10 +139,12 @@ th {
 
 .submit-btn:hover {
     background-color: #002e63; /* Darker blue on hover */
+    background-position: 0 0;
+            transition: 0.3s;
 }
 
 #submitEmployeesBtn {
-    margin-left: -55px; 
+    margin-left: 10px; 
     color: black;
     border-radius: 4px; 
     cursor: pointer; 
@@ -152,11 +154,13 @@ th {
 }
 
 #submitEmployeesBtn:hover {
-    background-color: #002e63; 
+    background-color: #002e63;
+    background-position: 0 0;
+            transition: 0.3s; 
 }
 
 #printSaveBtn {
-    margin-left: 65px;
+    margin-left: 70px;
      position: absolute;
       z-index: 2; 
       border-radius: 4px; 
@@ -166,6 +170,8 @@ th {
 
 #printSaveBtn:hover {
     background-color: #002e63;
+    background-position: 0 0;
+            transition: 0.3s;
 }
 
 .submit-section {
@@ -184,4 +190,6 @@ th {
 }
 #print-permit:hover {
     background-color: #afd3e2;
+    background-position: 0 0;
+            transition: 0.3s;
 }
