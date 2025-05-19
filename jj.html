@@ -1,11 +1,306 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <title>Sanitary Permit Issuance</title>
+    <link rel="stylesheet" href="css\2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="image\sanidad_logo.png" type="image/png">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color:#afd3e2;
+        }
+        
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section img {
+            width: 90px;
+            height: auto;
+        }
+
+        .title-section {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            
+        }
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 80px;
+        }
+
+        .search-section input {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-section button {
+            padding: 8px 12px;
+            background-color: #4c7b8b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+         .search-section button:hover{
+            background-color: #081330;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .add-button {
+            padding: 10px 20px;
+            background-color: #4c7b8b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            background-color :#afd3e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 101.5%;
+            margin-left: -10px;
+        }
+
+        #applicationTable {
+            width: 100%;
+            border-collapse: collapse;
+            color: black;
+        }
+
+        #applicationTable th {
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            padding: 12px;
+            text-align: left;
+        }
+
+        #applicationTable td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #applicationTable tbody tr:hover {
+            background-color: #ffffff;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            background-color: #462024;
+        }
+
+        #loadingMessage, #errorMessage {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-  
+  <div class="top-bar">
+  <div class="wrapper">
+        <div class="header">
+            <div class="logo-section">
+                <img src="image\My project (1).png" alt="Project Logo">
+                <img src="image\MUNICIPAL HEALTH OFFICE 2172025 (1).png" alt="Health Office Logo">
+                <a href="home.html">
+                    <img src="image\jhjhj.png" alt="Home" style="width: 40px; height: auto;">
+                </a>
+            </div>
+            <div class="title-section">
+                Issuance of Sanitary Permit
+            </div>
+            <div class="search-section">
+                <input type="text" id="iframeSearchInput" placeholder="Search...">
+                <button id="iframeSearchButton">Search</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="loadingMessage" style="display: none;">Loading data, please wait...</div>
+            <div id="errorMessage" style="display: none; color: red;">Failed to load data. Please try again later.</div>
+            </div> 
+            <div class="top-bars">
+            <div class="actions-bar">
+                <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button>
+            </div>
+            </div>
+            <div class="table-container">
+                <table id="applicationTable">
+                    <thead>
+                        <tr>
+                            <th>Business Name</th>
+                            <th>Owner/Applicant</th>
+                            <th>Applicant Type</th>
+                            <th>Application Date</th>
+                            <th>Address</th>
+                            <th>Remarks</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationTableBody">
+                        <tr><td colspan="8">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.getElementById('applicationTableBody');
+            const searchInput = document.getElementById('iframeSearchInput');
+            const searchButton = document.getElementById('iframeSearchButton');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            async function fetchData() {
+                loadingMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                try {
+                    const response = await fetch('http://localhost:3000/api/owners');
+                    if (!response.ok) {
+                        let errorText;
+                        try {
+                            const errorJson = await response.json();
+                            errorText = errorJson.error || JSON.stringify(errorJson);
+                        } catch {
+                            errorText = await response.text();
+                        }
+                        throw new Error(errorText || 'Network response was not ok');
+                    }
+                    const data = await response.json();
+                    tableBody.innerHTML = '';
+                    if (!Array.isArray(data) || data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="8">No data found.</td></tr>';
+                    } else {
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><a href="add_employee.html?business_name=${encodeURIComponent(row.business_name)}&owner_name=${encodeURIComponent(row.owner_name)}&application_year=${row.application_year}">${row.business_name || ''}</a></td>
+                                <td>${row.owner_name || ''}</td>
+                                <td>${row.applicant_type || ''}</td>
+                                <td>${row.application_date ? new Date(row.application_date).toLocaleDateString() : ''}</td>
+                                <td>${row.address || ''}</td>
+                                <td>${row.remarks || ''}</td>
+                                <td>${row.status || ''}</td>
+                                <td><button class="delete-button" data-business="${row.business_name}" data-owner="${row.owner_name}"><i class="fas fa-trash-alt"></i></button></td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                        addDeleteEventListeners();
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    tableBody.innerHTML = '<tr><td colspan="8">Error loading data.</td></tr>';
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = 'Failed to load data: ' + error.message;
+                } finally {
+                    loadingMessage.style.display = 'none';
+                }
+            }
+
+            function addDeleteEventListeners() {
+                const deleteButtons = document.querySelectorAll('.delete-button');
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', async () => {
+                        const businessName = button.getAttribute('data-business');
+                        const ownerName = button.getAttribute('data-owner');
+                        if (confirm(`Are you sure you want to delete the record for ${businessName} - ${ownerName}?`)) {
+                            try {
+                                const response = await fetch('http://localhost:3000/api/owners/delete', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ businessName, ownerName }),
+                                });
+                                if (!response.ok) {
+                                    const errorData = await response.json(); // Try to get error details from the server
+                                    console.error('Failed to delete record:', errorData);
+                                    throw new Error(errorData.error || 'Failed to delete record');
+                                }
+                                alert('Record deleted successfully');
+                                fetchData();
+                            } catch (error) {
+                                console.error('Error deleting record:', error);
+                                alert('Failed to delete record');
+                            }
+                        }
+                    });
+                });
+            }
+
+            function filterTable() {
+                const filter = searchInput.value.toUpperCase();
+                const rows = tableBody.getElementsByTagName('tr');
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].getElementsByTagName('td');
+                    let found = false;
+                    // Only check Business Name (cells[0]) and Owner/Applicant (cells[1])
+                    if (cells.length >= 2) {
+                        if (cells[0].textContent.toUpperCase().indexOf(filter) > -1 || cells[1].textContent.toUpperCase().indexOf(filter) > -1) {
+                            found = true;
+                        }
+                    }
+                    rows[i].style.display = found ? '' : 'none';
+                }
+            }
+
+            searchButton.addEventListener('click', filterTable);
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') filterTable();
+            });
+
+            fetchData();
+        });
+    </script>
 </body>
 </html>
