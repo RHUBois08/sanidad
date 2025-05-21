@@ -4,6 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool, Client } = require('pg');
 const cors = require('cors');
+const fs = require('fs');
+const PizZip = require("pizzip");
+const Docxtemplater = require("docxtemplater");
+const path = require('path');
 
 const app = express();
 const port = 3000;
@@ -202,13 +206,31 @@ async function init() {
                 return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, permitNumber, or classification' });
             }
             try {
-                // Insert new record without checking for duplicates
-                const insertQuery = `
-                    INSERT INTO classifications (business_name, owner_name, permit_number, classification, categories)
-                    VALUES ($1, $2, $3, $4, $5)
+                // Check if classification data already exists
+                const checkQuery = `
+                    SELECT * FROM classifications 
+                    WHERE business_name = $1 AND owner_name = $2
                 `;
-                await pool.query(insertQuery, [businessName, ownerName, permitNumber, classification, linkable_texts]);
-                res.json({ message: 'Classification saved successfully' });
+                const existingClassification = await pool.query(checkQuery, [businessName, ownerName]);
+
+                if (existingClassification.rows.length > 0) {
+                    // Update existing record
+                    const updateQuery = `
+                        UPDATE classifications 
+                        SET permit_number = $3, classification = $4, categories = $5
+                        WHERE business_name = $1 AND owner_name = $2
+                    `;
+                    await pool.query(updateQuery, [businessName, ownerName, permitNumber, classification, linkable_texts]);
+                    res.json({ message: 'Classification updated successfully' });
+                } else {
+                    // Insert new record
+                    const insertQuery = `
+                        INSERT INTO classifications (business_name, owner_name, permit_number, classification, categories)
+                        VALUES ($1, $2, $3, $4, $5)
+                    `;
+                    await pool.query(insertQuery, [businessName, ownerName, permitNumber, classification, linkable_texts]);
+                    res.json({ message: 'Classification saved successfully' });
+                }
             } catch (err) {
                 console.error('Error saving classification', err);
                 res.status(500).json({ error: 'Internal server error' });
@@ -440,7 +462,148 @@ async function init() {
             }
         });
 
-        app.listen(port, () => {
+        app.get('/api/generateCertificate', async (req, res) => {
+            const { businessName, ownerName, year } = req.query;
+        
+            if (!businessName || !ownerName) {
+                return res.status(400).json({ error: 'Missing required query parameters: businessName or ownerName' });
+            }
+        
+            try {
+                // Load the Word template as binary
+                const templatePath = path.join(__dirname, 'assets', 'sanitary_certificate_format.docx');
+                let content = fs.readFileSync(templatePath, "binary");
+        
+                // Unzip the content
+                let zip = new PizZip(content);
+        
+                // Create the doc from template
+                let doc = new Docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                });
+
+                // Get the current date
+                const currentDate = new Date();
+                const month = currentDate.toLocaleString('default', { month: 'long' });
+                const day = currentDate.getDate();
+                const currentYear = currentDate.getFullYear();
+                const formattedDate = `${month} ${day}, ${currentYear}`;
+
+                // Fetch employee list
+                const { businessName, ownerName, year } = req.query;
+
+                // Fetch owner application date
+                const ownerQuery = `
+                    SELECT application_date FROM owners
+                    WHERE business_name = $1 AND owner_name = $2
+                `;
+                const ownerParams = [businessName, ownerName];
+                const ownerResult = await pool.query(ownerQuery, ownerParams);
+
+                let applicationYear = null;
+                if (ownerResult.rows.length > 0 && ownerResult.rows[0].application_date) {
+                    applicationYear = new Date(ownerResult.rows[0].application_date).getFullYear();
+                }
+
+                // Fetch employee list based on business name, owner name, and application year
+                let employeeQuery = `
+                    SELECT employee_name, application_date FROM employees
+                    WHERE business_name = $1 AND owner_name = $2
+                `;
+                let employeeParams = [businessName, ownerName];
+
+                if (year) {
+                    employeeQuery += ` AND EXTRACT(YEAR FROM application_date) = $3`;
+                    employeeParams.push(year);
+                }
+
+                employeeQuery += ` ORDER BY no`;
+
+                const employeeResult = await pool.query(employeeQuery, employeeParams);
+
+                const employees = employeeResult.rows.map((emp, index) => `${index + 1}. ${emp.employee_name}`).join('\n');
+        
+                // Replace placeholders with actual data
+                doc.render({
+                    BUSINESS_NAME: businessName.toUpperCase(),
+                    BUSINESS_OWNER: ownerName.toUpperCase(),
+                    Date: formattedDate,
+                    Employees: employees
+                });
+        
+                // Generate the new document
+                const buf = doc.getZip().generate({
+                    type: "nodebuffer",
+                    compression: "DEFLATE",
+                });
+        
+                // Set the content type
+                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+                res.setHeader('Content-Disposition', `attachment; filename="${businessName} Certificate.docx"`);
+        
+                // Send the buffer to the client
+                res.send(buf);
+        
+            } catch (error) {
+                console.error('Error generating certificate:', error);
+                res.status(500).json({ error: 'Failed to generate certificate', details: error.message });
+            }
+        });
+
+        app.get('/api/generatePermit', async (req, res) => {
+            const { businessName, ownerName, classification, address, permitNumber, applicationDate, employeeCount, expirationDate } = req.query;
+
+            if (!businessName || !ownerName || !classification || !address || !permitNumber || !applicationDate || !employeeCount || !expirationDate) {
+                return res.status(400).json({ error: 'Missing required query parameters' });
+            }
+
+            try {
+                // Load the Word template as binary
+                const templatePath = path.join(__dirname, 'assets', 'sanitary_permit_format.docx');
+                let content = fs.readFileSync(templatePath, "binary");
+
+                // Unzip the content
+                let zip = new PizZip(content);
+
+                // Create the doc from template
+                let doc = new Docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                });
+
+                // Replace placeholders with actual data
+                doc.render({
+                    BUSINESS_NAME: businessName.toUpperCase(),
+                    BUSINESS_OWNER: ownerName.toUpperCase(),
+                    Type: classification,
+                    Address: address,
+                    Permit_No: permitNumber,
+                    Date_Issued: applicationDate,
+                    No_of_Employees: employeeCount,
+                    Exp_Date: expirationDate
+                });
+
+                // Generate the new document
+                const buf = doc.getZip().generate({
+                    type: "nodebuffer",
+                    compression: "DEFLATE",
+                });
+
+                // Set the content type
+                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+                res.setHeader('Content-Disposition', `attachment; filename="${businessName} Permit.docx"`);
+
+                // Send the buffer to the client
+                res.send(buf);
+
+            } catch (error) {
+                console.error('Error generating permit:', error);
+                res.status(500).json({ error: 'Failed to generate permit', details: error.message });
+            }
+        });
+
+app.listen(port, () => {
             console.log('Server running on http://localhost:${port}');
         });
     } catch (err) {
