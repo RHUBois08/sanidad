@@ -94,6 +94,11 @@ async function createTables(pool) {
             owner_name VARCHAR(255),
             no INTEGER,
             employee_name VARCHAR(255),
+            position VARCHAR(255),
+            age INTEGER,
+            sex VARCHAR(255),
+            nationality VARCHAR(255),
+            place_of_work VARCHAR(255),
             address VARCHAR(255),
             health_cert_no VARCHAR(255),
             remarks VARCHAR(255),
@@ -102,24 +107,11 @@ async function createTables(pool) {
         );
     `;
 
-    const createClassificationsTableQuery = `
-    CREATE TABLE IF NOT EXISTS classifications (
-        id SERIAL PRIMARY KEY,
-        business_name VARCHAR(255),
-        owner_name VARCHAR(255),
-        permit_number VARCHAR(255),
-        classification VARCHAR(255),
-        categories TEXT[]
-    );
-    `;
-
     try {
         await pool.query(createOwnersTableQuery);
         console.log('Table "owners" is ready');
         await pool.query(createEmployeesTableQuery);
         console.log('Table "employees" is ready');
-        await pool.query(createClassificationsTableQuery);
-        console.log('Table "classifications" is ready');
     } catch (err) {
         console.error('Error creating tables', err);
         throw err;
@@ -258,13 +250,18 @@ async function init() {
             }
             try {
                 const upsertQuery = `
-                    INSERT INTO employees (id, business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    INSERT INTO employees (id, business_name, owner_name, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
                     ON CONFLICT (id) DO UPDATE SET
                         business_name = EXCLUDED.business_name,
                         owner_name = EXCLUDED.owner_name,
                         no = EXCLUDED.no,
                         employee_name = EXCLUDED.employee_name,
+                        position = EXCLUDED.position,
+                        age = EXCLUDED.age,
+                        sex = EXCLUDED.sex,
+                        nationality = EXCLUDED.nationality,
+                        place_of_work = EXCLUDED.place_of_work,
                         address = EXCLUDED.address,
                         health_cert_no = EXCLUDED.health_cert_no,
                         remarks = EXCLUDED.remarks,
@@ -273,8 +270,8 @@ async function init() {
                 `;
 
                 const insertQuery = `
-                    INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    INSERT INTO employees (business_name, owner_name, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 `;
 
                 for (const emp of employees) {
@@ -286,6 +283,11 @@ async function init() {
                             ownerName,
                             emp.no,
                             emp.name,
+                            emp.position,
+                            emp.age,
+                            emp.sex,
+                            emp.nationality,
+                            emp.place_of_work,
                             emp.address,
                             emp.cert,
                             emp.remarks,
@@ -299,6 +301,11 @@ async function init() {
                             ownerName,
                             emp.no,
                             emp.name,
+                            emp.position,
+                            emp.age,
+                            emp.sex,
+                            emp.nationality,
+                            emp.place_of_work,
                             emp.address,
                             emp.cert,
                             emp.remarks,
@@ -351,7 +358,7 @@ async function init() {
             }
             try {
                 const query = `
-                    SELECT id, no, employee_name, address, health_cert_no, remarks, date_of_xray
+                    SELECT id, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray
                     FROM employees
                     WHERE business_name = $1 AND owner_name = $2
                     ${year ? 'AND EXTRACT(YEAR FROM application_date) = $3' : ''}
@@ -516,8 +523,7 @@ async function init() {
 
                 let applicationYear = null;
                 if (ownerResult.rows.length > 0 && ownerResult.rows[0].application_date) {
-                    const appDate = new Date(ownerResult.rows[0].application_date);
-                    applicationYear = appDate.getUTCFullYear();
+                    applicationYear = new Date(ownerResult.rows[0].application_date).getFullYear();
                 }
 
                 // Fetch employee list based on business name, owner name, and application year
@@ -619,7 +625,7 @@ async function init() {
 
 app.listen(port, () => {
             console.log('Server running on http://localhost:${port}');
-        });	
+        });
     } catch (err) {
         console.error('Failed to initialize server', err);
         process.exit(1);
