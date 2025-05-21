@@ -6,7 +6,6 @@
     <title>Sanitary Permit Form</title>
     <link rel="stylesheet" href="css\5.css">
     <link rel="icon" href="image\sanidad_logo.png" type="image/png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.0/mammoth.browser.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -32,11 +31,10 @@
                 <input style=" width: 239px; height: 20px;width: 131%; margin-left: -68px;" type="text" id="classificationInput">
         </div>
         </div>
-        <input type="hidden" id="classificationId">
         <div class="mid-section" style="margin-top: 30px; position: absolute; margin-left: 45px;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-<button id="print-permit" onclick="generate_permit()" aria-label="Print" title="Print">
+<button id="print-permit"onclick="generate_sanitary_permit()" aria-label="Print" title="Print">
     <img src="image/print_icon.png" alt="Print" style="width: 40px; height: 35px; vertical-align: middle; margin-left: 4px;">
 </button>
         </div>
@@ -88,7 +86,10 @@
 <button class="submit-btn"  onclick="submitForm()" aria-label="Save" title="Save">
     <img src="image/save_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
-<button id="printSaveBtn" onclick="generate_certificate()" aria-label="Print" title="Print">
+<button id="submitEmployeesBtn"onclick="saveEmployees()" aria-label="Submit" title="Submit" >
+    <img src="image/submit_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
+</button>
+<button id="printSaveBtn" onclick="printForm()" aria-label="Print" title="Print">
     <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
 </button>
         </div>
@@ -140,58 +141,58 @@
                     fetchUrl += `&year=${encodeURIComponent(applicationYear)}`;
                 }
 
-                const empResponse = await fetch(fetchUrl);
-                if (empResponse.ok) {
-                    const employees = await empResponse.json();
-                    if (Array.isArray(employees) && employees.length > 0) {
-                        populateEmployeeTable(employees);
+                    const empResponse = await fetch(fetchUrl);
+                    if (empResponse.ok) {
+                        const employees = await empResponse.json();
+                        if (Array.isArray(employees) && employees.length > 0) {
+                            populateEmployeeTable(employees);
+                        } 
+                        
+                        else {
+                            // Clear table and add a single empty row with input boxes for new data entry
+                            const tbody = document.getElementById("employeeTableBody2025");
+                            tbody.innerHTML = `
+                                <tr>
+                            <td class="employee-no-cell">1</td>
+                            <td><input type="text" class="employee-name" required></td>
+                            <td><input type="text" class="employee-address" required></td>
+                            <td><input type="text" class="health-cert" required></td>
+                            <td><input type="text" class="remarks" required></td>
+                            <td><input type="date" class="x-ray-date" required></td>
+                            <td>
+                                <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                            onmouseover="this.style.backgroundColor='#002e63'"
+                            onmouseout="this.style.backgroundColor='#0047abc9'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                    </svg>
+                            </button>
+                            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                            onmouseover="this.style.backgroundColor='#cc0000'"
+                            onmouseout="this.style.backgroundColor='#ff4d4d'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                </svg>
+                            </button>
+                            </td>
+                        </tr>
+                    `;
+                        }
                     } 
                     
                     else {
-                        // Clear table and add a single empty row with input boxes for new data entry
-                        const tbody = document.getElementById("employeeTableBody2025");
-                        tbody.innerHTML = `
-                            <tr>
-                        <td class="employee-no-cell">1</td>
-                        <td><input type="text" class="employee-name" required></td>
-                        <td><input type="text" class="employee-address" required></td>
-                        <td><input type="text" class="health-cert" required></td>
-                        <td><input type="text" class="remarks" required></td>
-                        <td><input type="date" class="x-ray-date" required></td>
-                        <td>
-                            <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
-                        onmouseover="this.style.backgroundColor='#002e63'"
-                        onmouseout="this.style.backgroundColor='#0047abc9'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                                </svg>
-                        </button>
-                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
-                        onmouseover="this.style.backgroundColor='#cc0000'"
-                        onmouseout="this.style.backgroundColor='#ff4d4d'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                            </svg>
-                        </button>
-                        </td>
-                    </tr>
-                `;
+                        console.error('Failed to fetch employees data. Status:', empResponse.status);
+                        alert('Failed to fetch employees data from server.');
                     }
                 } 
                 
-                else {
-                    console.error('Failed to fetch employees data. Status:', empResponse.status);
-                    alert('Failed to fetch employees data from server.');
+                catch (error) {
+                    console.error('Error fetching employees data:', error);
+                    alert('Error fetching employees data. Please try again later.');
                 }
-            } 
-            
-            catch (error) {
-                console.error('Error fetching employees data:', error);
-                alert('Error fetching employees data. Please try again later.');
-            }
-            }
-        });
+                }
+            });
 
         async function removeRow(button) {
             const row = button.parentElement.parentElement;
@@ -257,14 +258,14 @@
                 tdNo.textContent = emp.no || (index + 1);
                 tr.appendChild(tdNo);
 
-                // Employee Name
-                const tdName = document.createElement('td');
-                const inputName = document.createElement('input');
-                inputName.type = 'text';
-                inputName.className = 'employee-name';
-                inputName.value = emp.employee_name || '';
-                tdName.appendChild(inputName);
-                tr.appendChild(tdName);
+                    // Employee Name
+                    const tdName = document.createElement('td');
+                    const inputName = document.createElement('input');
+                    inputName.type = 'text';
+                    inputName.className = 'employee-name';
+                    inputName.value = emp.employee_name || '';
+                    tdName.appendChild(inputName);
+                    tr.appendChild(tdName);
 
                 // Address
                 const tdAddress = document.createElement('td');
@@ -327,26 +328,26 @@
                 visibleTableBody.appendChild(tr);
             });
 
-            // Append unsaved/new rows (if any)
-            unsavedRows.forEach(rowData => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="employee-no-cell"></td>
-                    <td><input type="text" class="employee-name" required value="${rowData.name || ''}"></td>
-                    <td><input type="text" class="employee-address" required value="${rowData.address || ''}"></td>
-                    <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
-                    <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
-                    <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
-                <td>
-                    <button onclick="addRow()">+</button>
-                    <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; font-size:20px; margin-left: 5px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                        </svg>
-                    </button>
-                </td>
-            `;
+                // Append unsaved/new rows (if any)
+                unsavedRows.forEach(rowData => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="employee-no-cell"></td>
+                        <td><input type="text" class="employee-name" required value="${rowData.name || ''}"></td>
+                        <td><input type="text" class="employee-address" required value="${rowData.address || ''}"></td>
+                        <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
+                        <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
+                        <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
+                    <td>
+                        <button onclick="addRow()">+</button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; font-size:20px; margin-left: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
                 visibleTableBody.appendChild(tr);
             });
 
@@ -356,6 +357,10 @@
             }
 
             updateRowNumbers();
+        }
+
+        function printForm() {
+            window.print();
         }
 
         function updateRowNumbers() {
@@ -371,15 +376,15 @@
         }
 
         async function submitForm() {
-            let businessName = document.getElementById("businessName").value.trim();
-            let ownerName = document.getElementById("ownerName").value.trim();
-            let permitNumber = document.getElementById("permitNumber").value.trim();
-            let classification = document.getElementById("classificationInput").value.trim();
-            const classificationId = document.getElementById("classificationId").value;
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+            const permitNumber = document.getElementById("permitNumber").value.trim();
+            const classification = document.getElementById("classificationInput").value.trim();
 
-            // Send empty strings if the fields are empty
-            permitNumber = permitNumber || "";
-            classification = classification || "";
+            if (!permitNumber || !classification) {
+                alert('Successfully Saved');
+                return;
+            }
 
             // Validate required inputs in employee table
             const visibleTableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
@@ -403,14 +408,7 @@
                 const response = await fetch('http://localhost:3000/api/classifications/save', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        id: classificationId,
-                        businessName, 
-                        ownerName, 
-                        permitNumber, 
-                        classification, 
-                        linkable_texts: selectedCategories 
-                    }),
+                    body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
                 });
 
                 if (!response.ok) {
@@ -430,36 +428,18 @@
                 localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
                 // Proceed with saving employees
                 await saveEmployees();
-
-                // Refetch classification data to update input fields
-                await fetchClassificationData(businessName, ownerName);
-
             } catch (error) {
                 console.error('Error saving Sanitary Permit # and Classification:', error);
                 alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
             }
         }
 
-        async function fetchClassificationData(businessName, ownerName) {
-            try {
-                const response = await fetch(`http://localhost:3000/api/classifications?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data) {
-                        document.getElementById('classificationInput').value = data.classification || '';
-                        document.getElementById('permitNumber').value = data.permit_number || '';
-                        document.getElementById('classificationId').value = data.id || ''; // Store the ID
-                        // Restore radio button selection from categories
-                        if (data.categories && Array.isArray(data.categories)) {
-                            document.getElementById('categoryFood').checked = data.categories.includes('Food');
-                            document.getElementById('categoryNonFood').checked = data.categories.includes('Non-Food');
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching classification data:', error);
-            }
-        }
+        // On page load, restore checkbox states from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedCategories = JSON.parse(localStorage.getItem('selectedCategories') || '[]');
+            document.getElementById('categoryFood').checked = savedCategories.includes('Food');
+            document.getElementById('categoryNonFood').checked = savedCategories.includes('Non-Food');
+        });
 
         async function saveEmployees() {
             const businessName = document.getElementById("businessName").value.trim();
@@ -515,19 +495,21 @@
                 const noText = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
                 const no = noText ? parseInt(noText, 10) : null;
                 const name = row.querySelector(".employee-name")?.value.trim() || '';
+                const position = row.querySelector(".employee-position")?.value.trim() || '';
                 const address = row.querySelector(".employee-address")?.value.trim() || '';
                 const cert = row.querySelector(".health-cert")?.value.trim() || '';
                 const remarks = row.querySelector(".remarks")?.value.trim() || '';
                 let date_of_xray = row.querySelector(".x-ray-date")?.value || '';
                 if (date_of_xray === "") date_of_xray = null;
                 // Only push if at least one field is filled
-                if (name || address || cert || remarks || date_of_xray) {
+                if (name || position || address || cert || remarks || date_of_xray) {
                     employees.push({
                         id,
                         business_name: businessName,
                         owner_name: ownerName,
                         no,
                         name,
+                        position,
                         address,
                         cert,
                         remarks,
@@ -582,6 +564,15 @@
                 newRow.innerHTML = `
                 <td class="employee-no-cell"></td>
                 <td><input type="text" class="employee-name" required></td>
+                <td><input type="text" class="employee-position" required></td>
+                <td><input type="number" class="employee-age" required></td>
+                <td><select class="employee-sex" required>
+                    <option value="">Select Sex</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    </select></td>
+                <td><input type="text" class="employee-nationality" required></td>
+                <td><input type="text" class="employee-place-of-work" required></td>
                 <td><input type="text" class="employee-address" required></td>
                 <td><input type="text" class="health-cert" required></td>
                 <td><input type="text" class="remarks" required></td>
@@ -737,7 +728,6 @@
                     return;
                 }
 
-                // Extract application year from application_date
                 let applicationYear = null;
                 if (ownerData.application_date) {
                     applicationYear = new Date(ownerData.application_date).getFullYear();
@@ -745,6 +735,7 @@
 
                 // Construct the URL for the API endpoint with applicationYear
                 let url = `http://localhost:3000/api/generateCertificate?businessName=${encodeURIComponent(businessName)}&ownerName=${encodeURIComponent(ownerName)}`;
+
                 if (applicationYear) {
                     url += `&year=${encodeURIComponent(applicationYear)}`;
                 }
@@ -757,6 +748,6 @@
             }
         }
     </script>
-<!-- <script src="print.js"></script> -->
+    <script src="print.js"></script>
 </body>
 </html>
