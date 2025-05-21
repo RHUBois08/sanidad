@@ -115,17 +115,21 @@ input[type="text"] {
 table {
     width: 100%;
     border-collapse: collapse;
-    background-color:none;
+    background-color: none;
+    font-size: 12px;
 }
 
 th, td {
     border: 1px solid #0a06068c;
-    padding: 10px;
+    padding: 4px;
     text-align: center;
+    white-space: nowrap;
 }
 
 th {
     background-color: #ffffff; 
+    font-size: 12px;
+    padding: 8px 4px;
 }
 
 .submit-btn {
@@ -144,7 +148,7 @@ th {
 }
 
 #submitEmployeesBtn {
-    margin-left: 10px; 
+    margin-left: -101px; 
     color: black;
     border-radius: 4px; 
     cursor: pointer; 
@@ -160,7 +164,7 @@ th {
 }
 
 #printSaveBtn {
-    margin-left: 70px;
+    margin-left: -40px;
      position: absolute;
       z-index: 2; 
       border-radius: 4px; 
@@ -177,19 +181,114 @@ th {
 .submit-section {
     text-align: right;
 }
-#print-permit{
-    margin-left: 1120px; 
-    width: 60px; 
-    position: absolute; 
-    margin-top: 1px; 
-    background-color: #0047abc9; 
-    height:35px; 
-    border-radius: 
-    5px; vertical-align: middle;
+#print-permit {
+    background-color: #0047abc9;
     border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 80px;
+    height: 32px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 #print-permit:hover {
-    background-color: #afd3e2;
-    background-position: 0 0;
-            transition: 0.3s;
+    background-color: #002e63;
+    transition: 0.3s;
+}
+#print-card {
+    background-color: #0047abc9;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: -144px;
+    height: 32px;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#print-card:hover {
+    background-color: #002e63;
+    transition: 0.3s;
+}
+
+/* Update table container and table styles */
+.table-container {
+    width: 99.8%;
+    margin: 0px -14px;
+    overflow-x: auto;
+    padding: 0 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: none;
+    font-size: 12px;
+}
+
+th, td {
+    border: 1px solid #0a06068c;
+    padding: 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+th {
+    background-color: #ffffff;
+    font-size: 12px;
+    padding: 8px 4px;
+}
+
+/* Make inputs and selects smaller */
+.table-container input,
+.table-container select {
+    padding: 2px 4px;
+    height: 24px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+.table-container input[type="number"] {
+    width: 50px;
+}
+
+.table-container .employee-name {
+    width: 140px;
+}
+
+.table-container .employee-occupation {
+    width: 100px;
+}
+
+.table-container .employee-sex {
+    width: 70px;
+}
+
+.table-container .nationality {
+    width: 80px;
+}
+
+.table-container .employee-address {
+    width: 120px;
+}
+
+.table-container .place-of-work {
+    width: 120px;
+}
+
+.table-container .health-cert {
+    width: 90px;
+}
+
+.table-container .remarks {
+    width: 100px;
+}
+
+.table-container .x-ray-date {
+    width: 120px;
 }

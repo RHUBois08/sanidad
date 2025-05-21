@@ -1,306 +1,784 @@
-<!-- index.html -->
+<!-- add_employee.html -->
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sanitary Permit Issuance</title>
-    <link rel="stylesheet" href="css\2.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Sanitary Permit Form</title>
+    <link rel="stylesheet" href="css\5.css">
     <link rel="icon" href="image\sanidad_logo.png" type="image/png">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color:#afd3e2;
+        .home-link img {
+            width: 40px;
+            height: auto;
+            float: left;
+            margin-left: -40px;
+            z-index: 100;
+            margin-top: -2.3%;
+            transition: transform 0.3s ease;
         }
         
-        .wrapper {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        .home-link img:hover {
+            transform: scale(1.2);
         }
 
-        .header {
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-section img {
-            width: 90px;
-            height: auto;
-        }
-
-        .title-section {
-            flex-grow: 1;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            
-        }
-
-        .search-section {
-            display: flex;
-            gap: 10px;
-            margin-top: 80px;
-        }
-
-        .search-section input {
-            padding: 8px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .search-section button {
-            padding: 8px 12px;
-            background-color: #4c7b8b;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-         .search-section button:hover{
-            background-color: #081330;
-        }
-
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-
-        .actions-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        .add-button {
-            padding: 10px 20px;
-            background-color: #4c7b8b;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .table-container {
-            background-color :#afd3e2;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow: hidden;
-            width: 101.5%;
-            margin-left: -10px;
-        }
-
-        #applicationTable {
+        /* Update dropdown style with increased height */
+        .employee-address {
             width: 100%;
-            border-collapse: collapse;
-            color: black;
-        }
-
-        #applicationTable th {
-            background-color: #ffffff;
-            color: rgb(0, 0, 0);
-            padding: 12px;
-            text-align: left;
-        }
-
-        #applicationTable td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        #applicationTable tbody tr:hover {
-            background-color: #ffffff;
-        }
-
-        .delete-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
+            height: 35px; /* Increased from 32px */
+            box-sizing: border-box;
+            border: 1px solid #ccc;
             border-radius: 3px;
-            padding: 6px 10px;
-            cursor: pointer;
+            padding: 2px 5px;
         }
 
-        .delete-button:hover {
-            background-color: #462024;
-        }
-
-        #loadingMessage, #errorMessage {
-            text-align: center;
-            padding: 20px;
+        /* Add style for date input */
+        .x-ray-date {
+            height: 35px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 2px 5px;
         }
     </style>
 </head>
 <body>
-  <div class="top-bar">
-  <div class="wrapper">
-        <div class="header">
-            <div class="logo-section">
-                <img src="image\My project (1).png" alt="Project Logo">
-                <img src="image\MUNICIPAL HEALTH OFFICE 2172025 (1).png" alt="Health Office Logo">
-                <a href="home.html">
-                    <img src="image\jhjhj.png" alt="Home" style="width: 40px; height: auto;">
-                </a>
+    <div class="container">
+        <div id="connectionStatus" style="margin-bottom: 10px; font-weight: bold;">Connecting to database...</div>
+        <div class="top-bar">
+            <a href="index.html" class="home-link">
+                <img src="image\jhjhj.png" alt="Home">
+            </a>
+            <div class="header">
+                <div class="input-group">
+                    <label for="businessName" style="margin-left: 50px;">Business Name</label>
+                    <input style="height: 20px; width: 115%; "type="text" id="businessName">
+                </div>
+                <div class="input-group" style="margin-left: 45px;">
+                    <label for="ownerName"style="margin-left: 54px;">Name of Owner/Applicant</label>
+                    <input style="height: 20px; width: 115%;" type="text" id="ownerName">
+                </div>
+                <div class="input-group" style="margin-right: 20px;">
+                    <label for="permitNumber" style="margin-right: 30px;">Sanitary Permit #</label>
+                    <input style="height: 20px; width: 80%;" type="text" id="permitNumber">
+                </div>
+                <div style="margin-top: 65px; margin-left:628px; position: absolute; ">
+                    <label for="classification" style="margin-left: -228px;margin-top:-5px; position: absolute;">Type of Establishment</label><br>
+                    <select id="classificationInput" style="width: 297px; height: 38px; margin-left: -98px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="">Select Type</option>
+                        <option value="Restaurant">Restaurant</option>
+                        <option value="Bakery">Bakery</option>
+                        <option value="Convenience Store">Convenience Store</option>
+                        <option value="Grocery Store">Grocery Store</option>
+                        <option value="Food Manufacturing">Food Manufacturing</option>
+                        <option value="Food Stall">Food Stall</option>
+                        <option value="Catering Service">Catering Service</option>
+                        <option value="Hotels">Hotels</option>
+                        <option value="Pharmacy">Pharmacy</option>
+                        <option value="Clinic">Clinic</option>
+                        <option value="Hospital">Hospital</option>
+                        <option value="Beauty Salon">Beauty Salon</option>
+                        <option value="Spa">Spa</option>
+                        <option value="Other">Other</option>
+                    </select>
             </div>
-            <div class="title-section">
-                Issuance of Sanitary Permit
             </div>
-            <div class="search-section">
-                <input type="text" id="iframeSearchInput" placeholder="Search...">
-                <button id="iframeSearchButton">Search</button>
-            </div>
-        </div>
-
-        <div class="content">
-            <div id="loadingMessage" style="display: none;">Loading data, please wait...</div>
-            <div id="errorMessage" style="display: none; color: red;">Failed to load data. Please try again later.</div>
-            </div> 
-            <div class="top-bars">
-            <div class="actions-bar">
-                <button onclick="window.location.href='add_owner.html'" class="add-button">Add</button>
+            <div class="mid-section" style="margin-top: 30px; position: absolute; margin-left: 45px;">
+                <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
+                <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
             </div>
             </div>
             <div class="table-container">
-                <table id="applicationTable">
+                <table id="table2025" style="display: table;">
                     <thead>
                         <tr>
-                            <th>Business Name</th>
-                            <th>Owner/Applicant</th>
-                            <th>Applicant Type</th>
-                            <th>Application Date</th>
+                            <th>No.</th>
+                            <th>Employee Name</th>
+                            <th>Occupation</th>
+                            <th>Age</th>
+                            <th>Sex</th>
+                            <th>Nationality</th>
                             <th>Address</th>
-                            <th>Remarks</th>
-                            <th>Status</th>
+                            <th>Place of Work</th>
+                            <th>Health Cert. No.</th>
+                            <th>Status of Requirements</th>
+                            <th>Date of X-ray</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="applicationTableBody">
-                        <tr><td colspan="8">Loading data...</td></tr>
+                <tbody id="employeeTableBody2025">
+                <tr>
+                    <td class="employee-no-cell">1</td>
+                    <td><input type="text" class="employee-name" required></td>
+                    <td><input type="text" class="employee-occupation" required></td>
+                    <td><input type="number" class="employee-age" required min="18" max="100" style="width: 60px;"></td>
+                    <td>
+                        <select class="employee-sex" required style="width: 80px;">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="nationality" value="Filipino" required></td>
+                    <td><input type="text" class="employee-address" required></td>
+                    <td><input type="text" class="place-of-work" required></td>
+                    <td><input type="text" class="health-cert" required></td>
+                    <td><input type="text" class="remarks" required></td>
+                    <td><input type="date" class="x-ray-date" style="height: 35px; width: 100%;" required></td>
+                    <td>
+                        <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.backgroundColor='#002e63'"
+                        onmouseout="this.style.backgroundColor='#0047abc9'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                </svg>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.backgroundColor='#cc0000'"
+                        onmouseout="this.style.backgroundColor='#ff4d4d'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+                </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
+                <button id="submitEmployeesBtn" onclick="saveEmployees()" aria-label="Submit" title="Submit">
+                    <img src="image/submit_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
+                </button>
+                <button id="printSaveBtn" onclick="printForm()" aria-label="Print" title="Print Certificate">
+                    <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
+                </button>
+                <button id="print-permit" onclick="generate_sanitary_permit()" aria-label="Print" title="Print Permit">
+                    <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
+                </button>
+                <button id="print-card" onclick="generate_sanitary_permit()" aria-label="Print" title="Print Health Card">
+                    <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
+                </button>
+            </div>
+            <div></div>
         </div>
-    </div>
+        <!-- Removed the Add Year button as per user request -->
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const businessName = urlParams.get('business_name');
+                const ownerName = urlParams.get('owner_name');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tableBody = document.getElementById('applicationTableBody');
-            const searchInput = document.getElementById('iframeSearchInput');
-            const searchButton = document.getElementById('iframeSearchButton');
-            const loadingMessage = document.getElementById('loadingMessage');
-            const errorMessage = document.getElementById('errorMessage');
-
-            async function fetchData() {
-                loadingMessage.style.display = 'block';
-                errorMessage.style.display = 'none';
-                try {
-                    const response = await fetch('http://localhost:3000/api/owners');
-                    if (!response.ok) {
-                        let errorText;
-                        try {
-                            const errorJson = await response.json();
-                            errorText = errorJson.error || JSON.stringify(errorJson);
-                        } catch {
-                            errorText = await response.text();
-                        }
-                        throw new Error(errorText || 'Network response was not ok');
-                    }
-                    const data = await response.json();
-                    tableBody.innerHTML = '';
-                    if (!Array.isArray(data) || data.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="8">No data found.</td></tr>';
-                    } else {
-                        data.forEach(row => {
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td><a href="add_employee.html?business_name=${encodeURIComponent(row.business_name)}&owner_name=${encodeURIComponent(row.owner_name)}&application_year=${row.application_year}">${row.business_name || ''}</a></td>
-                                <td>${row.owner_name || ''}</td>
-                                <td>${row.applicant_type || ''}</td>
-                                <td>${row.application_date ? new Date(row.application_date).toLocaleDateString() : ''}</td>
-                                <td>${row.address || ''}</td>
-                                <td>${row.remarks || ''}</td>
-                                <td>${row.status || ''}</td>
-                                <td><button class="delete-button" data-business="${row.business_name}" data-owner="${row.owner_name}"><i class="fas fa-trash-alt"></i></button></td>
-                            `;
-                            tableBody.appendChild(tr);
-                        });
-                        addDeleteEventListeners();
-                    }
-                } catch (error) {
-                    console.error('Error loading data:', error);
-                    tableBody.innerHTML = '<tr><td colspan="8">Error loading data.</td></tr>';
-                    errorMessage.style.display = 'block';
-                    errorMessage.textContent = 'Failed to load data: ' + error.message;
-                } finally {
-                    loadingMessage.style.display = 'none';
+                if (businessName) {
+                    document.getElementById('businessName').value = decodeURIComponent(businessName);
                 }
-            }
+                if (ownerName) {
+                    document.getElementById('ownerName').value = decodeURIComponent(ownerName);
+                }
 
-            function addDeleteEventListeners() {
-                const deleteButtons = document.querySelectorAll('.delete-button');
-                deleteButtons.forEach(button => {
-                    button.addEventListener('click', async () => {
-                        const businessName = button.getAttribute('data-business');
-                        const ownerName = button.getAttribute('data-owner');
-                        if (confirm(`Are you sure you want to delete the record for ${businessName} - ${ownerName}?`)) {
-                            try {
-                                const response = await fetch('http://localhost:3000/api/owners/delete', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ businessName, ownerName }),
-                                });
-                                if (!response.ok) {
-                                    const errorData = await response.json(); // Try to get error details from the server
-                                    console.error('Failed to delete record:', errorData);
-                                    throw new Error(errorData.error || 'Failed to delete record');
+                // Remove localStorage saving for category checkboxes
+
+                // Fetch and prefill Classification and Sanitary Permit #
+                if (businessName && ownerName) {
+                    try {
+                        const response = await fetch(`http://localhost:3000/api/classifications?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data) {
+                                document.getElementById('classificationInput').value = data.classification || '';
+                                document.getElementById('permitNumber').value = data.permit_number || '';
+                                // Restore radio button selection from categories
+                                if (data.categories && Array.isArray(data.categories)) {
+                                    document.getElementById('categoryFood').checked = data.categories.includes('Food');
+                                    document.getElementById('categoryNonFood').checked = data.categories.includes('Non-Food');
                                 }
-                                alert('Record deleted successfully');
-                                fetchData();
-                            } catch (error) {
-                                console.error('Error deleting record:', error);
-                                alert('Failed to delete record');
                             }
                         }
-                    });
-                });
+                    } catch (error) {
+                        console.error('Error fetching classification data:', error);
+                    }
+
+                // Fetch and populate employees data
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const applicationYear = urlParams.get('application_year');
+
+                    let fetchUrl = `http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
+                    if (applicationYear) {
+                        fetchUrl += `&year=${encodeURIComponent(applicationYear)}`;
+                    }
+
+                    const empResponse = await fetch(fetchUrl);
+                    if (!empResponse.ok) {
+                        throw new Error(`HTTP error! status: ${empResponse.status}`);
+                    }
+                    const employees = await empResponse.json();
+                    
+                    if (Array.isArray(employees)) {
+                        if (employees.length > 0) {
+                            populateEmployeeTable(employees);
+                        } else {
+                            // Add empty row for new data entry
+                            addRow();
+                        }
+                    } else {
+                        throw new Error('Invalid data format received from server');
+                    }
+                } catch (error) {
+                    console.error('Error fetching employees data:', error);
+                    // Clear table and add a single empty row for new data entry
+                    const tbody = document.getElementById("employeeTableBody2025");
+                    tbody.innerHTML = '';
+                    addRow();
+                    // Show user-friendly error message
+                    document.getElementById('connectionStatus').textContent = 
+                        'Could not load existing data. You can still add new entries.';
+                    document.getElementById('connectionStatus').style.color = '#ff4d4d';
+                }
+            });
+
+            async function removeRow(button) {
+                const row = button.parentElement.parentElement;
+                const employeeNoCell = row.querySelector('.employee-no-cell');
+                const employeeNameInput = row.querySelector('.employee-name');
+                const businessName = document.getElementById("businessName").value.trim();
+                const ownerName = document.getElementById("ownerName").value.trim();
+
+                // Check if this row has a data-employee-id attribute (existing employee)
+                const employeeId = row.getAttribute('data-employee-id');
+
+                if (employeeId) {
+                    // Confirm deletion
+                    if (!confirm(`Are you sure you want to delete employee "${employeeNameInput.value}"?`)) {
+                        return;
+                    }
+                    try {
+                        const response = await fetch(`http://localhost:3000/api/employees/${employeeId}`, {
+                            method: 'DELETE',
+                        });
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            alert(`Failed to delete employee: ${errorData.error || 'Unknown error'}`);
+                            return;
+                        }
+                        alert('Employee deleted successfully');
+                    } catch (error) {
+                        alert(`Error deleting employee: ${error.message}`);
+                        return;
+                    }
+                }
+
+                // Remove row from DOM and update row numbers
+                row.remove();
+                updateRowNumbers();
             }
 
-            function filterTable() {
-                const filter = searchInput.value.toUpperCase();
-                const rows = tableBody.getElementsByTagName('tr');
-                for (let i = 0; i < rows.length; i++) {
-                    const cells = rows[i].getElementsByTagName('td');
-                    let found = false;
-                    // Only check Business Name (cells[0]) and Owner/Applicant (cells[1])
-                    if (cells.length >= 2) {
-                        if (cells[0].textContent.toUpperCase().indexOf(filter) > -1 || cells[1].textContent.toUpperCase().indexOf(filter) > -1) {
-                            found = true;
+            function populateEmployeeTable(employees, unsavedRows = []) {
+                // Determine visible table body
+                let visibleTableBody = null;
+                if (document.getElementById("table2025").style.display !== "none") {
+                    visibleTableBody = document.getElementById("employeeTableBody2025");
+                } else if (document.getElementById("table2026").style.display !== "none") {
+                    visibleTableBody = document.getElementById("employeeTableBody2026"); // Fixed missing )
+                } else if (document.getElementById("table2027").style.display !== "none") {
+                    visibleTableBody = document.getElementById("employeeTableBody2027"); // Fixed missing )
+                } else {
+                    visibleTableBody = document.getElementById("employeeTableBody2025"); // default
+                }
+
+                // Clear existing rows
+                visibleTableBody.innerHTML = '';
+
+                // Populate rows from DB (saved)
+                employees.forEach((emp, index) => {
+                    const tr = document.createElement('tr');
+                    // Set employee id as data attribute
+                    tr.setAttribute('data-employee-id', emp.id || '');
+
+                    // No.
+                    const tdNo = document.createElement('td');
+                    tdNo.className = 'employee-no-cell';
+                    tdNo.textContent = emp.no || (index + 1);
+                    tr.appendChild(tdNo);
+
+                    // Employee Name
+                    const tdName = document.createElement('td');
+                    const inputName = document.createElement('input');
+                    inputName.type = 'text';
+                    inputName.className = 'employee-name';
+                    inputName.value = emp.employee_name || '';
+                    tdName.appendChild(inputName);
+                    tr.appendChild(tdName);
+
+                    // Occupation
+                    const tdOccupation = document.createElement('td');
+                    const inputOccupation = document.createElement('input');
+                    inputOccupation.type = 'text';
+                    inputOccupation.className = 'employee-occupation';
+                    inputOccupation.value = emp.occupation || '';
+                    tdOccupation.appendChild(inputOccupation);
+                    tr.appendChild(tdOccupation);
+
+                    // Age
+                    const tdAge = document.createElement('td');
+                    const inputAge = document.createElement('input');
+                    inputAge.type = 'number';
+                    inputAge.className = 'employee-age';
+                    inputAge.value = emp.age || '';
+                    inputAge.min = 18;
+                    inputAge.max = 100;
+                    inputAge.style.width = '60px';
+                    tdAge.appendChild(inputAge);
+                    tr.appendChild(tdAge);
+
+                    // Sex
+                    const tdSex = document.createElement('td');
+                    const selectSex = document.createElement('select');
+                    selectSex.className = 'employee-sex';
+                    selectSex.required = true;
+                    selectSex.style.width = '80px';
+                    
+                    // Add options
+                    const sexOptions = [
+                        { value: '', text: 'Select' },
+                        { value: 'Male', text: 'Male' },
+                        { value: 'Female', text: 'Female' }
+                    ];
+                    
+                    sexOptions.forEach(option => {
+                        const opt = document.createElement('option');
+                        opt.value = option.value;
+                        opt.textContent = option.text;
+                        if (emp.sex === option.value) {
+                            opt.selected = true;
                         }
+                        selectSex.appendChild(opt);
+                    });
+                    
+                    tdSex.appendChild(selectSex);
+                    tr.appendChild(tdSex);
+
+                    // Nationality
+                    const tdNationality = document.createElement('td');
+                    const inputNationality = document.createElement('input');
+                    inputNationality.type = 'text';
+                    inputNationality.className = 'nationality';
+                    inputNationality.value = emp.nationality || 'Filipino';
+                    tdNationality.appendChild(inputNationality);
+                    tr.appendChild(tdNationality);
+
+                    // Address
+                    const tdAddress = document.createElement('td');
+                    const inputAddress = document.createElement('input');
+                    inputAddress.type = 'text';
+                    inputAddress.className = 'employee-address';
+                    inputAddress.value = emp.address || '';
+                    inputAddress.required = true;
+                    tdAddress.appendChild(inputAddress);
+                    tr.appendChild(tdAddress);
+
+                    // Place of Work
+                    const tdPlaceOfWork = document.createElement('td');
+                    const inputPlaceOfWork = document.createElement('input');
+                    inputPlaceOfWork.type = 'text';
+                    inputPlaceOfWork.className = 'place-of-work';
+                    inputPlaceOfWork.value = emp.place_of_work || '';
+                    tdPlaceOfWork.appendChild(inputPlaceOfWork);
+                    tr.appendChild(tdPlaceOfWork);
+
+                    // Health Cert No.
+                    const tdCert = document.createElement('td');
+                    const inputCert = document.createElement('input');
+                    inputCert.type = 'text';
+                    inputCert.className = 'health-cert';
+                    inputCert.value = emp.health_cert_no || '';
+                    tdCert.appendChild(inputCert);
+                    tr.appendChild(tdCert);
+
+                    // Remarks
+                    const tdRemarks = document.createElement('td');
+                    const inputRemarks = document.createElement('input');
+                    inputRemarks.type = 'text';
+                    inputRemarks.className = 'remarks';
+                    inputRemarks.value = emp.remarks || '';
+                    tdRemarks.appendChild(inputRemarks);
+                    tr.appendChild(tdRemarks);
+
+                    // Date of X-ray
+                    const tdXray = document.createElement('td');
+                    const inputXray = document.createElement('input');
+                    inputXray.type = 'date';
+                    inputXray.className = 'x-ray-date';
+                    if (emp.date_of_xray) {
+                        inputXray.value = emp.date_of_xray.split('T')[0];
                     }
-                    rows[i].style.display = found ? '' : 'none';
+                    tdXray.appendChild(inputXray);
+                    tr.appendChild(tdXray);
+
+                    // Actions
+                    const tdActions = document.createElement('td');
+                    tdActions.innerHTML = `
+                        <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.backgroundColor='#002e63'"
+                        onmouseout="this.style.backgroundColor='#0047abc9'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background: #ff4d4d; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+                        onmouseover="this.style.backgroundColor='#cc0000'"
+                        onmouseout="this.style.backgroundColor='#ff4d4d'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
+                        </button>
+                    `;
+                    tr.appendChild(tdActions);
+
+                    visibleTableBody.appendChild(tr);
+                });
+
+                // Append unsaved/new rows (if any)
+                unsavedRows.forEach(rowData => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="employee-no-cell"></td>
+                        <td><input type="text" class="employee-name" required value="${rowData.name || ''}"></td>
+                        <td><input type="text" class="employee-occupation" required value="${rowData.occupation || ''}"></td>
+                        <td><input type="number" class="employee-age" required min="18" max="100" style="width: 60px;" value="${rowData.age || ''}"></td>
+                        <td>
+                            <select class="employee-sex" required style="width: 80px;" value="${rowData.sex || ''}">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </td>
+                        <td><input type="text" class="nationality" value="Filipino" required></td>
+                        <td><input type="text"  class="employee-address" required value="${rowData.address || ''}"></td>
+                        <td><input type="text" class="place-of-work" required></td>
+                        <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
+                        <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
+                        <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
+                    <td>
+                        <button onclick="addRow()">+</button>
+                        <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:none; border:none; cursor:pointer; padding:0; font-size:20px; margin-left: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                        </svg>
+                        </button>
+                    </td>
+                `;
+                visibleTableBody.appendChild(tr);
+            });
+
+            // If no rows at all, add a blank row
+            if (employees.length === 0 && unsavedRows.length === 0) {
+                addRow();
+            }
+
+            updateRowNumbers();
+        }
+
+        function printForm() {
+            window.print();
+        }
+
+        function updateRowNumbers() {
+            const visibleTable = document.querySelector(".table-container table:not([style*='display: none'])");
+            if (!visibleTable) return;
+            const rows = visibleTable.querySelectorAll("tbody tr");
+            rows.forEach((row, index) => {
+                const noCell = row.querySelector(".employee-no-cell");
+                if (noCell) {
+                    noCell.textContent = index + 1;
+                }
+            });
+        }
+
+        async function submitForm() {
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+            const permitNumber = document.getElementById("permitNumber").value.trim();
+            const classification = document.getElementById("classificationInput").value.trim();
+
+            if (!permitNumber || !classification) {
+                alert('Successfully Saved');
+                return;
+            }
+
+            // Validate required inputs in employee table
+            const visibleTableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (visibleTableBody) {
+                const inputs = visibleTableBody.querySelectorAll("input[required]");
+                for (const input of inputs) {
+                    if (!input.value.trim()) {
+                        alert("Please input all the required fields in the employee table.");
+                        input.focus();
+                        return;
+                    }
                 }
             }
 
-            searchButton.addEventListener('click', filterTable);
-            searchInput.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') filterTable();
+            // Save Sanitary Permit # and Classification with selected categories as linkable_texts
+            const selectedCategories = [];
+            if (document.getElementById("categoryFood").checked) selectedCategories.push("Food");
+            if (document.getElementById("categoryNonFood").checked) selectedCategories.push("Non-Food");
+
+            try {
+                const response = await fetch('http://localhost:3000/api/classifications/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ businessName, ownerName, permitNumber, classification, linkable_texts: selectedCategories }),
+                });
+
+                if (!response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to save Sanitary Permit # and Classification');
+                    } else {
+                        const errorText = await response.text();
+                        console.error('Unexpected response:', errorText);
+                        throw new Error('Unexpected response from server');
+                    }
+                }
+
+                alert('Saved successfully!');
+                // Save selected categories in localStorage to persist checkbox state
+                localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
+                // Proceed with saving employees
+                await saveEmployees();
+            } catch (error) {
+                console.error('Error saving Sanitary Permit # and Classification:', error);
+                alert(`Failed to save Sanitary Permit # and Classification: ${error.message}`);
+            }
+        }
+
+        // On page load, restore checkbox states from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedCategories = JSON.parse(localStorage.getItem('selectedCategories') || '[]');
+            document.getElementById('categoryFood').checked = savedCategories.includes('Food');
+            document.getElementById('categoryNonFood').checked = savedCategories.includes('Non-Food');
+        });
+
+        async function saveEmployees() {
+            const businessName = document.getElementById("businessName").value.trim();
+            const ownerName = document.getElementById("ownerName").value.trim();
+            const categoryFood = document.getElementById("categoryFood").checked;
+            const categoryNonFood = document.getElementById("categoryNonFood").checked;
+            const categories = [];
+            if (categoryFood) categories.push("Food");
+            if (categoryNonFood) categories.push("Non-Food");
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const applicationYear = urlParams.get('application_year');
+            let applicationDate = null;
+            if (applicationYear) {
+                // Construct applicationDate as January 1st of the applicationYear
+                applicationDate = `${applicationYear}-01-01`;
+            }
+
+            let visibleTableBody = null;
+            const table2025 = document.getElementById("table2025");
+            const table2026 = document.getElementById("table2026");
+            const table2027 = document.getElementById("table2027");
+
+            if (table2025 && table2025.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            } else if (table2026 && table2026.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2026");
+            } else if (table2027 && table2027.offsetParent !== null) {
+                visibleTableBody = document.getElementById("employeeTableBody2027");
+            } else {
+                visibleTableBody = document.getElementById("employeeTableBody2025");
+            }
+
+            if (!visibleTableBody) {
+                alert('No employee table is visible. Cannot save employees.');
+                return;
+            }
+
+            // Validate required inputs in employee table before saving
+            const inputs = visibleTableBody.querySelectorAll("input[required]");
+            for (const input of inputs) {
+                if (!input.value.trim()) {
+                    alert("Please input all the required fields in the employee table.");
+                    input.focus();
+                    return;
+                }
+            }
+
+            // Gather all rows (including unsaved/new)
+            const employees = [];
+            visibleTableBody.querySelectorAll("tr").forEach(row => {
+                const id = row.getAttribute('data-employee-id') || null;
+                const noText = row.querySelector(".employee-no-cell")?.textContent.trim() || '';
+                const no = noText ? parseInt(noText, 10) : null;
+                const name = row.querySelector(".employee-name")?.value.trim() || '';
+                const occupation = row.querySelector(".employee-occupation")?.value.trim() || '';
+                const age = row.querySelector(".employee-age")?.value || null;
+                const sex = row.querySelector(".employee-sex")?.value || '';
+                const address = row.querySelector(".employee-address")?.value || '';
+                const cert = row.querySelector(".health-cert")?.value.trim() || '';
+                const remarks = row.querySelector(".remarks")?.value.trim() || '';
+                let date_of_xray = row.querySelector(".x-ray-date")?.value || '';
+                if (date_of_xray === "") date_of_xray = null;
+                const nationality = row.querySelector(".nationality")?.value.trim() || 'Filipino';
+                const place_of_work = row.querySelector(".place-of-work")?.value.trim() || '';
+                // Only push if at least one field is filled
+                if (name || address || cert || remarks || date_of_xray) {
+                    employees.push({
+                        id,
+                        business_name: businessName,
+                        owner_name: ownerName,
+                        no,
+                        name,
+                        occupation,
+                        age,
+                        sex,
+                        address,
+                        cert,
+                        remarks,
+                        date_of_xray,
+                        nationality,
+                        place_of_work,
+                        application_date: applicationDate
+                    });
+                }
             });
 
-            fetchData();
-        });
+            const formData = { businessName, ownerName, categories, employees };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/employees/full', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to save employees. Status: ${response.status}. Response: ${errorText}`);
+                }
+
+                alert('Employees saved successfully!');
+                // After saving, reload all employees using only backend data (no unsaved rows)
+                await reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody);
+            } catch (error) {
+                console.error('Error saving employees:', error);
+                alert(`Failed to save employees: ${error.message}`);
+            }
+        }
+
+        async function reloadEmployeesTableOnlyFromBackend(businessName, ownerName, visibleTableBody) {
+            try {
+                const empResponse = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`);
+                if (!empResponse.ok) {
+                    throw new Error(`HTTP error! status: ${empResponse.status}`);
+                }
+                const employees = await empResponse.json();
+                if (!Array.isArray(employees)) {
+                    throw new Error('Invalid data format received from server');
+                }
+                populateEmployeeTable(employees, []); // do not append unsaved rows
+                document.getElementById('connectionStatus').textContent = 'Connected to database';
+                document.getElementById('connectionStatus').style.color = '#008000';
+            } catch (error) {
+                console.error('Error fetching employees data:', error);
+                document.getElementById('connectionStatus').textContent = 
+                    'Connection error. Your changes may not be saved. Please check your connection.';
+                document.getElementById('connectionStatus').style.color = '#ff4d4d';
+            }
+        }
+
+        function addRow() {
+            const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (!tableBody) return;
+
+            const newRow = document.createElement("tr");
+                newRow.innerHTML = `
+        <td class="employee-no-cell"></td>
+        <td><input type="text" class="employee-name" required></td>
+        <td><input type="text" class="employee-occupation" required></td>
+        <td><input type="number" class="employee-age" required min="18" max="100" style="width: 60px;"></td>
+        <td>
+            <select class="employee-sex" required style="width: 80px;">
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </td>
+        <td><input type="text" class="nationality" value="Filipino" required></td>
+        <td><input type="text"  class="employee-address" required></td>
+        <td><input type="text" class="place-of-work" required></td>
+        <td><input type="text" class="health-cert" required></td>
+        <td><input type="text" class="remarks" required></td>
+        <td><input type="date" class="x-ray-date" style="height: 35px; width: 100%;" required></td>
+        <td>
+            <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+            onmouseover="this.style.backgroundColor='#002e63'"
+            onmouseout="this.style.backgroundColor='#0047abc9'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+            </button>
+            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+            onmouseover="this.style.backgroundColor='#cc0000'"
+            onmouseout="this.style.backgroundColor='#ff4d4d'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                </svg>
+            </button>
+        </td>
+    `;
+            tableBody.appendChild(newRow);
+            updateRowNumbers();
+        }
     </script>
+    <script src="print.js"></script>
+</body>
+</html>
+                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                </svg>
+            </button>
+        </td>
+    `;
+            tableBody.appendChild(newRow);
+            updateRowNumbers();
+        }
+    </script>
+    <script src="print.js"></script>
+</body>
+</html>
+        <td><input type="text" class="health-cert" required></td>
+        <td><input type="text" class="remarks" required></td>
+        <td><input type="date" class="x-ray-date" style="height: 35px; width: 100%;" required></td>
+        <td>
+            <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+            onmouseover="this.style.backgroundColor='#002e63'"
+            onmouseout="this.style.backgroundColor='#0047abc9'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+            </button>
+            <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
+            onmouseover="this.style.backgroundColor='#cc0000'"
+            onmouseout="this.style.backgroundColor='#ff4d4d'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+            </svg>
+            </button>
+        </td>
+    `;
+            tableBody.appendChild(newRow);
+            updateRowNumbers();
+        }
+    </script>
+    <script src="print.js"></script>
 </body>
 </html>
