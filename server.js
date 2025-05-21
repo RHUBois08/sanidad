@@ -94,6 +94,11 @@ async function createTables(pool) {
             owner_name VARCHAR(255),
             no INTEGER,
             employee_name VARCHAR(255),
+            position VARCHAR(255),
+            age INTEGER,
+            sex VARCHAR(255),
+            nationality VARCHAR(255),
+            place_of_work VARCHAR(255),
             address VARCHAR(255),
             health_cert_no VARCHAR(255),
             remarks VARCHAR(255),
@@ -245,13 +250,18 @@ async function init() {
             }
             try {
                 const upsertQuery = `
-                    INSERT INTO employees (id, business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    INSERT INTO employees (id, business_name, owner_name, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
                     ON CONFLICT (id) DO UPDATE SET
                         business_name = EXCLUDED.business_name,
                         owner_name = EXCLUDED.owner_name,
                         no = EXCLUDED.no,
                         employee_name = EXCLUDED.employee_name,
+                        position = EXCLUDED.position,
+                        age = EXCLUDED.age,
+                        sex = EXCLUDED.sex,
+                        nationality = EXCLUDED.nationality,
+                        place_of_work = EXCLUDED.place_of_work,
                         address = EXCLUDED.address,
                         health_cert_no = EXCLUDED.health_cert_no,
                         remarks = EXCLUDED.remarks,
@@ -260,8 +270,8 @@ async function init() {
                 `;
 
                 const insertQuery = `
-                    INSERT INTO employees (business_name, owner_name, no, employee_name, address, health_cert_no, remarks, date_of_xray, application_date)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                    INSERT INTO employees (business_name, owner_name, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 `;
 
                 for (const emp of employees) {
@@ -273,6 +283,11 @@ async function init() {
                             ownerName,
                             emp.no,
                             emp.name,
+                            emp.position,
+                            emp.age,
+                            emp.sex,
+                            emp.nationality,
+                            emp.place_of_work,
                             emp.address,
                             emp.cert,
                             emp.remarks,
@@ -286,6 +301,11 @@ async function init() {
                             ownerName,
                             emp.no,
                             emp.name,
+                            emp.position,
+                            emp.age,
+                            emp.sex,
+                            emp.nationality,
+                            emp.place_of_work,
                             emp.address,
                             emp.cert,
                             emp.remarks,
@@ -338,7 +358,7 @@ async function init() {
             }
             try {
                 const query = `
-                    SELECT id, no, employee_name, address, health_cert_no, remarks, date_of_xray
+                    SELECT id, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray
                     FROM employees
                     WHERE business_name = $1 AND owner_name = $2
                     ${year ? 'AND EXTRACT(YEAR FROM application_date) = $3' : ''}
