@@ -102,11 +102,24 @@ async function createTables(pool) {
         );
     `;
 
+    const createClassificationsTableQuery = `
+    CREATE TABLE IF NOT EXISTS classifications (
+        id SERIAL PRIMARY KEY,
+        business_name VARCHAR(255),
+        owner_name VARCHAR(255),
+        permit_number VARCHAR(255),
+        classification VARCHAR(255),
+        categories TEXT[]
+    );
+    `;
+
     try {
         await pool.query(createOwnersTableQuery);
         console.log('Table "owners" is ready');
         await pool.query(createEmployeesTableQuery);
         console.log('Table "employees" is ready');
+        await pool.query(createClassificationsTableQuery);
+        console.log('Table "classifications" is ready');
     } catch (err) {
         console.error('Error creating tables', err);
         throw err;
@@ -503,7 +516,8 @@ async function init() {
 
                 let applicationYear = null;
                 if (ownerResult.rows.length > 0 && ownerResult.rows[0].application_date) {
-                    applicationYear = new Date(ownerResult.rows[0].application_date).getFullYear();
+                    const appDate = new Date(ownerResult.rows[0].application_date);
+                    applicationYear = appDate.getUTCFullYear();
                 }
 
                 // Fetch employee list based on business name, owner name, and application year
@@ -605,7 +619,7 @@ async function init() {
 
 app.listen(port, () => {
             console.log('Server running on http://localhost:${port}');
-        });
+        });	
     } catch (err) {
         console.error('Failed to initialize server', err);
         process.exit(1);
