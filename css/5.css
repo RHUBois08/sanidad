@@ -320,5 +320,12 @@ th {
 }
 
 .table-container .x-ray-date {
-    width: 120px;
+    width: 100%px;
+    height: 30px;
+    font-size: 15px;
+}
+#print-health-card {
+   border: none; 
+   padding: 0; 
+   background: none; 
 }
