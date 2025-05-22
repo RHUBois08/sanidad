@@ -78,9 +78,7 @@
         <div class="mid-section" style="margin-top: 30px; position: absolute; margin-left: 45px;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
-<button id="print-permit" onclick="generate_permit()" aria-label="Print" title="Print">
-    <img src="image/print_icon.png" alt="Print" style="width: 40px; height: 35px; vertical-align: middle; margin-left: 4px;">
-</button>
+
         </div>
         </div>
         <div class="table-container">
@@ -119,6 +117,9 @@
                     <td><input type="text" class="remarks" required></td>
                     <td><input type="date" class="x-ray-date" required></td>
                     <td>
+                    <button id="print-health-card" onclick="generate_health_cert()" aria-label="Print" title="Print Health Card">
+                        <img src="image/health_card_print_icon.png" alt="Print" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                    </button>
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
                     onmouseover="this.style.backgroundColor='#002e63'"
                     onmouseout="this.style.backgroundColor='#0047abc9'">
@@ -140,15 +141,17 @@
                 </tbody>
             </table>
         </div>
-        <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:1220px; z-index: 10;">
-<button class="submit-btn"  onclick="submitForm()" aria-label="Save" title="Save">
-    <img src="image/save_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
-</button>
-<button id="printSaveBtn" onclick="generate_certificate()" aria-label="Print" title="Print">
-    <img src="image/print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
-</button>
-        </div>
-        <div></div>
+            <div class="submit-section" id="submitSection" style="display: flex; align-items: center; margin-top: 10px; position:absolute; margin-left:120px; z-index: 10;">
+                <button id="print-permit" onclick="generate_permit()" aria-label="Print" title="Print Permit">
+                    <img src="image/permit_print_icon.png" alt="Print" style="width: 40px; height: 35px; vertical-align: middle; margin-left: 4px;">
+                </button>
+                <button class="submit-btn" onclick="submitForm()" aria-label="Save" title="Save">
+                    <img src="image/save_icon.png" alt="Save" style="width: 35px; height: 30px; vertical-align: middle;">
+                </button>
+                <button id="printSaveBtn" onclick="generate_certificate()" aria-label="Print" title="Print Certificate">
+                    <img src="image/certificate_print_icon.png" alt="Print" style="width: 35px; height: 30px; vertical-align: middle;">
+                </button>
+            </div>
     </div>
     <!-- Removed the Add Year button as per user request -->
     <script>
@@ -224,20 +227,23 @@
                     <td><input type="text" class="remarks" required></td>
                     <td><input type="date" class="x-ray-date" required></td>
                     <td>
-                            <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
-                        onmouseover="this.style.backgroundColor='#002e63'"
-                        onmouseout="this.style.backgroundColor='#0047abc9'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-                                </svg>
+                        <button id="print-health-card" onclick="generate_health_cert()" aria-label="Print" title="Print Health Card">
+                            <img src="image/health_card_print_icon.png" alt="Print" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                        </button>
+                        <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                            onmouseover="this.style.backgroundColor='#002e63'"
+                            onmouseout="this.style.backgroundColor='#0047abc9'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                    </svg>
                         </button>
                         <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
-                        onmouseover="this.style.backgroundColor='#cc0000'"
-                        onmouseout="this.style.backgroundColor='#ff4d4d'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                            </svg>
+                            onmouseover="this.style.backgroundColor='#cc0000'"
+                            onmouseout="this.style.backgroundColor='#ff4d4d'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                                </svg>
                         </button>
                         </td>
                     </tr>
@@ -423,19 +429,22 @@
                 // Actions
                 const tdActions = document.createElement('td');
                 tdActions.innerHTML = `
+                    <button id="print-health-card" onclick="generate_health_cert()" aria-label="Print" title="Print Health Card">
+                        <img src="image/health_card_print_icon.png" alt="Print" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                    </button>
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
-                    onmouseover="this.style.backgroundColor='#002e63'"
-                    onmouseout="this.style.backgroundColor='#0047abc9'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        onmouseover="this.style.backgroundColor='#002e63'"
+                        onmouseout="this.style.backgroundColor='#0047abc9'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </button>
                     <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background: #ff4d4d; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
-                    onmouseover="this.style.backgroundColor='#cc0000'"
-                    onmouseout="this.style.backgroundColor='#ff4d4d'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                        </svg>
+                        onmouseover="this.style.backgroundColor='#cc0000'"
+                        onmouseout="this.style.backgroundColor='#ff4d4d'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
                     </button>
                 `;
                 tr.appendChild(tdActions);
@@ -724,19 +733,22 @@
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
+                    <button id="print-health-card" onclick="generate_health_cert()" aria-label="Print" title="Print Health Card">
+                        <img src="image/health_card_print_icon.png" alt="Print" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;">
+                    </button>
                     <button onclick="addRow()" aria-label="Add" title="Add" style="background: #0047abc9; border-radius: 50%; border:none; cursor:pointer; width: 24px; height: 24px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
-                    onmouseover="this.style.backgroundColor='#002e63'"
-                    onmouseout="this.style.backgroundColor='#0047abc9'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        onmouseover="this.style.backgroundColor='#002e63'"
+                        onmouseout="this.style.backgroundColor='#0047abc9'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill="white" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </button>
                     <button onclick="removeRow(this)" aria-label="Delete" title="Delete" style="background:  #ff4d4d; border-radius: 50%; border:none; cursor:pointer;  width: 24px; height: 24px; padding: 0; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center;"
-                    onmouseover="this.style.backgroundColor='#cc0000'"
-                    onmouseout="this.style.backgroundColor='#ff4d4d'">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
-                        </svg>
+                        onmouseover="this.style.backgroundColor='#cc0000'"
+                        onmouseout="this.style.backgroundColor='#ff4d4d'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
+                            </svg>
                     </button>
                 </td>
             `;
@@ -892,6 +904,10 @@
             } catch (error) {
                 alert('Error fetching owner data: ' + error.message);
             }
+        }
+
+        async function generate_health_cert() {
+
         }
     </script>
 <!-- <script src="print.js"></script> -->
