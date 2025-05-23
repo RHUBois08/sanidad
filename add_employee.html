@@ -12,24 +12,37 @@
     <div class="container">
         <div id="connectionStatus" style="margin-bottom: 10px; font-weight: bold;">Connecting to database...</div>
           <div class="top-bar">
-            <a href="index.html"><img src="image\jhjhj.png" style="width: 40px; height: auto; float: left; margin-left:-40px;
-    z-index:100; margin-top:-2%;"></a>
+           <a href="index.html" class="home-link">
+            <img src="image\jhjhj.png" alt="Home">
+        </a>
         <div class="header">
             <div class="input-group">
                 <label for="businessName" style="margin-left: 50px;">Business Name</label>
                 <input style="height: 20px; width: 115%; "type="text" id="businessName">
             </div>
-            <div class="input-group" style="margin-left: 45px;">
+            <div class="input-group" style="margin-left: -45px;">
                 <label for="ownerName"style="margin-left: 54px;">Name of Owner/Applicant</label>
                 <input style="height: 20px; width: 115%;" type="text" id="ownerName">
             </div>
-            <div class="input-group" style="margin-right: 20px;">
-                <label for="permitNumber" style="margin-right: 30px;">Sanitary Permit #</label>
-                <input style="height: 20px; width: 80%;" type="text" id="permitNumber">
+            <div class="input-group" style=" margin-left:1020px;position: fixed;" required="">
+                <label for="permitStatus" style="margin-right: 50px;">Sanitary Permit #</label>
+                <input style="height: 20px; width: 180px;" type="text" id="permitNumber">
             </div>
-            <div style="margin-top: 65px; margin-left:597px; position: absolute; ">
-                <label for="classification" style="margin-right: 55px;">Type of Establishment</label><br>
-                <input list="classificationOptions" id="classificationInput" style="width: 297px; height: 20px; margin-left: -98px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; appearance: none; -webkit-appearance: none; background-color: white; ">
+            <td>
+                <label for="permitStatus" style="margin-top: 65px; margin-right:138px;">Status</label>
+                <select id="permitStatus" class="employee-sex" style="width:200px;position:absolute; height:39px;
+                margin-top: 89px; border-radius: 5px; margin-left: 1020px;" required>
+                    <option value="">Select Status</option>
+                    <option value="Denied">Denied</option>
+                    <option value="For Release">For Release</option>
+                    <option value="Issued">Issued</option>
+                    <option value="Pending">Pending</option>
+                </select>
+            </td>
+            <div style="margin-top: 65px; margin-left:600px; position: absolute; "required>
+                <label for="classification" style="margin-right: 70px;">Type of Establishment</label><br>
+                <input list="classificationOptions" id="classificationInput" style="width: 279px; height: 20px; margin-left: -50px; margin-top: 5px;
+                padding: 8px; border: 1px solid #ccc; border-radius: 4px; appearance: none; -webkit-appearance: none; background-color: white; ">
                 <datalist id="classificationOptions">
                     <option value="Apartment">
                     <option value="Bakery">
@@ -75,7 +88,7 @@
             </div>
         </div>
         <input type="hidden" id="classificationId">
-        <div class="mid-section" style="margin-top: 30px; position: absolute; margin-left: 45px;">
+        <div class="mid-section" style="margin-top: -5px; position: absolute; margin-left: 45px;">
             <label><input type="radio" id="categoryFood" name="category" value="Food"> Food</label>
             <label><input type="radio" id="categoryNonFood" name="category" value="Non-Food"> Non-Food</label>
 
@@ -159,6 +172,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const businessName = urlParams.get('business_name');
             const ownerName = urlParams.get('owner_name');
+            const applicantType = urlParams.get('applicant_type');
+            const applicationYear = urlParams.get('application_year');
+            const applicationDate = urlParams.get('application_date');
 
             if (businessName) {
                 document.getElementById('businessName').value = decodeURIComponent(businessName);
@@ -189,11 +205,27 @@
                     console.error('Error fetching classification data:', error);
                 }
 
+            // Fetch and set permit status (remarks from owners table)
+            if (businessName && ownerName) {
+                try {
+                    const ownerRes = await fetch(`http://localhost:3000/api/owners?business_name=${encodeURIComponent(businessName)}`);
+                    if (ownerRes.ok) {
+                        const owners = await ownerRes.json();
+                        const ownerData = owners && owners.find(owner =>
+                            owner.business_name.toUpperCase() === businessName.toUpperCase() &&
+                            owner.owner_name.toUpperCase() === ownerName.toUpperCase()
+                        );
+                        if (ownerData && ownerData.remarks) {
+                            document.getElementById('permitStatus').value = ownerData.remarks;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching permit status:', error);
+                }
+            }
+
             // Fetch and populate employees data
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const applicationYear = urlParams.get('application_year');
-
                 let fetchUrl = `http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}`;
                 if (applicationYear) {
                     fetchUrl += `&year=${encodeURIComponent(applicationYear)}`;
@@ -201,7 +233,25 @@
 
                 const empResponse = await fetch(fetchUrl);
                 if (empResponse.ok) {
-                    const employees = await empResponse.json();
+                    let employees = await empResponse.json();
+
+                    // Only duplicate for display if applicantType is Renewal and there are no employees for this year
+                    if (applicantType === 'Renewal' && Array.isArray(employees) && employees.length === 0) {
+                        // Fetch previous year's employees for display
+                        const prevYear = applicationYear ? (parseInt(applicationYear) - 1).toString() : '';
+                        if (prevYear) {
+                            const prevEmpRes = await fetch(`http://localhost:3000/api/employees?business_name=${encodeURIComponent(businessName)}&owner_name=${encodeURIComponent(ownerName)}&year=${prevYear}`);
+                            if (prevEmpRes.ok) {
+                                const prevEmployees = await prevEmpRes.json();
+                                employees = prevEmployees.map(emp => ({
+                                    ...emp,
+                                    id: null,
+                                    application_date: applicationDate // set to current application_date for display
+                                }));
+                            }
+                        }
+                    }
+
                     if (Array.isArray(employees) && employees.length > 0) {
                         populateEmployeeTable(employees);
                     } 
@@ -241,7 +291,7 @@
                             onmouseover="this.style.backgroundColor='#cc0000'"
                             onmouseout="this.style.backgroundColor='#ff4d4d'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
                                 </svg>
                         </button>
@@ -262,6 +312,37 @@
                 alert('Error fetching employees data. Please try again later.');
             }
             }
+        });
+
+        // Listen for changes to permitStatus and update DB
+        document.addEventListener('DOMContentLoaded', () => {
+            const permitStatusSelect = document.getElementById('permitStatus');
+            permitStatusSelect.addEventListener('change', async function() {
+                const status = this.value;
+                const businessName = document.getElementById('businessName').value.trim();
+                const ownerName = document.getElementById('ownerName').value.trim();
+                if (!businessName || !ownerName) {
+                    alert('Please enter both business name and owner name before changing status.');
+                    this.value = '';
+                    return;
+                }
+                try {
+                    const response = await fetch('http://localhost:3000/api/owners/updateRemarks', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            business_name: businessName,
+                            owner_name: ownerName,
+                            remarks: status
+                        })
+                    });
+                    if (!response.ok) {
+                        alert('Failed to update status in database.');
+                    }
+                } catch (error) {
+                    alert('Error updating status: ' + error.message);
+                }
+            });
         });
 
         async function removeRow(button) {
@@ -298,6 +379,7 @@
             // Remove row from DOM and update row numbers
             row.remove();
             updateRowNumbers();
+            updateHealthCertNumbers();
         }
 
         function populateEmployeeTable(employees, unsavedRows = []) {
@@ -402,7 +484,9 @@
                 const inputCert = document.createElement('input');
                 inputCert.type = 'text';
                 inputCert.className = 'health-cert';
-                inputCert.value = emp.health_cert_no || '';
+                // Always assign by row index
+                inputCert.value = getHealthCertNoByIndex(index);
+                inputCert.readOnly = true;
                 tdCert.appendChild(inputCert);
                 tr.appendChild(tdCert);
 
@@ -453,7 +537,7 @@
             });
 
             // Append unsaved/new rows (if any)
-            unsavedRows.forEach(rowData => {
+            unsavedRows.forEach((rowData, idx) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                 
@@ -469,7 +553,7 @@
                         <td><input type="text" class="employee-nationality" required value="${rowData.nationality || ''}"></td>
                         <td><input type="text" class="employee-place-of-work" required value="${rowData.place_of_work || ''}"></td>
                         <td><input type="text" class="employee-address" required value="${rowData.address || ''}"></td>
-                        <td><input type="text" class="health-cert" required value="${rowData.cert || ''}"></td>
+                        <td><input type="text" class="health-cert" required></td>
                         <td><input type="text" class="remarks" required value="${rowData.remarks || ''}"></td>
                         <td><input type="date" class="x-ray-date" required value="${rowData.date_of_xray || ''}"></td>
                     <td>
@@ -483,6 +567,7 @@
             }
 
             updateRowNumbers();
+            updateHealthCertNumbers();
         }
 
         function updateRowNumbers() {
@@ -599,9 +684,9 @@
 
             const urlParams = new URLSearchParams(window.location.search);
             const applicationYear = urlParams.get('application_year');
-            let applicationDate = null;
+            let applicationDate = urlParams.get('application_date');
+            // Always use the correct applicationDate for saving
             if (applicationYear) {
-                // Construct applicationDate as January 1st of the applicationYear
                 applicationDate = `${applicationYear}-01-01`;
             }
 
@@ -669,7 +754,7 @@
                         cert,
                         remarks,
                         date_of_xray,
-                        application_date: applicationDate
+                        application_date: applicationDate // always set correct application_date
                     });
                 }
             });
@@ -711,12 +796,43 @@
             }
         }
 
+        // Utility to get the current year or application year from URL
+        function getCurrentYearForCert() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const applicationYear = urlParams.get('application_year');
+            if (applicationYear && /^\d{4}$/.test(applicationYear)) {
+                return applicationYear;
+            }
+            return new Date().getFullYear().toString();
+        }
+
+        // Generate health cert number for a given row index (starting from 0)
+        function getHealthCertNoByIndex(index) {
+            const year = getCurrentYearForCert();
+            return `${year}-${(index + 1).toString().padStart(4, '0')}`;
+        }
+
+        // Update all health-cert numbers in the visible table to match their row order
+        function updateHealthCertNumbers() {
+            const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (!tableBody) return;
+            const rows = Array.from(tableBody.querySelectorAll("tr"));
+            rows.forEach((row, idx) => {
+                const certInput = row.querySelector('.health-cert');
+                if (certInput) {
+                    certInput.value = getHealthCertNoByIndex(idx);
+                    certInput.readOnly = true;
+                }
+            });
+        }
+
+        // When adding a row, auto-assign the health-cert number
         function addRow() {
             const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
             if (!tableBody) return;
 
             const newRow = document.createElement("tr");
-                newRow.innerHTML = `
+            newRow.innerHTML = `
                 <td class="employee-no-cell"></td>
                 <td><input type="text" class="employee-name" required></td>
                 <td><input type="text" class="employee-position" required></td>
@@ -729,7 +845,7 @@
                 <td><input type="text" class="employee-nationality" required></td>
                 <td><input type="text" class="employee-place-of-work" required></td>
                 <td><input type="text" class="employee-address" required></td>
-                <td><input type="text" class="health-cert" required></td>
+                <td><input type="text" class="health-cert" required readonly></td>
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
@@ -746,7 +862,7 @@
                         onmouseover="this.style.backgroundColor='#cc0000'"
                         onmouseout="this.style.backgroundColor='#ff4d4d'">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
                             </svg>
                     </button>
@@ -754,9 +870,33 @@
             `;
             tableBody.appendChild(newRow);
             updateRowNumbers();
+            updateHealthCertNumbers();
         }
 
+        // On initial page load, set the health-cert number for the first row if empty
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHealthCertNumbers();
+            // Ensure the first row (if present) gets its health-cert number immediately
+            const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
+            if (tableBody) {
+                const rows = Array.from(tableBody.querySelectorAll("tr"));
+                if (rows.length === 1) {
+                    const certInput = rows[0].querySelector('.health-cert');
+                    if (certInput && !certInput.value) {
+                        certInput.value = getHealthCertNoByIndex(0);
+                        certInput.readOnly = true;
+                    }
+                }
+            }
+        });
+
         async function generate_permit() {
+            // Check permit status before proceeding
+            const permitStatus = document.getElementById('permitStatus').value;
+            if (permitStatus !== "Issued") {
+                alert('Permit can only be generated if status is "Issued".');
+                return;
+            }
             const urlParams = new URLSearchParams(window.location.search);
             let businessName = urlParams.get('business_name');
             let ownerName = urlParams.get('owner_name');
@@ -861,6 +1001,12 @@
         }
 
         async function generate_certificate() {
+            // Check permit status before proceeding
+            const permitStatus = document.getElementById('permitStatus').value;
+            if (permitStatus !== "Issued") {
+                alert('Certificate can only be generated if status is "Issued".');
+                return;
+            }
             const businessName = document.getElementById('businessName').value.trim();
             const ownerName = document.getElementById('ownerName').value.trim();
 
@@ -907,7 +1053,42 @@
         }
 
         async function generate_health_cert() {
+            // Check permit status before proceeding
+            const permitStatus = document.getElementById('permitStatus').value;
+            if (permitStatus !== "Issued") {
+                alert('Health Card can only be generated if status is "Issued".');
+                return;
+            }
+            // Find the button that triggered the event
+            const event = window.event;
+            if (!event) return;
+            const button = event.target.closest('button');
+            if (!button) return;
+            const row = button.closest('tr');
+            if (!row) return;
 
+            // Fetch the required fields from the row
+            const healthCertNo = row.querySelector('.health-cert')?.value || '';
+            const employeeName = row.querySelector('.employee-name')?.value || '';
+            const position = row.querySelector('.employee-position')?.value || '';
+            const age = row.querySelector('.employee-age')?.value || '';
+            const sex = row.querySelector('.employee-sex')?.value || '';
+            const nationality = row.querySelector('.employee-nationality')?.value || '';
+            const businessName = document.getElementById('businessName')?.value || '';
+
+            // Build the API URL with query parameters (include business_name)
+            const params = new URLSearchParams({
+                health_cert_no: healthCertNo,
+                employee_name: employeeName,
+                position: position,
+                age: age,
+                sex: sex,
+                nationality: nationality,
+                business_name: businessName
+            });
+
+            // Open the generated docx in a new tab (triggers download)
+            window.open(`http://localhost:3000/api/generateHealthCard?${params.toString()}`, '_blank');
         }
     </script>
 <!-- <script src="print.js"></script> -->
