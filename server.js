@@ -154,7 +154,7 @@ async function init() {
                     SELECT * FROM owners 
                     WHERE LOWER(business_name) = LOWER($1) 
                     AND LOWER(owner_name) = LOWER($2)
-                    AND LOWER(applicant_type) = LOWER($3)
+                    AND applicant_type = $3
                     AND application_date = $4
                     AND LOWER(address) = LOWER($5)
                     AND LOWER(remarks) = LOWER($6)
@@ -168,7 +168,7 @@ async function init() {
                         existingData: existingOwner.rows[0]
                     });
                 } else {
-                    // If no duplicate found, insert the new owner
+                    // Insert the new owner
                     const insertQuery = `
                         INSERT INTO owners 
                         (business_name, owner_name, applicant_type, application_date, remarks, status, address)
@@ -177,6 +177,53 @@ async function init() {
                     `;
                     const values = [businessName, ownerName, applicantType, applicationDate, remarks, status, address];
                     const result = await pool.query(insertQuery, values);
+
+                    // If applicantType is "Renewal", duplicate employees from the most recent previous application_date
+                    if (applicantType && applicantType.toLowerCase() === "renewal") {
+                        // Find the most recent previous application_date for this business/owner
+                        const prevDateQuery = `
+                            SELECT application_date FROM owners
+                            WHERE business_name = $1 AND owner_name = $2 AND application_date < $3
+                            ORDER BY application_date DESC
+                            LIMIT 1
+                        `;
+                        const prevDateResult = await pool.query(prevDateQuery, [businessName, ownerName, applicationDate]);
+                        if (prevDateResult.rows.length > 0) {
+                            const prevAppDate = prevDateResult.rows[0].application_date;
+                            // Fetch employees from that previous application_date
+                            const prevEmployeesQuery = `
+                                SELECT no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray
+                                FROM employees
+                                WHERE business_name = $1 AND owner_name = $2 AND application_date = $3
+                            `;
+                            const prevEmployees = await pool.query(prevEmployeesQuery, [businessName, ownerName, prevAppDate]);
+                            // Duplicate each employee for the new application_date (set application_date to the new one)
+                            for (const emp of prevEmployees.rows) {
+                                await pool.query(
+                                    `INSERT INTO employees
+                                    (business_name, owner_name, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date)
+                                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+                                    [
+                                        businessName,
+                                        ownerName,
+                                        emp.no,
+                                        emp.employee_name,
+                                        emp.position,
+                                        emp.age,
+                                        emp.sex,
+                                        emp.nationality,
+                                        emp.place_of_work,
+                                        emp.address,
+                                        emp.health_cert_no,
+                                        emp.remarks,
+                                        emp.date_of_xray,
+                                        applicationDate // <-- always use the new/current applicationDate
+                                    ]
+                                );
+                            }
+                        }
+                    }
+
                     res.status(201).json(result.rows[0]);
                 }
             } catch (err) {
@@ -249,6 +296,17 @@ async function init() {
                 return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or employees' });
             }
             try {
+                // Remove all employees for this business/owner/application_date before inserting new ones
+                let applicationDate = null;
+                if (employees.length > 0) {
+                    applicationDate = employees[0].application_date;
+                }
+                if (applicationDate) {
+                    await pool.query(
+                        `DELETE FROM employees WHERE business_name = $1 AND owner_name = $2 AND application_date = $3`,
+                        [businessName, ownerName, applicationDate]
+                    );
+                }
                 const upsertQuery = `
                     INSERT INTO employees (id, business_name, owner_name, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
@@ -357,8 +415,8 @@ async function init() {
                 return res.status(400).json({ error: 'Missing required query parameters: business_name or owner_name' });
             }
             try {
-                const query = `
-                    SELECT id, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray
+                let query = `
+                    SELECT id, no, employee_name, position, age, sex, nationality, place_of_work, address, health_cert_no, remarks, date_of_xray, application_date
                     FROM employees
                     WHERE business_name = $1 AND owner_name = $2
                     ${year ? 'AND EXTRACT(YEAR FROM application_date) = $3' : ''}
@@ -623,7 +681,77 @@ async function init() {
             }
         });
 
-app.listen(port, () => {
+        app.get('/api/generateHealthCard', async (req, res) => {
+            const { health_cert_no, employee_name, position, age, sex, nationality, business_name } = req.query;
+            if (!health_cert_no || !employee_name || !position || !age || !sex || !nationality || !business_name) {
+                return res.status(400).json({ error: 'Missing required query parameters' });
+            }
+            try {
+                const templatePath = path.join(__dirname, 'assets', 'sanitary_health_card_format.docx');
+                let content = fs.readFileSync(templatePath, "binary");
+                let zip = new PizZip(content);
+                let doc = new Docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                });
+
+                // Sex: only first letter, uppercase
+                const sexInitial = String(sex).charAt(0).toUpperCase();
+
+                doc.render({
+                    Reg_No: String(health_cert_no).toUpperCase(),
+                    Name: String(employee_name).toUpperCase(),
+                    Occupation: String(position).toUpperCase(),
+                    A: String(age).toUpperCase(),
+                    S: sexInitial,
+                    Nationality: String(nationality).toUpperCase()
+                });
+
+                const buf = doc.getZip().generate({
+                    type: "nodebuffer",
+                    compression: "DEFLATE",
+                });
+
+                // Compose filename: business_name "employee_name" [health_cert_no].docx (not all caps)
+                const safeBusiness = String(business_name).replace(/[\\/:*?"<>|]/g, '');
+                const safeEmployee = String(employee_name).replace(/[\\/:*?"<>|]/g, '');
+                const safeCert = String(health_cert_no).replace(/[\\/:*?"<>|]/g, '');
+                const filename = `${safeBusiness} "${safeEmployee}" [${safeCert}].docx`;
+
+                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+                res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+                res.send(buf);
+            } catch (error) {
+                console.error('Error generating health card:', error);
+                res.status(500).json({ error: 'Failed to generate health card', details: error.message });
+            }
+        });
+
+        // API to update remarks/status for an owner
+        app.post('/api/owners/updateRemarks', async (req, res) => {
+            const { business_name, owner_name, remarks } = req.body;
+            if (!business_name || !owner_name) {
+                return res.status(400).json({ error: 'Missing required fields: business_name or owner_name' });
+            }
+            try {
+                const updateQuery = `
+                    UPDATE owners
+                    SET remarks = $3
+                    WHERE business_name = $1 AND owner_name = $2
+                `;
+                const result = await pool.query(updateQuery, [business_name, owner_name, remarks]);
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ error: 'Owner not found' });
+                }
+                res.json({ message: 'Remarks/status updated successfully' });
+            } catch (err) {
+                console.error('Error updating remarks:', err);
+                res.status(500).json({ error: 'Internal server error' });
+            }
+        });
+
+        app.listen(port, () => {
             console.log('Server running on http://localhost:${port}');
         });
     } catch (err) {
