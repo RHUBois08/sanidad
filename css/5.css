@@ -7,7 +7,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 100%;
+    max-width: 1358px;
     margin: 20px auto;
     background-color :#afd3e2;
     border-radius: 8px;
@@ -279,18 +279,18 @@ th {
     font-size: 15px; 
 }
 .table-container .employee-age {
-    width: 50px;
+    width: 1000px;
     height: 30px;
     font-size: 15px;
 }
 .table-container .employee-sex {
-    width: 150px;
+    width: 100px;
      height: 30px;
     font-size: 15px;
 }
 
 .table-container .employee-nationality {
-    width: 100%px;
+    width: 100%;
     height: 30px;
     font-size: 15px;
 }
@@ -320,7 +320,7 @@ th {
 }
 
 .table-container .x-ray-date {
-    width: 100%px;
+    width: 100%;
     height: 30px;
     font-size: 15px;
 }
@@ -328,4 +328,37 @@ th {
    border: none; 
    padding: 0; 
    background: none; 
+   margin-left: 1px;
+   margin-right: 5px;
+   margin-top: 4px;
+}
+.home-link img {
+            width: 40px;
+            height: auto;
+            float: left;
+            margin-left: -3.1%;
+            z-index: 100;
+            margin-top: -29px;
+            transition: transform 0.3s ease;
+        }
+        
+        .home-link img:hover {
+            transform: scale(1.2);
+        }
+/* Style for action buttons container */
+.table-container td:last-child {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    align-items: center; /* Align buttons vertically */
+}
+
+/* Adjustments for individual buttons */
+.table-container td:last-child button {
+    margin: 0 2px; /* Add some horizontal spacing between buttons */
+}
+
+.employee-age::-webkit-outer-spin-button,
+.employee-age::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
