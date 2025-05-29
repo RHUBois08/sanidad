@@ -328,35 +328,4 @@ th {
    border: none; 
    padding: 0; 
    background: none; 
-   margin-left: 1px;
-   margin-right: 5px;
-   margin-top: 4px;
-}
-.home-link img {
-            width: 40px;
-            height: auto;
-            float: left;
-            margin-left: -3.1%;
-            z-index: 100;
-            margin-top: -29px;
-            transition: transform 0.3s ease;
-        }
-        
-        .home-link img:hover {
-            transform: scale(1.2);
-        }
-.table-container td:last-child {
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-}
-
-.table-container td:last-child button {
-    margin: 0 2px;
-}
-
-.employee-age::-webkit-outer-spin-button,
-.employee-age::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
