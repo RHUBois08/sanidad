@@ -345,16 +345,14 @@ th {
         .home-link img:hover {
             transform: scale(1.2);
         }
-/* Style for action buttons container */
 .table-container td:last-child {
     display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    align-items: center; /* Align buttons vertically */
+    justify-content: center; 
+    align-items: center; 
 }
 
-/* Adjustments for individual buttons */
 .table-container td:last-child button {
-    margin: 0 2px; /* Add some horizontal spacing between buttons */
+    margin: 0 2px;
 }
 
 .employee-age::-webkit-outer-spin-button,
