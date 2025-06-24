@@ -83,8 +83,30 @@ async function createTables(pool) {
         remarks VARCHAR(255),
         status VARCHAR(50),
         address VARCHAR(255),
+        date_issued DATE, -- Added column
+        registered_num VARCHAR(255), -- New column
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+    `;
+
+    // Ensure both date_issued and registered_num exist for existing tables
+    const alterOwnersTableQuery = `
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name='owners' AND column_name='date_issued'
+            ) THEN
+                ALTER TABLE owners ADD COLUMN date_issued DATE;
+            END IF;
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns 
+                WHERE table_name='owners' AND column_name='registered_num'
+            ) THEN
+                ALTER TABLE owners ADD COLUMN registered_num VARCHAR(255);
+            END IF;
+        END
+        $$;
     `;
 
     const createEmployeesTableQuery = `
@@ -109,7 +131,8 @@ async function createTables(pool) {
 
     try {
         await pool.query(createOwnersTableQuery);
-        console.log('Table "owners" is ready');
+        // Ensure date_issued and registered_num exist for existing tables
+        await pool.query(alterOwnersTableQuery);
         await pool.query(createEmployeesTableQuery);
         console.log('Table "employees" is ready');
     } catch (err) {
@@ -168,14 +191,27 @@ async function init() {
                         existingData: existingOwner.rows[0]
                     });
                 } else {
-                    // Insert the new owner
+                    // Generate registered_num: "year-00000" where 00000 is the order for this year
+                    const year = new Date(applicationDate).getFullYear();
+                    // Get the minimum id for this year (to ensure order by creation)
+                    const orderQuery = `
+                        SELECT id FROM owners
+                        WHERE EXTRACT(YEAR FROM application_date) = $1
+                        ORDER BY id
+                    `;
+                    const orderResult = await pool.query(orderQuery, [year]);
+                    // The new business will be the next in order
+                    const orderNumber = orderResult.rows.length + 1;
+                    const registeredNum = `${year}-${orderNumber.toString().padStart(5, '0')}`;
+
+                    // Insert the new owner with registered_num
                     const insertQuery = `
                         INSERT INTO owners 
-                        (business_name, owner_name, applicant_type, application_date, remarks, status, address)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7)
+                        (business_name, owner_name, applicant_type, application_date, remarks, status, address, registered_num)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                         RETURNING *;
                     `;
-                    const values = [businessName, ownerName, applicantType, applicationDate, remarks, status, address];
+                    const values = [businessName, ownerName, applicantType, applicationDate, remarks, status, address, registeredNum];
                     const result = await pool.query(insertQuery, values);
 
                     // If applicantType is "Renewal", duplicate employees from the most recent previous application_date
@@ -232,18 +268,21 @@ async function init() {
             }
         });
 
-        // API to delete an owner by businessName and ownerName
+        // API to delete an owner by businessName, ownerName, and applicationDate
         app.post('/api/owners/delete', async (req, res) => {
-            const { businessName, ownerName } = req.body;
-            if (!businessName || !ownerName) {
-                return res.status(400).json({ error: 'Missing required fields: businessName or ownerName' });
+            const { businessName, ownerName, applicationDate } = req.body;
+            if (!businessName || !ownerName || !applicationDate) {
+                return res.status(400).json({ error: 'Missing required fields: businessName, ownerName, or applicationDate' });
             }
             try {
                 const deleteQuery = `
                     DELETE FROM owners
-                    WHERE business_name = $1 AND owner_name = $2;
+                    WHERE business_name = $1 AND owner_name = $2 AND application_date = $3
                 `;
-                await pool.query(deleteQuery, [businessName, ownerName]);
+                const result = await pool.query(deleteQuery, [businessName, ownerName, applicationDate]);
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ error: 'Owner not found' });
+                }
                 res.json({ message: 'Owner deleted successfully' });
             } catch (err) {
                 console.error('Error deleting owner', err);
@@ -637,6 +676,26 @@ async function init() {
             }
 
             try {
+                // Fetch date_issued and registered_num from owners table using businessName, ownerName, and applicationDate
+                const ownerQuery = `
+                    SELECT date_issued, registered_num FROM owners
+                    WHERE business_name = $1 AND owner_name = $2 AND application_date = $3
+                    LIMIT 1
+                `;
+                const ownerResult = await pool.query(ownerQuery, [businessName, ownerName, applicationDate]);
+                let dateIssuedValue = '';
+                let registeredNumValue = '';
+                if (ownerResult.rows.length > 0) {
+                    if (ownerResult.rows[0].date_issued) {
+                        const date = new Date(ownerResult.rows[0].date_issued);
+                        const month = date.toLocaleString('default', { month: 'long' });
+                        const day = date.getDate();
+                        const year = date.getFullYear();
+                        dateIssuedValue = `${month} ${day}, ${year}`;
+                    }
+                    registeredNumValue = ownerResult.rows[0].registered_num || '';
+                }
+
                 // Load the Word template as binary
                 const templatePath = path.join(__dirname, 'assets', 'sanitary_permit_format.docx');
                 let content = fs.readFileSync(templatePath, "binary");
@@ -657,9 +716,10 @@ async function init() {
                     Type: classification,
                     Address: address,
                     Permit_No: permitNumber,
-                    Date_Issued: applicationDate,
+                    Date_Issued: dateIssuedValue,
                     No_of_Employees: employeeCount,
-                    Exp_Date: expirationDate
+                    Exp_Date: expirationDate,
+                    Reg_No: registeredNumValue // <-- for {Reg_No}
                 });
 
                 // Generate the new document
@@ -735,12 +795,23 @@ async function init() {
                 return res.status(400).json({ error: 'Missing required fields: business_name or owner_name' });
             }
             try {
-                const updateQuery = `
-                    UPDATE owners
-                    SET remarks = $3
-                    WHERE business_name = $1 AND owner_name = $2
-                `;
-                const result = await pool.query(updateQuery, [business_name, owner_name, remarks]);
+                let updateQuery, params;
+                if (remarks === "Issued") {
+                    updateQuery = `
+                        UPDATE owners
+                        SET remarks = $3, date_issued = CURRENT_DATE
+                        WHERE business_name = $1 AND owner_name = $2
+                    `;
+                    params = [business_name, owner_name, remarks];
+                } else {
+                    updateQuery = `
+                        UPDATE owners
+                        SET remarks = $3, date_issued = NULL
+                        WHERE business_name = $1 AND owner_name = $2
+                    `;
+                    params = [business_name, owner_name, remarks];
+                }
+                const result = await pool.query(updateQuery, params);
                 if (result.rowCount === 0) {
                     return res.status(404).json({ error: 'Owner not found' });
                 }

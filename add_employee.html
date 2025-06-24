@@ -24,8 +24,8 @@
                 <label for="ownerName"style="margin-left: 54px;">Name of Owner/Applicant</label>
                 <input style="height: 20px; width: 115%;" type="text" id="ownerName">
             </div>
-            <div class="input-group" style=" margin-left:1020px;position: fixed;" required="">
-                <label for="permitStatus" style="margin-right: 50px;">Sanitary Permit #</label>
+            <div class="input-group-2" style="margin-top: 5px; margin-left:1020px;position: fixed;" required="">
+                <label id="permitLabel" for="permitStatus" style="margin-right: 170px; top: 36px; position: fixed;">Sanitary Permit No.</label>
                 <input style="height: 20px; width: 180px;" type="text" id="permitNumber">
             </div>
             <td>
@@ -291,7 +291,7 @@
                             onmouseover="this.style.backgroundColor='#cc0000'"
                             onmouseout="this.style.backgroundColor='#ff4d4d'">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                    <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                     <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
                                 </svg>
                         </button>
@@ -379,7 +379,6 @@
             // Remove row from DOM and update row numbers
             row.remove();
             updateRowNumbers();
-            updateHealthCertNumbers();
         }
 
         function populateEmployeeTable(employees, unsavedRows = []) {
@@ -484,9 +483,8 @@
                 const inputCert = document.createElement('input');
                 inputCert.type = 'text';
                 inputCert.className = 'health-cert';
-                // Always assign by row index
-                inputCert.value = getHealthCertNoByIndex(index);
-                inputCert.readOnly = true;
+                // Remove auto-assignment and readOnly
+                inputCert.value = emp.health_cert_no || '';
                 tdCert.appendChild(inputCert);
                 tr.appendChild(tdCert);
 
@@ -567,7 +565,6 @@
             }
 
             updateRowNumbers();
-            updateHealthCertNumbers();
         }
 
         function updateRowNumbers() {
@@ -845,7 +842,7 @@
                 <td><input type="text" class="employee-nationality" required></td>
                 <td><input type="text" class="employee-place-of-work" required></td>
                 <td><input type="text" class="employee-address" required></td>
-                <td><input type="text" class="health-cert" required readonly></td>
+                <td><input type="text" class="health-cert" required></td> <!-- Editable, no value -->
                 <td><input type="text" class="remarks" required></td>
                 <td><input type="date" class="x-ray-date" required></td>
                 <td>
@@ -862,7 +859,7 @@
                         onmouseover="this.style.backgroundColor='#cc0000'"
                         onmouseout="this.style.backgroundColor='#ff4d4d'">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
+                                <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5zm5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5z"/>
                                 <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3.086a1 1 0 0 1 .707.293l.707.707h3.586l.707-.707A1 1 0 0 1 11.414 1H14.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"/>
                             </svg>
                     </button>
@@ -870,12 +867,11 @@
             `;
             tableBody.appendChild(newRow);
             updateRowNumbers();
-            updateHealthCertNumbers();
         }
 
-        // On initial page load, set the health-cert number for the first row if empty
+        // On initial page load, do NOT auto-assign health-cert number
         document.addEventListener('DOMContentLoaded', () => {
-            updateHealthCertNumbers();
+            // updateHealthCertNumbers(); // REMOVE THIS LINE
             // Ensure the first row (if present) gets its health-cert number immediately
             const tableBody = document.querySelector(".table-container table:not([style*='display: none']) tbody");
             if (tableBody) {
@@ -927,13 +923,24 @@
                 if (!ownerRes.ok) throw new Error('Failed to fetch owner info');
                 const owners = await ownerRes.json();
                 
-                // Filter owners array to find the entry matching both businessName and ownerName
-                const ownerData = owners && owners.find(owner => 
-                    owner.business_name.toUpperCase() === businessName.toUpperCase() && 
-                    owner.owner_name.toUpperCase() === ownerName.toUpperCase()
-                );
+                // Filter owners array to find the entry matching both businessName, ownerName, and application_date
+                let applicationDateParam = urlParams.get('application_date');
+                let ownerData;
+                if (applicationDateParam) {
+                    // If application_date is provided in URL, use it for precise match
+                    ownerData = owners && owners.find(owner => 
+                        owner.business_name.toUpperCase() === businessName.toUpperCase() && 
+                        owner.owner_name.toUpperCase() === ownerName.toUpperCase() &&
+                        owner.application_date && owner.application_date.startsWith(applicationDateParam)
+                    );
+                } else {
+                    // Fallback: match only businessName and ownerName
+                    ownerData = owners && owners.find(owner => 
+                        owner.business_name.toUpperCase() === businessName.toUpperCase() && 
+                        owner.owner_name.toUpperCase() === ownerName.toUpperCase()
+                    );
+                }
 
-                // If no matching owner data is found, display an error and return
                 if (!ownerData) {
                     alert('No matching owner found for the given Business Name and Owner Name.');
                     return;
@@ -989,8 +996,20 @@
                     applicationDate = `${month} ${day}, ${year}`;
                 }
 
-                // Construct the URL for the API endpoint
-                const url = `http://localhost:3000/api/generatePermit?businessName=${encodeURIComponent(businessName)}&ownerName=${encodeURIComponent(ownerName)}&classification=${encodeURIComponent(classification)}&address=${encodeURIComponent(address)}&permitNumber=${encodeURIComponent(permitNumber)}&applicationDate=${encodeURIComponent(applicationDate)}&employeeCount=${encodeURIComponent(employeeCount)}&expirationDate=${encodeURIComponent(expirationDate)}`;
+                // Get date_issued and format it for the docx
+                let dateIssued = '';
+                if (ownerData.date_issued) {
+                    const date = new Date(ownerData.date_issued);
+                    const month = date.toLocaleString('default', { month: 'long' });
+                    const day = date.getDate();
+                    const year = date.getFullYear();
+                    dateIssued = `${month} ${day}, ${year}`;
+                } else {
+                    dateIssued = '';
+                }
+
+                // Construct the URL for the API endpoint, pass dateIssued as Date_Issued
+                const url = `http://localhost:3000/api/generatePermit?businessName=${encodeURIComponent(businessName)}&ownerName=${encodeURIComponent(ownerName)}&classification=${encodeURIComponent(classification)}&address=${encodeURIComponent(address)}&permitNumber=${encodeURIComponent(permitNumber)}&applicationDate=${encodeURIComponent(applicationDate)}&employeeCount=${encodeURIComponent(employeeCount)}&expirationDate=${encodeURIComponent(expirationDate)}&dateIssued=${encodeURIComponent(dateIssued)}`;
 
                 // Open a new window to trigger the download
                 window.open(url, '_blank');

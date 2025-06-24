@@ -191,15 +191,41 @@
                     button.addEventListener('click', async () => {
                         const businessName = button.getAttribute('data-business');
                         const ownerName = button.getAttribute('data-owner');
-                        if (confirm(`Are you sure you want to delete the record for ${businessName} - ${ownerName}?`)) {
+                        // Get application_date from the same row (4th cell, index 3)
+                        const row = button.closest('tr');
+                        let applicationDate = '';
+                        if (row) {
+                            const dateCell = row.querySelectorAll('td')[3];
+                            if (dateCell) {
+                                const displayed = dateCell.textContent.trim();
+                                if (displayed) {
+                                    const parts = displayed.split('/');
+                                    if (parts.length === 3) {
+                                        let yyyy = parts[2];
+                                        let mm = parts[0];
+                                        let dd = parts[1];
+                                        if (parseInt(mm, 10) > 12) {
+                                            dd = parts[0];
+                                            mm = parts[1];
+                                        }
+                                        applicationDate = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+                                    }
+                                }
+                            }
+                        }
+                        if (!applicationDate) {
+                            alert('Could not determine application date for deletion.');
+                            return;
+                        }
+                        if (confirm(`Are you sure you want to delete the record for ${businessName} - ${ownerName} (${applicationDate})?`)) {
                             try {
                                 const response = await fetch('http://localhost:3000/api/owners/delete', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ businessName, ownerName }),
+                                    body: JSON.stringify({ businessName, ownerName, applicationDate }),
                                 });
                                 if (!response.ok) {
-                                    const errorData = await response.json(); // Try to get error details from the server
+                                    const errorData = await response.json();
                                     console.error('Failed to delete record:', errorData);
                                     throw new Error(errorData.error || 'Failed to delete record');
                                 }
