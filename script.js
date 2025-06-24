@@ -14,7 +14,7 @@ form.addEventListener("submit", (e) => {
         button: "OK",
       }).then((value) => {
           if (value) { 
-              window.location.href = "index.html";
+              window.location.href = "home.html";
           }
       });
       form.reset();
